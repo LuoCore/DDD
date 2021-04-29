@@ -1,7 +1,9 @@
 ﻿using Domain.CommandHandlers;
 using Domain.Interface.ICommandHandlers;
+using Domain.Interface.IRepository;
 using Domain.Interface.ISeedwork;
 using Domain.Notifications;
+using Domain.Repository;
 using Infrastructure.Factory;
 using Infrastructure.Interface.IFactory;
 using MediatR;
@@ -43,13 +45,13 @@ namespace Infrastructure.CrossCutting.IoC
             });
 
             // 注入 基础设施层 - 数据层
-            services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+      
 
 
             // 注入 基础设施层 - 事件溯源
-            services.AddScoped<IEventStoreRepository, EventStoreSQLRepository>();
+            services.AddScoped<IEventStoreRepository, EventStoreRepository>();
 
             services.AddScoped<ISqlSugarFactory, SqlSugarFactory>();
 

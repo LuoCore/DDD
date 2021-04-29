@@ -3,7 +3,6 @@ using Application.Interface;
 using Application.Models.EventSourcedNormalizers;
 using Application.Models.ViewModels;
 using Domain.Interface.ICommandHandlers;
-using Domain.Interface.IEventSourcing;
 using Domain.Interface.IRepository;
 using Infrastructure.Factory;
 using Infrastructure.Repository;
@@ -47,6 +46,11 @@ namespace Application.Services
 
             _Mediator.SendCommand(usercommandModel);
 
+            throw new NotImplementedException();
+        }
+
+        IList<StudentHistoryData> IUsersService.GetAllHistory(Guid id)
+        {
             throw new NotImplementedException();
         }
     }

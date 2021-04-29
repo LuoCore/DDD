@@ -14,6 +14,11 @@ namespace Domain.Commands
 
         public DateTime Timestamp { get; private set; }
         public ValidationResult ValidationResult { get; set; }
+
+        public string MessageType { get; private set; }
+
+        public Guid AggregateId { get; private set; }
+
         protected Command()
         {
             Timestamp = DateTime.Now;

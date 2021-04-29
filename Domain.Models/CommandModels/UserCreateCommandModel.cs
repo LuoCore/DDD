@@ -30,6 +30,10 @@ namespace Domain.Models.CommandModels
         public abstract DateTime Timestamp { get; }
         public abstract ValidationResult ValidationResult { get; set; }
 
+        public string MessageType { get; set; }
+
+        public Guid AggregateId { get; set; }
+
         public abstract bool IsValid();
     }
 }
