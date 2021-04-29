@@ -31,3 +31,4 @@
 /Infrastructure.Interface/obj
 /SqlSugar/bin/Debug/netstandard2.0
 /SqlSugar/obj
+.vs
