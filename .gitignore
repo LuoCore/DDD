@@ -34,3 +34,5 @@
 .vs
 /Web.Layui/bin/Debug/net6.0
 /Web.Layui/obj
+/LuoCore.WebMVC/bin/Debug/net6.0
+/LuoCore.WebMVC/obj

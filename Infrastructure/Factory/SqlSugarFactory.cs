@@ -15,10 +15,10 @@ namespace Infrastructure.Factory
 
             this.config = _config;
         }
-        public SqlSugarClient GetDbContext(Action<Exception> onErrorEvent)
-        {
-            return GetDbContext(null, null, onErrorEvent);
-        }
+        //public SqlSugarClient GetDbContext(Action<Exception> onErrorEvent)
+        //{
+        //    return GetDbContext(null, null, onErrorEvent);
+        //}
 
         public SqlSugarClient GetDbContext(Action<string, SugarParameter[]> onExecutedEvent)
         {

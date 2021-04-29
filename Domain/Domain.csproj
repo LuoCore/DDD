@@ -12,13 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain.Models\Domain.Models.csproj" />
-    <ProjectReference Include="..\Domain.Repository\Domain.Repository.csproj" />
     <ProjectReference Include="..\IDomain\Domain.Interface.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Repository\" />
   </ItemGroup>
 
 </Project>

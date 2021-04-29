@@ -7,5 +7,7 @@ namespace Domain.Interface.IEvents
 {
     public interface IMessage : IRequest<bool>
     {
+        public string MessageType { get;}
+        public Guid AggregateId { get;}
     }
 }

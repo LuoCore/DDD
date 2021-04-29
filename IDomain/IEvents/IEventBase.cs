@@ -7,5 +7,6 @@ namespace Domain.Interface.IEvents
 {
     public interface IEventBase : IMessage, INotification 
     {
+        public DateTime Timestamp { get;}
     }
 }
