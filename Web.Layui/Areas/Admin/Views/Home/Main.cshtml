@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_LayuiLayout.cshtml";
+}
+
+<div class="layui-body" id="LAY_app_body">
+
+    <div class="layadmin-tabsbody-item layui-show">
+
+        <iframe src="/Account/Welcome" frameborder="0" class="layadmin-iframe"></iframe>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        layui.config({
+            base: '../../lib/layui/layadmin/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use('index');
+    </script>
+}

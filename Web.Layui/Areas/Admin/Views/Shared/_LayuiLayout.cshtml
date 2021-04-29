@@ -1,0 +1,34 @@
+﻿@using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Layui</title>
+    <link href="~/lib/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body class="layui-layout-body">
+
+    <div id="LAY_app">
+        <div class="layui-layout layui-layout-admin" style="border:1px solid red !important;">
+            <!-- 头部区域 Start-->
+            @await Component.InvokeAsync("Header")
+            <!-- 头部区域 End-->
+            <!-- 侧边菜单 Start-->
+            @await Component.InvokeAsync("SideMenu")
+            <!-- 侧边菜单 End-->
+            <!-- 页面标签 Start-->
+            <partial name="_PageTabs" />
+            <!-- 页面标签 End-->
+            <!-- 主体内容 Start-->
+            @RenderBody()
+            <!-- 主体内容 End-->
+            <!-- 辅助元素，一般用于移动设备下遮罩 -->
+            <div class="layadmin-body-shade" layadmin-event="shade"></div>
+        </div>
+    </div>
+    <script src="~/lib/layui/layui.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
