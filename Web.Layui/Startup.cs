@@ -1,5 +1,8 @@
+using Infrastructure.CrossCutting.IoC;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +27,38 @@ namespace Web.Layui
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            //用于配置 HstsOptions 的委托。
+            services.AddHsts(options =>
+            {
+                options.Preload = true;//设置严格传输安全标头的预载参数。
+                options.IncludeSubDomains = true;//启用严格传输-安全标头的 includeSubDomain 参数。
+                options.MaxAge = TimeSpan.FromDays(60);//设置严格传输安全标头的最大生存期参数。
+                options.ExcludedHosts.Add("");//不会添加 HSTS 标头的主机名列表
+            });
+            services.AddSameSiteCookiePolicy();
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(1000 * 60 * 20);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
+            // Adding MediatR for Domain Events
+            // 领域命令、领域事件等注入
+            // 引用包 MediatR.Extensions.Microsoft.DependencyInjection
+            services.AddMediatR(typeof(Startup));
+
+            // .NET Core 原生依赖注入
+            // 单写一层用来添加依赖项，从展示层 Presentation 中隔离
+            NativeInjectorBootStrapper.RegisterServices(services);
+
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

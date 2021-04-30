@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Interface.IServices;
+using Domain.Notifications;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,14 +16,36 @@ namespace Web.Layui.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUsersService _studentAppService;
+        private IMemoryCache _cache;
+        // 将领域通知处理程序注入Controller
+        private readonly DomainNotificationHandler _notifications;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IUsersService studentAppService, IMemoryCache cache, INotificationHandler<DomainNotification> notifications)
         {
             _logger = logger;
+            _studentAppService = studentAppService;
+            _cache = cache;
+            // 强类型转换
+            _notifications = (DomainNotificationHandler)notifications;
         }
 
         public IActionResult Index()
         {
+            _studentAppService.Register(new Application.Models.ViewModels.UserViewModel() 
+            {
+                BirthDate=DateTime.Now,
+                City="asdf",
+                County="sad",
+                Email="sd",
+                Name="sdf",
+                Phone="sd",
+                Province="sadf",
+                Street="asdf",
+            });
+            // 是否存在消息通知
+            if (!_notifications.HasNotifications())
+                ViewBag.Sucesso = "Student Registered!";
             return View();
         }
 

@@ -1,49 +1,30 @@
-﻿using Domain.Events;
-using Domain.Interface.IEvents;
+﻿using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
-using Infrastructure.Factory;
+using Infrastructure.CommandEventsHandler;
+using Infrastructure.Interface.IFactory;
 using Infrastructure.Repository;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Repository
 {
-    public class EventStoreRepository : SqlSugarRepository<SqlSugarFactory>, IEventStoreRepository
+    /// <summary>
+    /// 作者：(YJY)
+    /// 时间：2021/4/30 16:14:11
+    /// 版本：V1.0.1  
+    /// 说明：
+    /// </summary>
+    public class EventStoreRepository: SqlSugarRepository<ISqlSugarFactory>,IEventStoreRepository
     {
-        public EventStoreRepository(SqlSugarFactory factory) : base(factory)
+        public EventStoreRepository(ISqlSugarFactory factory) : base(factory)
         {
 
         }
-        public Task<IList<IEventStore>> All(Guid aggregateId)
+
+        public void Save<T>(T theEvent) where T : Event
         {
             throw new NotImplementedException();
-        }
-
-        public void Save<T>(T theEvent) where T : IEventBase
-        {
-            // 对事件模型序列化
-            var serializedData = JsonConvert.SerializeObject(theEvent);
-
-          
-        }
-
-        public void Store(IEventBase theEvent)
-        {
-            // 对事件模型序列化
-            var serializedData = JsonConvert.SerializeObject(theEvent);
-
-            var storedEvent = new StoredEvent(
-                theEvent,
-                serializedData,
-                "");
-
-            Factory.GetDbContext((db) =>
-            {
-                db.Insertable<StoredEvent>(storedEvent).ExecuteCommand();
-            });
         }
     }
 }

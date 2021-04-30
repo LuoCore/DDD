@@ -1,14 +1,14 @@
 ﻿
+using Infrastructure.Entitys;
 using Infrastructure.Interface.IRepository;
 using Infrastructure.Repository;
 
 namespace Domain.Interface.IRepository
 {
-    public interface IUsersRepository:ISqlSugarRepository
+    public interface IUsersRepository : ISqlSugarRepository
     {
-        //一些Student独有的接口
-        Infrastructure.Entitys.User GetByEmail(string email);
+         User Read(string id);
 
-        bool Create(Infrastructure.Entitys.User user);
+        bool Create(User model);
     }
 }

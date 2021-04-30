@@ -1,10 +1,11 @@
-﻿using Application.EventSourcedNormalizers;
-using Application.Interface;
-using Application.Models.EventSourcedNormalizers;
+﻿using Application.Interface;
+using Application.Interface.IServices;
 using Application.Models.ViewModels;
-using Domain.Interface.ICommandHandlers;
+using Domain.CommandEventsHandler.Commands.User;
+using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
 using Infrastructure.Factory;
+using Infrastructure.Interface.IFactory;
 using Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
@@ -12,46 +13,31 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    public class UsersService : SqlSugarRepository<SqlSugarFactory, IUsersRepository>, IUsersService
+    public class UsersService : SqlSugarRepository<ISqlSugarFactory, IUsersRepository>, IUsersService
     {
         // 中介者 总线
-        private readonly IMediatorHandler _Mediator;
+        private readonly IMediatorHandler Bus;
         // 事件源仓储
-        private readonly IEventStoreRepository _EventStoreRepository;
-        public UsersService(SqlSugarFactory factory, IUsersRepository repository, IMediatorHandler mediator, IEventStoreRepository eventStoreRepository) : base(factory)
+        private readonly IEventStoreRepository _eventStoreRepository;
+
+        public UsersService(ISqlSugarFactory factory, IUsersRepository repository,
+            IMediatorHandler bus,
+            IEventStoreRepository eventStoreRepository
+            ) : base(factory)
         {
-            _Mediator = mediator;
-            _EventStoreRepository = eventStoreRepository;
+            Bus = bus;
+            _eventStoreRepository = eventStoreRepository;
         }
 
-        public async Task<IList<StudentHistoryData>> GetAllHistory(Guid id)
+
+        public void Register(UserViewModel vm)
         {
-         
-            return StudentHistory.ToJavaScriptStudentHistory(await _EventStoreRepository.All(id));
-        }
+            //这里引入领域设计中的写命令 还没有实现
+            //请注意这里如果是平时的写法，必须要引入Student领域模型，会造成污染
 
-        public UserViewModel GetById(Guid id)
-        {
-            var ddd = DbRepository.GetByEmail(id.ToString());
-            UserViewModel userView = new UserViewModel()
-            {
-                Email = ddd.Email
-            };
-            return userView;
-        }
-
-        public void Register(UserViewModel userViewModel)
-        {
-            Domain.Commands.User.UserCreateCommand usercommandModel= new Domain.Commands.User.UserCreateCommand(userViewModel.Name, userViewModel.Email, userViewModel.BirthDate, userViewModel.Phone, userViewModel.Province, userViewModel.City, userViewModel.County, userViewModel.Street);
-
-            _Mediator.SendCommand(usercommandModel);
-
-            throw new NotImplementedException();
-        }
-
-        IList<StudentHistoryData> IUsersService.GetAllHistory(Guid id)
-        {
-            throw new NotImplementedException();
+           
+            var registerCommand = new UserRegisterCommand(vm.Name, vm.Email, vm.BirthDate, vm.Phone, vm.Province, vm.City, vm.County, vm.Street);
+            Bus.SendCommand(registerCommand);
         }
     }
 }

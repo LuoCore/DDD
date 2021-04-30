@@ -1,38 +1,25 @@
 ﻿
 using Domain.Interface.IRepository;
 using Infrastructure.Entitys;
-using Infrastructure.Factory;
+using Infrastructure.Interface.IFactory;
 using Infrastructure.Repository;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace Domain.Repository
 {
-    public class UsersRepository : SqlSugarRepository<SqlSugarFactory>, IUsersRepository
+    public class UsersRepository : SqlSugarRepository<ISqlSugarFactory>, IUsersRepository
     {
-        public UsersRepository(SqlSugarFactory factory) : base(factory)
+        public UsersRepository(ISqlSugarFactory factory) : base(factory)
         {
 
         }
 
-    
-
-        public bool Create(User user)
+        public bool Create(User model)
         {
             throw new System.NotImplementedException();
         }
 
-        public User GetByEmail(string email)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
+        public User Read(string id)
         {
             throw new System.NotImplementedException();
         }

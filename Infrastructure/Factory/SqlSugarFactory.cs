@@ -53,7 +53,7 @@ namespace Infrastructure.Factory
             };
             return db;
         }
-        public void GetDbContext(Action<SqlSugar.SqlSugarClient> Func)
+        public void GetDbContext(Action<SqlSugarClient> Func)
         {
 
             using (SqlSugarClient db = new SqlSugarClient(this.config))
@@ -101,5 +101,9 @@ namespace Infrastructure.Factory
                 }
             };
         }
+
+
+
+
     }
 }

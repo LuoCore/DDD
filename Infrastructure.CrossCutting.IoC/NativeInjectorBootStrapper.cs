@@ -1,7 +1,12 @@
-﻿using Domain.CommandHandlers;
-using Domain.Interface.ICommandHandlers;
+﻿using Application.Interface.IServices;
+using Application.Services;
+using Domain.CommandEventsHandler;
+using Domain.CommandEventsHandler.CommandHandlers;
+using Domain.CommandEventsHandler.Commands.User;
+using Domain.CommandEventsHandler.EventHandlers;
+using Domain.CommandEventsHandler.Events.User;
+using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
-using Domain.Interface.ISeedwork;
 using Domain.Notifications;
 using Domain.Repository;
 using Infrastructure.Factory;
@@ -13,30 +18,40 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SqlSugar;
 using System;
+using System.Collections.Generic;
 
 namespace Infrastructure.CrossCutting.IoC
 {
     public class NativeInjectorBootStrapper
     {
+
+
         public static void RegisterServices(IServiceCollection services)
         {
-            // 命令总线Domain Bus (Mediator)
-            services.AddScoped<IMediatorHandler, InMemoryBus>();
-            // 注入 应用层Application
-            services.AddScoped<Application.Interface.IUsersService, Application.Services.UsersService>();
-
-            // Domain - Events
-            // 将事件模型和事件处理程序匹配注入
-
-            // 领域通知
-            services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
-            // 领域事件
-            services.AddScoped<INotificationHandler<Domain.Events.UserCreateEvent>, Domain.EventHandlers.UserEventHandler>();
+            services.AddScoped<ISqlSugarFactory, SqlSugarFactory>();
 
 
-            // 领域层 - 领域命令
-            // 将命令模型和命令处理程序匹配
-            services.AddScoped<IRequestHandler<Domain.Commands.User.UserCreateCommand, bool>, Domain.CommandHandlers.UserCommandHandler > ();
+            AddSqlSugarClient<ISqlSugarFactory>(services, (sp, cc) =>
+            {
+                var ConnectStr = sp.GetService<IConfiguration>().GetConnectionString("lucy");
+                var ConnectStr2 = sp.GetService<IConfiguration>().GetConnectionString("lucy2");
+                cc.ConnectionString = ConnectStr;//主库
+                cc.DbType = DbType.Sqlite;
+                cc.InitKeyType = InitKeyType.Attribute;//从特性读取主键和自增列信息
+                cc.IsAutoCloseConnection = true;//开启自动释放模式和EF原理一样我就不多解释了
+                //从库
+                cc.SlaveConnectionConfigs = new List<SlaveConnectionConfig>()
+                {
+                     new SlaveConnectionConfig()
+                     {
+                         HitRate=10,//HitRate 越大走这个从库的概率越大
+                          ConnectionString=ConnectStr2
+                     }
+                };
+            });
+
+
+
             // 领域层 - Memory
             services.AddSingleton<IMemoryCache>(factory =>
             {
@@ -44,30 +59,45 @@ namespace Infrastructure.CrossCutting.IoC
                 return cache;
             });
 
+            // 命令总线Domain Bus (Mediator)
+            services.AddScoped<IMediatorHandler, MediatorHandler>();
             // 注入 基础设施层 - 数据层
             services.AddScoped<IUsersRepository, UsersRepository>();
-
-      
-
-
-            // 注入 基础设施层 - 事件溯源
             services.AddScoped<IEventStoreRepository, EventStoreRepository>();
+            // 领域通知
+            services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
+            // 领域事件
+            services.AddScoped<INotificationHandler<UserRegisteredEvent>, UserEventHandler>();
+            // 领域层 - 领域命令
+            // 将命令模型和命令处理程序匹配
+            services.AddScoped<IRequestHandler<UserRegisterCommand, bool>, UserCommandHandler>();
 
-            services.AddScoped<ISqlSugarFactory, SqlSugarFactory>();
 
-            services.TryAdd(new ServiceDescriptor(typeof(ConnectionConfig),sp=>ConnectionConfigFactory(sp), ServiceLifetime.Scoped));
+            services.AddScoped<IUsersService, UsersService>();
 
 
         }
-
-        private static ConnectionConfig ConnectionConfigFactory(IServiceProvider sp)
+        // <summary>
+        /// SqlSugar上下文注入
+        /// </summary>
+        /// <typeparam name="TSugarContext">要注册的上下文的类型</typeparam>
+        /// <param name="serviceCollection"></param>
+        /// <param name="configAction"></param>
+        /// <param name="lifetime">用于在容器中注册TSugarClient服务的生命周期</param>
+        /// <returns></returns>
+        internal static IServiceCollection AddSqlSugarClient<TSugarContext>(IServiceCollection serviceCollection, Action<IServiceProvider, ConnectionConfig> configAction, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+             where TSugarContext : ISqlSugarFactory
+        {
+            serviceCollection.TryAdd(new ServiceDescriptor(typeof(ConnectionConfig), sp => ConnectionConfigFactory(sp, configAction), lifetime));
+            serviceCollection.Add(new ServiceDescriptor(typeof(ConnectionConfig), p => ConnectionConfigFactory(p, configAction), lifetime));
+            serviceCollection.TryAdd(new ServiceDescriptor(typeof(TSugarContext), typeof(TSugarContext), lifetime));
+            return serviceCollection;
+        }
+        private static ConnectionConfig ConnectionConfigFactory(IServiceProvider applicationServiceProvider, Action<IServiceProvider, ConnectionConfig> configAction)
         {
             var config = new ConnectionConfig();
-            config.ConnectionString = sp.GetService<IConfiguration>().GetConnectionString("lucy");
-            config.DbType = DbType.MySql;
-            config.IsAutoCloseConnection = true;
-            config.InitKeyType = InitKeyType.Attribute;
-            config.IsShardSameThread = true;
+
+            configAction.Invoke(applicationServiceProvider, config);
             return config;
         }
     }

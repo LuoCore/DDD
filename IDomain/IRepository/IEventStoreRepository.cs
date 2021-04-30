@@ -1,15 +1,21 @@
-﻿using Domain.Interface.IEvents;
+﻿using Domain.Interface.ICommandEventsHandler;
+using Infrastructure.CommandEventsHandler;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Interface.IRepository
 {
-    public interface IEventStoreRepository 
+    /// <summary>
+    /// 领域存储服务接口
+    /// </summary>
+    public interface IEventStoreRepository
     {
-        void Store(IEventBase theEvent);
-        Task<IList<IEventStore>> All(Guid aggregateId);
-
+        /// <summary>
+        /// 将命令模型进行保存
+        /// </summary>
+        /// <typeparam name="T"> 泛型：Event命令模型</typeparam>
+        /// <param name="theEvent"></param>
+        void Save<T>(T theEvent) where T : Event;
     }
 }

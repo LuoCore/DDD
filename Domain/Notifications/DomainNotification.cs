@@ -1,4 +1,6 @@
-﻿using Domain.Events;
+﻿using Domain.CommandEventsHandler;
+using Domain.Interface.ICommandEventsHandler;
+using Infrastructure.CommandEventsHandler;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +11,7 @@ namespace Domain.Notifications
     /// 领域通知模型，用来获取当前总线中出现的通知信息
     /// 继承自领域事件和 INotification（也就意味着可以拥有中介的发布/订阅模式）
     /// </summary>
-    public class DomainNotification : EventBase
+    public class DomainNotification : Event
     {
         // 标识
         public Guid DomainNotificationId { get; private set; }
