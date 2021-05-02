@@ -1,7 +1,6 @@
 ﻿using Application.Interface;
 using Application.Interface.IServices;
 using Application.Models.ViewModels;
-using Domain.CommandEventsHandler.Commands.User;
 using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
 using Infrastructure.Factory;
@@ -36,7 +35,7 @@ namespace Application.Services
             //请注意这里如果是平时的写法，必须要引入Student领域模型，会造成污染
 
            
-            var registerCommand = new UserRegisterCommand(vm.Name, vm.Email, vm.BirthDate, vm.Phone, vm.Province, vm.City, vm.County, vm.Street);
+            var registerCommand = new Domain.Models.User.CommandModels.UserCreateCommandModel(vm.UserId,vm.UserName, vm.Email, vm.Password, vm.Phone);
             Bus.SendCommand(registerCommand);
         }
     }

@@ -1,4 +1,4 @@
-﻿using Domain.CommandEventsHandler.Events.User;
+﻿
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace Domain.CommandEventsHandler.EventHandlers
 {
     public class UserEventHandler :
-        INotificationHandler<UserRegisteredEvent>
+        INotificationHandler<Domain.Models.User.EventModels.UserCreateEvent>
     {
         // 学习被注册成功后的事件处理方法
-        public Task Handle(UserRegisteredEvent message, CancellationToken cancellationToken)
+        public Task Handle(Domain.Models.User.EventModels.UserCreateEvent message, CancellationToken cancellationToken)
         {
             // 恭喜您，注册成功，欢迎加入我们。
 

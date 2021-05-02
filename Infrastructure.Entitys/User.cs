@@ -4,11 +4,19 @@ namespace Infrastructure.Entitys
 {
     public class User
     {
-        public string Id { get; set; }
+        public int ID { get; set; }
         /// <summary>
-        /// 姓名
+        /// 用户唯一标识
         /// </summary>
-        public string Name { get; set; }
+        public string UserId { get; set; }
+        /// <summary>
+        /// 用户名称
+        /// </summary>
+        public string UserName { get; set; }
+        /// <summary>
+        /// 密码
+        /// </summary>
+        public string Password { get; set; }
         /// <summary>
         /// 邮箱
         /// </summary>
@@ -17,11 +25,9 @@ namespace Infrastructure.Entitys
         /// 手机
         /// </summary>
         public string Phone { get; set; }
-        /// <summary>
-        /// 生日
-        /// </summary>
-        public DateTime BirthDate { get; set; }
+        
 
-        public int Address { get; set; }
+        public DateTime CreateTime { get; set; }
+        public string CreateName { get; set; }
     }
 }

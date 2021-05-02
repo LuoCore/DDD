@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Domain.Models.Entitys;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Models.Entitys
+namespace Domain.Models.User
 {
     /// <summary>
     /// 作者：(YJY)
@@ -15,18 +16,19 @@ namespace Domain.Models.Entitys
         protected UserDomainModel()
         {
         }
-        public UserDomainModel(Guid id, string name, string email, string phone, DateTime birthDate)
+        public UserDomainModel(Guid id, string name,string password, string email, string phone)
         {
             Id = id;
-            Name = name;
+            UserName = name;
+            Password = password;
             Email = email;
             Phone = phone;
-            BirthDate = birthDate;
         }
         /// <summary>
         /// 姓名
         /// </summary>
-        public string Name { get; private set; }
+        public string UserName { get; private set; }
+        public string Password { get; set; }
         /// <summary>
         /// 邮箱
         /// </summary>
@@ -35,10 +37,6 @@ namespace Domain.Models.Entitys
         /// 手机
         /// </summary>
         public string Phone { get; private set; }
-        /// <summary>
-        /// 生日
-        /// </summary>
-        public DateTime BirthDate { get; private set; }
 
     }
 }

@@ -13,36 +13,20 @@ namespace Application.Models.ViewModels
     public class UserViewModel
     {
 
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
 
 
-        public string Name { get; set; }
+        public string UserName { get; set; }
 
 
         public string Email { get; set; }
 
-        public DateTime BirthDate { get; set; }
+        public string Password { get; set; }
 
 
         public string Phone { get; set; }
 
 
 
-        public string Province { get; set; }
-
-        /// <summary>
-        /// 城市
-        /// </summary>
-        public string City { get; set; }
-
-        /// <summary>
-        /// 区县
-        /// </summary>
-        public string County { get; set; }
-
-        /// <summary>
-        /// 街道
-        /// </summary>
-        public string Street { get; set; }
     }
 }

@@ -2,9 +2,7 @@
 using Application.Services;
 using Domain.CommandEventsHandler;
 using Domain.CommandEventsHandler.CommandHandlers;
-using Domain.CommandEventsHandler.Commands.User;
 using Domain.CommandEventsHandler.EventHandlers;
-using Domain.CommandEventsHandler.Events.User;
 using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
 using Domain.Notifications;
@@ -33,8 +31,8 @@ namespace Infrastructure.CrossCutting.IoC
 
             AddSqlSugarClient<ISqlSugarFactory>(services, (sp, cc) =>
             {
-                var ConnectStr = sp.GetService<IConfiguration>().GetConnectionString("lucy");
-                var ConnectStr2 = sp.GetService<IConfiguration>().GetConnectionString("lucy2");
+                var ConnectStr = sp.GetService<IConfiguration>().GetConnectionString("SqlserverConnection");
+                var ConnectStr2 = sp.GetService<IConfiguration>().GetConnectionString("SqlserverConnection");
                 cc.ConnectionString = ConnectStr;//主库
                 cc.DbType = DbType.Sqlite;
                 cc.InitKeyType = InitKeyType.Attribute;//从特性读取主键和自增列信息
@@ -67,10 +65,10 @@ namespace Infrastructure.CrossCutting.IoC
             // 领域通知
             services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
             // 领域事件
-            services.AddScoped<INotificationHandler<UserRegisteredEvent>, UserEventHandler>();
+            services.AddScoped<INotificationHandler<Domain.Models.User.EventModels.UserCreateEvent>, UserEventHandler>();
             // 领域层 - 领域命令
             // 将命令模型和命令处理程序匹配
-            services.AddScoped<IRequestHandler<UserRegisterCommand, bool>, UserCommandHandler>();
+            services.AddScoped<IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>, UserCommandHandler>();
 
 
             services.AddScoped<IUsersService, UsersService>();

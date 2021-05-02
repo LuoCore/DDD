@@ -34,14 +34,11 @@ namespace Web.Layui.Controllers
         {
             _studentAppService.Register(new Application.Models.ViewModels.UserViewModel() 
             {
-                BirthDate=DateTime.Now,
-                City="asdf",
-                County="sad",
-                Email="sd",
-                Name="sdf",
-                Phone="sd",
-                Province="sadf",
-                Street="asdf",
+                UserId=Guid.NewGuid(),
+                Email="123@qq.com",
+                Password="123",
+                Phone="123456789",
+                UserName="Admin"
             });
             // 是否存在消息通知
             if (!_notifications.HasNotifications())

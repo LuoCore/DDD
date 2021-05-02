@@ -1,8 +1,7 @@
-﻿using Domain.CommandEventsHandler.Commands.User;
-using Domain.CommandEventsHandler.Events.User;
-using Domain.Interface.ICommandEventsHandler;
+﻿using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
 using Domain.Models.Entitys;
+using Domain.Models.User.EventModels;
 using Domain.Notifications;
 using Infrastructure.Entitys;
 using MediatR;
@@ -21,7 +20,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class UserCommandHandler : CommandHandler, IRequestHandler<UserRegisterCommand, bool>
+    public class UserCommandHandler : CommandHandler, IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>
     {
         // 注入仓储接口
         private readonly IUsersRepository _userRepository;
@@ -52,7 +51,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<bool> Handle(UserRegisterCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(Domain.Models.User.CommandModels.UserCreateCommandModel request, CancellationToken cancellationToken)
         {
             // 命令验证
             if (!request.IsValid())
@@ -65,18 +64,18 @@ namespace Domain.CommandEventsHandler.CommandHandlers
 
             // 实例化领域模型，这里才真正的用到了领域模型
             // 注意这里是通过构造函数方法实现
-            var userModel = new UserDomainModel(Guid.NewGuid(), request.Name, request.Email, request.Phone, request.BirthDate);
+            var userReq = new Domain.Models.User.UserDomainModel(Guid.NewGuid(), request.UserName, request.Password,request.Email, request.Phone);
 
             // 判断邮箱是否存在
             // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
-            if (_userRepository.Read(userModel.Id.ToString()) != null)
+            if (_userRepository.ReadId(userReq.UserName.ToString()) != null)
             {
                 ////这里对错误信息进行发布，目前采用缓存形式
                 //List<string> errorInfo = new List<string>() { "该邮箱已经被使用！" };
                 //Cache.Set("ErrorData", errorInfo);
 
                 //引发错误事件
-                Bus.RaiseEvent(new DomainNotification("", "该邮箱已经被使用！"));
+                Bus.RaiseEvent(new DomainNotification("", "该用户已存在！"));
                 return Task.FromResult(false);
 
             }
@@ -86,17 +85,19 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             // 统一提交
             if (_userRepository.Create(new User()
             {
-                Id = userModel.Id.ToString(),
-                BirthDate = userModel.BirthDate,
-                Email = userModel.Email,
-                Name = userModel.Name,
-                Phone = userModel.Phone
+                UserId= userReq.Id.ToString(),
+                UserName= userReq.UserName,
+                Email=userReq.Email,
+                Password=userReq.Password,
+                Phone=userReq.Phone,
+                CreateName="后台添加",
+                CreateTime=DateTime.Now
             }))
             {
                 // 提交成功后，这里需要发布领域事件
                 // 比如欢迎用户注册邮件呀，短信呀等
 
-                Bus.RaiseEvent(new UserRegisteredEvent(userModel.Id, userModel.Name, userModel.Email, userModel.BirthDate, userModel.Phone));
+                Bus.RaiseEvent(new UserCreateEvent(userReq.Id, userReq.UserName, userReq.Email, userReq.Password, userReq.Phone));
               
             }
 
