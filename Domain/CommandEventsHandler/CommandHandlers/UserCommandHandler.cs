@@ -22,8 +22,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 说明：
     /// </summary>
     public class UserCommandHandler : CommandHandler, 
-        IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>,
-         IRequestHandler<Domain.Models.User.CommandModels.UserLoginCommandModel, Infrastructure.Entitys.User>
+        IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>
     {
         // 注入仓储接口
         private readonly IUsersRepository _userRepository;
@@ -51,7 +50,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<bool> Handle(Domain.Models.User.CommandModels.UserCreateCommandModel request, CancellationToken cancellationToken)
+        public Task<bool> Handle(UserCreateCommandModel request, CancellationToken cancellationToken)
         {
             // 命令验证
             if (!request.IsValid())
@@ -100,12 +99,6 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             return Task.FromResult(true);
         }
 
-        public Task<Infrastructure.Entitys.User> Handle(UserLoginCommandModel request, CancellationToken cancellationToken)
-        {
-           
-            var userinfo = _userRepository.Login(request.UserName, request.Password);
-         
-            return Task.FromResult(userinfo);
-        }
+        
     }
 }

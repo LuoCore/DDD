@@ -8,6 +8,6 @@ namespace Application.Interface.IServices
     public interface IUsersService
     {
         void Register(Models.ViewModels.UserCreateViewModel userViewModel);
-        public void Login(UserLoginViewModel vm);
+        public UserViewModel Login(UserLoginViewModel vm);
     }
 }

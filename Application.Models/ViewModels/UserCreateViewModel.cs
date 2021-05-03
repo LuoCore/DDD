@@ -10,20 +10,8 @@ namespace Application.Models.ViewModels
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class UserCreateViewModel
+    public class UserCreateViewModel:UserViewModel
     {
-
-
-        public string UserName { get; set; }
-
-        public string Password { get; set; }
-
-        public string Email { get; set; }
-
-
-
-        public string Phone { get; set; }
-
 
 
     }

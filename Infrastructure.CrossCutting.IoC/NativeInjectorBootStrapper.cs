@@ -5,8 +5,11 @@ using Domain.CommandEventsHandler.CommandHandlers;
 using Domain.CommandEventsHandler.EventHandlers;
 using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
+using Domain.Models.User.CommandModels;
+using Domain.Models.User.EventModels;
 using Domain.Notifications;
 using Domain.Repository;
+using Infrastructure.Entitys;
 using Infrastructure.Factory;
 using Infrastructure.Interface.IFactory;
 using MediatR;
@@ -59,18 +62,20 @@ namespace Infrastructure.CrossCutting.IoC
 
             // 命令总线Domain Bus (Mediator)
             services.AddScoped<IMediatorHandler, MediatorHandler>();
-            // 注入 基础设施层 - 数据层
-            services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<IEventStoreRepository, EventStoreRepository>();
+          
             // 领域通知
             services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
             // 领域事件
-            services.AddScoped<INotificationHandler<Domain.Models.User.EventModels.UserCreateEventModel>, UserEventHandler>();
+            services.AddScoped<INotificationHandler<UserCreateEventModel>, UserEventHandler>();
             // 领域层 - 领域命令
             // 将命令模型和命令处理程序匹配
-            services.AddScoped<IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>, UserCommandHandler>();
+            services.AddScoped<IRequestHandler<UserCreateCommandModel, bool>, UserCommandHandler>();
+           
 
-
+            // 注入 仓储层
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IEventStoreRepository, EventStoreRepository>();
+            // 注入 服务层
             services.AddScoped<IUsersService, UsersService>();
 
 

@@ -3,6 +3,7 @@ using Application.Interface.IServices;
 using Application.Models.ViewModels;
 using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
+using Domain.Models.User.CommandModels;
 using Infrastructure.Factory;
 using Infrastructure.Interface.IFactory;
 using Infrastructure.Repository;
@@ -33,17 +34,21 @@ namespace Application.Services
         {
             //这里引入领域设计中的写命令 还没有实现
             //请注意这里如果是平时的写法，必须要引入Student领域模型，会造成污染
-            var registerCommand = new Domain.Models.User.CommandModels.UserCreateCommandModel(Guid.NewGuid(), vm.UserName, vm.Email, vm.Password, vm.Phone,"用户注册");
+            var registerCommand = new UserCreateCommandModel(Guid.NewGuid(), vm.UserName, vm.Email, vm.Password, vm.Phone, "用户注册");
             Bus.SendCommand(registerCommand);
         }
 
-        public void Login(UserLoginViewModel vm)
+        public UserViewModel Login(UserLoginViewModel vm)
         {
-            //这里引入领域设计中的写命令 还没有实现
-            //请注意这里如果是平时的写法，必须要引入Student领域模型，会造成污染
-            var registerCommand = new Domain.Models.User.CommandModels.UserLoginCommandModel(vm.UserName,vm.Password);
-            var ddd= Bus.SendCommand(registerCommand);
-            
+            UserViewModel userRes = new UserViewModel();
+            var userData = DbRepository.Login(vm.UserName, vm.Password);
+            if (userData != null)
+            {
+                userRes.UserName = userData.UserName;
+                userRes.Phone = userData.Phone;
+                userRes.Email = userData.Email;
+            }
+            return userRes;
         }
     }
 }

@@ -27,7 +27,9 @@ namespace Web.Layui.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(Application.Models.ViewModels.UserLoginViewModel vm)
         {
-            _userService.Login(vm);
+           var user= _userService.Login(vm);
+            await HttpContext.Response.Cookies.Append("User", user.)
+           
             return View();
         }
 

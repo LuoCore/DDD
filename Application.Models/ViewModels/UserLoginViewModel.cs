@@ -10,10 +10,9 @@ namespace Application.Models.ViewModels
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class UserLoginViewModel
+    public class UserLoginViewModel : UserViewModel
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
+
         public string VerifiCode { get; set; }
     }
 }
