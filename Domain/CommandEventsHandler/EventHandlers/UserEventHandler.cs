@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace Domain.CommandEventsHandler.EventHandlers
 {
     public class UserEventHandler :
-        INotificationHandler<Domain.Models.User.EventModels.UserCreateEvent>
+        INotificationHandler<Domain.Models.User.EventModels.UserCreateEventModel>
     {
         // 学习被注册成功后的事件处理方法
-        public Task Handle(Domain.Models.User.EventModels.UserCreateEvent message, CancellationToken cancellationToken)
+        public Task Handle(Domain.Models.User.EventModels.UserCreateEventModel message, CancellationToken cancellationToken)
         {
             // 恭喜您，注册成功，欢迎加入我们。
 

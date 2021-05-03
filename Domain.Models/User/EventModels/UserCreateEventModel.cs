@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Domain.Models.User.EventModels
 {
-    public class UserCreateEvent:Infrastructure.CommandEventsHandler.Event
+    public class UserCreateEventModel:Infrastructure.CommandEventsHandler.Event
     {
-        public UserCreateEvent(Guid userId, string name, string email, string password, string phone)
+        public UserCreateEventModel(Guid userId, string name, string email, string password, string phone)
         {
             UserId = userId;
             UserName = name;

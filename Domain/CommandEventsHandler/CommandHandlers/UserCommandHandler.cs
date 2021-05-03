@@ -97,7 +97,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 // 提交成功后，这里需要发布领域事件
                 // 比如欢迎用户注册邮件呀，短信呀等
 
-                Bus.RaiseEvent(new UserCreateEvent(userReq.Id, userReq.UserName, userReq.Email, userReq.Password, userReq.Phone));
+                Bus.RaiseEvent(new UserCreateEventModel(userReq.Id, userReq.UserName, userReq.Email, userReq.Password, userReq.Phone));
               
             }
 

@@ -20,7 +20,16 @@ namespace Domain.Repository
             bool sqlExe = true;
             Factory.GetDbContext((db) =>
             {
-                sqlExe = db.Insertable<User>(model)
+                sqlExe = db.Insertable<User>(new 
+                {
+                    UserId=model.UserId,
+                    UserName=model.UserName,
+                    Password=model.Password,
+                    Email=model.Email,
+                    Phone=model.Phone,
+                    CreateTime=DateTime.Now,
+                    CreateName=model.CreateName
+                })
                 .IgnoreColumns(ignoreNullColumn: true)
                 .ExecuteCommand()>0;
             });

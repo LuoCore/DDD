@@ -34,7 +34,7 @@ namespace Infrastructure.CrossCutting.IoC
                 var ConnectStr = sp.GetService<IConfiguration>().GetConnectionString("SqlserverConnection");
                 var ConnectStr2 = sp.GetService<IConfiguration>().GetConnectionString("SqlserverConnection");
                 cc.ConnectionString = ConnectStr;//主库
-                cc.DbType = DbType.Sqlite;
+                cc.DbType = DbType.SqlServer;
                 cc.InitKeyType = InitKeyType.Attribute;//从特性读取主键和自增列信息
                 cc.IsAutoCloseConnection = true;//开启自动释放模式和EF原理一样我就不多解释了
                 //从库
@@ -65,7 +65,7 @@ namespace Infrastructure.CrossCutting.IoC
             // 领域通知
             services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
             // 领域事件
-            services.AddScoped<INotificationHandler<Domain.Models.User.EventModels.UserCreateEvent>, UserEventHandler>();
+            services.AddScoped<INotificationHandler<Domain.Models.User.EventModels.UserCreateEventModel>, UserEventHandler>();
             // 领域层 - 领域命令
             // 将命令模型和命令处理程序匹配
             services.AddScoped<IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>, UserCommandHandler>();
