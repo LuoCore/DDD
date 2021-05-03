@@ -42,12 +42,17 @@ namespace Web.Layui
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            services.AddDistributedMemoryCache();//分布式内存缓存
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(1000 * 60 * 20);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+           
+
+         
 
             // Adding MediatR for Domain Events
             // 领域命令、领域事件等注入
@@ -80,6 +85,8 @@ namespace Web.Layui
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

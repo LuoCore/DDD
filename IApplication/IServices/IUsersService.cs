@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,7 @@ namespace Application.Interface.IServices
 {
     public interface IUsersService
     {
-        void Register(Models.ViewModels.UserViewModel userViewModel);
+        void Register(Models.ViewModels.UserCreateViewModel userViewModel);
+        public void Login(UserLoginViewModel vm);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
 using Domain.Models.Entitys;
+using Domain.Models.User.CommandModels;
 using Domain.Models.User.EventModels;
 using Domain.Notifications;
 using Infrastructure.Entitys;
@@ -20,13 +21,16 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class UserCommandHandler : CommandHandler, IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>
+    public class UserCommandHandler : CommandHandler, 
+        IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>,
+         IRequestHandler<Domain.Models.User.CommandModels.UserLoginCommandModel, Infrastructure.Entitys.User>
     {
         // 注入仓储接口
         private readonly IUsersRepository _userRepository;
         // 注入总线
         private readonly IMediatorHandler Bus;
-        private IMemoryCache Cache;
+
+
         /// <summary>
         /// 构造函数注入
         /// </summary>
@@ -34,14 +38,10 @@ namespace Domain.CommandEventsHandler.CommandHandlers
         /// <param name="uow"></param>
         /// <param name="bus"></param>
         /// <param name="cache"></param>
-        public UserCommandHandler(IUsersRepository userRepository,
-                                      IMediatorHandler bus,
-                                      IMemoryCache cache
-                                      ) : base(bus, cache)
+        public UserCommandHandler(IUsersRepository userRepository,IMediatorHandler bus) : base(bus)
         {
             _userRepository = userRepository;
             Bus = bus;
-            Cache = cache;
         }
         /// <summary>
         ///  // RegisterStudentCommand命令的处理程序
@@ -64,18 +64,14 @@ namespace Domain.CommandEventsHandler.CommandHandlers
 
             // 实例化领域模型，这里才真正的用到了领域模型
             // 注意这里是通过构造函数方法实现
-            var userReq = new Domain.Models.User.UserDomainModel(Guid.NewGuid(), request.UserName, request.Password,request.Email, request.Phone);
+            var userReq = new Domain.Models.User.UserDomainModel(Guid.NewGuid(), request.UserName, request.Password,request.Email, request.Phone, request.CreateName);
 
             // 判断邮箱是否存在
             // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
-            if (_userRepository.ReadId(userReq.UserName.ToString()) != null)
+            if (_userRepository.ReadName(userReq.UserName.ToString()) != null)
             {
-                ////这里对错误信息进行发布，目前采用缓存形式
-                //List<string> errorInfo = new List<string>() { "该邮箱已经被使用！" };
-                //Cache.Set("ErrorData", errorInfo);
-
                 //引发错误事件
-                Bus.RaiseEvent(new DomainNotification("", "该用户已存在！"));
+                Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));
                 return Task.FromResult(false);
 
             }
@@ -90,7 +86,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 Email=userReq.Email,
                 Password=userReq.Password,
                 Phone=userReq.Phone,
-                CreateName="后台添加",
+                CreateName= request.CreateName,
                 CreateTime=DateTime.Now
             }))
             {
@@ -102,6 +98,14 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             }
 
             return Task.FromResult(true);
+        }
+
+        public Task<Infrastructure.Entitys.User> Handle(UserLoginCommandModel request, CancellationToken cancellationToken)
+        {
+           
+            var userinfo = _userRepository.Login(request.UserName, request.Password);
+         
+            return Task.FromResult(userinfo);
         }
     }
 }

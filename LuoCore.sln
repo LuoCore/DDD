@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.CrossCutting
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Layui", "Web.Layui\Web.Layui.csproj", "{8504D1A0-DF7B-4E7C-B568-20D1C70D0AD1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Utility", "Infrastructure.Utility\Infrastructure.Utility.csproj", "{D1997C93-06C9-4945-83E7-A5FE99C3216F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{8504D1A0-DF7B-4E7C-B568-20D1C70D0AD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8504D1A0-DF7B-4E7C-B568-20D1C70D0AD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8504D1A0-DF7B-4E7C-B568-20D1C70D0AD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1997C93-06C9-4945-83E7-A5FE99C3216F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1997C93-06C9-4945-83E7-A5FE99C3216F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1997C93-06C9-4945-83E7-A5FE99C3216F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1997C93-06C9-4945-83E7-A5FE99C3216F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{9797D68B-D5D7-41C4-968B-D3992553D491} = {613EA36B-43F2-475A-B280-CFFD424EEDF0}
 		{262E50C9-86D6-4E20-B499-7E7D51648A12} = {613EA36B-43F2-475A-B280-CFFD424EEDF0}
 		{8504D1A0-DF7B-4E7C-B568-20D1C70D0AD1} = {91D2D302-A0FE-462E-A478-4D04228EAEF3}
+		{D1997C93-06C9-4945-83E7-A5FE99C3216F} = {613EA36B-43F2-475A-B280-CFFD424EEDF0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5D124464-3AE4-4351-B844-00CB16B59BC8}

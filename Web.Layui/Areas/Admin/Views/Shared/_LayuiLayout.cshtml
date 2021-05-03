@@ -13,6 +13,11 @@
     <link href="~/lib/layui/css/modules/laydate/default/laydate.css" rel="stylesheet" />
     <link href="~/lib/layui/css/modules/layer/default/layer.css" rel="stylesheet" />
     <link href="~/lib/layui/css/modules/code.css" rel="stylesheet" />
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body class="layui-layout-body">
     @RenderBody()

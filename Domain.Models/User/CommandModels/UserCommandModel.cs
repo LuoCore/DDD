@@ -23,6 +23,8 @@ namespace Domain.Models.User.CommandModels
 
         public string Phone { get; protected set; }
 
-      
+        public string CreateName { get; protected set; }
+
+
     }
 }

@@ -7,14 +7,14 @@ namespace Domain.Models.User.CommandModels
     public class UserCreateCommandModel:UserCommandModel
     {
         // set 受保护，只能通过构造函数方法赋值
-        public UserCreateCommandModel(Guid userId,string userName, string email, string password, string phone)
+        public UserCreateCommandModel(Guid userId,string userName, string email, string password, string phone,string createname)
         {
             UserId = userId;
             UserName = userName;
             Password = password;
             Email = email;
             Phone = phone;
-           
+            CreateName = createname;
         }
 
         // 重写基类中的 是否有效 方法

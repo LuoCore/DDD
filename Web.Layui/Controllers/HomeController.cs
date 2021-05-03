@@ -32,17 +32,7 @@ namespace Web.Layui.Controllers
 
         public IActionResult Index()
         {
-            _studentAppService.Register(new Application.Models.ViewModels.UserViewModel() 
-            {
-                UserId=Guid.NewGuid(),
-                Email="123@qq.com",
-                Password="123",
-                Phone="123456789",
-                UserName="Admin"
-            });
-            // 是否存在消息通知
-            if (!_notifications.HasNotifications())
-                ViewBag.Sucesso = "Student Registered!";
+            
             return View();
         }
 

@@ -29,14 +29,21 @@ namespace Application.Services
         }
 
 
-        public void Register(UserViewModel vm)
+        public void Register(UserCreateViewModel vm)
         {
             //这里引入领域设计中的写命令 还没有实现
             //请注意这里如果是平时的写法，必须要引入Student领域模型，会造成污染
-
-           
-            var registerCommand = new Domain.Models.User.CommandModels.UserCreateCommandModel(vm.UserId,vm.UserName, vm.Email, vm.Password, vm.Phone);
+            var registerCommand = new Domain.Models.User.CommandModels.UserCreateCommandModel(Guid.NewGuid(), vm.UserName, vm.Email, vm.Password, vm.Phone,"用户注册");
             Bus.SendCommand(registerCommand);
+        }
+
+        public void Login(UserLoginViewModel vm)
+        {
+            //这里引入领域设计中的写命令 还没有实现
+            //请注意这里如果是平时的写法，必须要引入Student领域模型，会造成污染
+            var registerCommand = new Domain.Models.User.CommandModels.UserLoginCommandModel(vm.UserName,vm.Password);
+            var ddd= Bus.SendCommand(registerCommand);
+            
         }
     }
 }

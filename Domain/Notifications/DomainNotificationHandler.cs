@@ -42,6 +42,18 @@ namespace Domain.Notifications
             return GetNotifications().Any();
         }
 
+        // 判断在当前总线对象周期中，是否存在通知信息
+        public virtual Task<bool> AsyncHasNotifications()
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            Task.Run(() => 
+            { 
+                tcs.SetResult(GetNotifications().Any()); 
+            });
+            return tcs.Task;
+
+        }
+
         // 手动回收（清空通知）
         public void Dispose()
         {

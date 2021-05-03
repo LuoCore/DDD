@@ -16,13 +16,14 @@ namespace Domain.Models.User
         protected UserDomainModel()
         {
         }
-        public UserDomainModel(Guid id, string name,string password, string email, string phone)
+        public UserDomainModel(Guid id, string name,string password, string email, string phone,string createName)
         {
             Id = id;
             UserName = name;
             Password = password;
             Email = email;
             Phone = phone;
+            CreateName = createName;
         }
         /// <summary>
         /// 姓名
@@ -37,6 +38,11 @@ namespace Domain.Models.User
         /// 手机
         /// </summary>
         public string Phone { get; private set; }
+
+        /// <summary>
+        /// 创建信息
+        /// </summary>
+        public string CreateName { get; private set; }
 
     }
 }

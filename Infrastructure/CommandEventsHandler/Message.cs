@@ -19,6 +19,7 @@ namespace Infrastructure.CommandEventsHandler
             MessageType = GetType().Name;
         }
 
+        
        
     }
 }

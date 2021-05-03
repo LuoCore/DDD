@@ -16,19 +16,15 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     {
         // 注入中介处理接口（目前用不到，在领域事件中用来发布事件）
         private readonly IMediatorHandler _bus;
-        // 注入缓存，用来存储错误信息（目前是错误方法，以后用领域通知替换）
-        private IMemoryCache _cache;
+
 
         /// <summary>
         /// 构造函数注入
         /// </summary>
-        /// <param name="uow"></param>
         /// <param name="bus"></param>
-        /// <param name="cache"></param>
-        public CommandHandler(IMediatorHandler bus, IMemoryCache cache)
+        public CommandHandler(IMediatorHandler bus)
         {
             _bus = bus;
-            _cache = cache;
         }
 
 
@@ -36,7 +32,6 @@ namespace Domain.CommandEventsHandler.CommandHandlers
         //目前用的是缓存方法（以后通过领域通知替换）
         protected void NotifyValidationErrors(Command message)
         {
-            List<string> errorInfo = new List<string>();
             foreach (var error in message.ValidationResult.Errors)
             {
                 //将错误信息提交到事件总线，派发出去

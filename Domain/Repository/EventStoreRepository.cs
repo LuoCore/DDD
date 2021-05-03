@@ -28,10 +28,11 @@ namespace Domain.Repository
             // 对事件模型序列化
             var serializedData = Newtonsoft.Json.JsonConvert.SerializeObject(theEvent);
 
+            
             var storedEvent = new StoredEventModel(
                 theEvent,
                 serializedData,
-                "后台");
+                theEvent.MessageType);
             Factory.GetDbContext((db) =>
             {
                 db.Insertable<Infrastructure.Entitys.StoredEvent>(new 

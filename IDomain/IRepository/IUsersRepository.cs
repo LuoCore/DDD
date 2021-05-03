@@ -13,5 +13,6 @@ namespace Domain.Interface.IRepository
         bool Create(User model);
         public User ReadId(string userId);
         public User ReadName(string username);
+        public User Login(string username, string pwd);
     }
 }

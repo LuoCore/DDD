@@ -1,0 +1,10 @@
+D:\Git\DDD\Infrastructure.Utility\bin\Debug\netstandard2.1\Infrastructure.Utility.deps.json
+D:\Git\DDD\Infrastructure.Utility\bin\Debug\netstandard2.1\Infrastructure.Utility.dll
+D:\Git\DDD\Infrastructure.Utility\bin\Debug\netstandard2.1\Infrastructure.Utility.pdb
+D:\Git\DDD\Infrastructure.Utility\obj\Debug\netstandard2.1\Infrastructure.Utility.csprojAssemblyReference.cache
+D:\Git\DDD\Infrastructure.Utility\obj\Debug\netstandard2.1\Infrastructure.Utility.GeneratedMSBuildEditorConfig.editorconfig
+D:\Git\DDD\Infrastructure.Utility\obj\Debug\netstandard2.1\Infrastructure.Utility.AssemblyInfoInputs.cache
+D:\Git\DDD\Infrastructure.Utility\obj\Debug\netstandard2.1\Infrastructure.Utility.AssemblyInfo.cs
+D:\Git\DDD\Infrastructure.Utility\obj\Debug\netstandard2.1\Infrastructure.Utility.csproj.CoreCompileInputs.cache
+D:\Git\DDD\Infrastructure.Utility\obj\Debug\netstandard2.1\Infrastructure.Utility.dll
+D:\Git\DDD\Infrastructure.Utility\obj\Debug\netstandard2.1\Infrastructure.Utility.pdb

@@ -64,5 +64,18 @@ namespace Domain.Repository
             });
             return m;
         }
+
+        public User Login(string username,string pwd) 
+        {
+            User m = new User();
+            Factory.GetDbContext((db) =>
+            {
+                m = db.Queryable<User>()
+                .Where(x => x.UserName == username)
+                .Where(x => x.Password == pwd)
+                .First();
+            });
+            return m;
+        }
     }
 }
