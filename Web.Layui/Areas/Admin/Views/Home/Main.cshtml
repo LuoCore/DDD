@@ -4,6 +4,19 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayuiLayout.cshtml";
 }
 
+<style>
+    .layui-layout-admin .Luo-Left-Body {
+        right: 225px;
+        left: 0;
+    }
+    .layadmin-side-shrink .Luo-Left-Body,
+    .layadmin-side-shrink .layui-layout-admin .layui-body,
+    .layadmin-side-shrink .layui-layout-admin .layui-footer {
+        left: 0;
+        right:60px;
+    }
+   
+</style>
 
 
 
@@ -20,7 +33,7 @@
             <partial name="_PageTabs" />
             <!-- 页面标签 End-->
             <!-- 主体内容 -->
-            <div class="layui-body" id="LAY_app_body">
+            <div class="Luo-Left-Body layui-body " id="LAY_app_body">
                 <div class="layadmin-tabsbody-item layui-show">
                     <iframe src="/Admin/Home/Welcome" class="layadmin-iframe" frameborder="0"></iframe>
                 </div>

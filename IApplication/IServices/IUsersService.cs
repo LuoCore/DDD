@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Application.Interface.IServices
 {
     public interface IUsersService
     {
         void Register(Models.ViewModels.UserCreateViewModel userViewModel);
-        public UserViewModel Login(UserLoginViewModel vm);
+        public  Task<UserViewModel> Login(UserLoginViewModel vm);
     }
 }

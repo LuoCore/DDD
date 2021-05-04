@@ -24,7 +24,7 @@ namespace Application.Services
         public UsersService(ISqlSugarFactory factory, IUsersRepository repository,
             IMediatorHandler bus,
             IEventStoreRepository eventStoreRepository
-            ) : base(factory)
+            ) : base(factory, repository)
         {
             Bus = bus;
             _eventStoreRepository = eventStoreRepository;
@@ -41,18 +41,27 @@ namespace Application.Services
 
         public async Task<UserViewModel> Login(UserLoginViewModel vm)
         {
-            UserViewModel userRes = new UserViewModel();
-            var userData =await Task.Run<User>(() =>
+           
+            return await Task.Run<UserViewModel>(() =>
             {
-                return DbRepository.Login(vm.UserName, vm.Password);
+                UserViewModel userRes = new UserViewModel();
+                try
+                {
+                    Infrastructure.Entitys.User userData = DbRepository.Login(vm.UserName, vm.Password);
+                    if (userData != null)
+                    {
+                        userRes.UserName = userData.UserName;
+                        userRes.Phone = userData.Phone;
+                        userRes.Email = userData.Email;
+                    }
+                }
+                catch (Exception ex) 
+                {
+                    return null; 
+                }
+                return userRes;
+
             });
-            if (userData != null)
-            {
-                userRes.UserName = userData.UserName;
-                userRes.Phone = userData.Phone;
-                userRes.Email = userData.Email;
-            }
-            return userRes;
         }
     }
 }

@@ -88,13 +88,13 @@
             border-color: burlywood;
         }
 
-            .layui-field-title legend {
+        .layui-field-title legend {
                 margin: 0 auto;
             }
         .captcha-img {
             line-height: 40px;
         }
-       
+        
     </style>
 </head>
 <body>
@@ -109,7 +109,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">用户名</label>
                 <div class="layui-input-block">
-                    <input type="text" name="title" required lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                    <input type="text" name="username" required lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
@@ -121,7 +121,7 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">验证码</label>
                 <div class="layui-input-inline">
-                    <input type="text" name="title" required lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input verity">
+                    <input type="text" name="verifiCode" required lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input verity">
                 </div>
                 <div class="captcha-img">
                     <img src="/Admin/User/ValidateCode" onclick="this.src+='?new Date()'">
@@ -149,23 +149,25 @@
             });
             //监听提交
             form.on('submit(formLogin)', function (data) {
+
+                var index = layer.load(0, { shade: [0.8, '#393D49'], time: 10 * 1000 });
                 $.ajax({
                     type: "Post",
                     url: "/Admin/User/Login",
                     data: {
                         UserName: data.field.username,
                         Password: data.field.password,
-                       
+                        VerifiCode: data.field.verifiCode
                     },
                     dataType: "json",
                     success: function (data) {
                         layer.close(index);
                         if (data.status) {
                             layer.alert(data.msg, { icon: 1 }, function (index) {
-                                window.location.replace("/Admin/User/Login");
+                                window.location.replace("/Admin");
                             });
                         } else {
-                            layer.alert('注册失败，' + data.msg, { icon: 2 });
+                            layer.alert('登录失败，' + data.msg, { icon: 2 });
                         }
                     },
                     error: function (jqXHR) {

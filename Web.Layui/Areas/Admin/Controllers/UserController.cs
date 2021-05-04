@@ -28,9 +28,18 @@ namespace Web.Layui.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(Application.Models.ViewModels.UserLoginViewModel vm)
         {
-            var user = _userService.Login(vm);
+            string verifiCode = HttpContext.Session.GetString("SecurityCode");
+            if (!verifiCode.Equals(vm.VerifiCode))
+            {
+                return Json(new { status = false, msg = "验证码错误！" });
+            }
+            var user = await _userService.Login(vm);
+            if (user == null)
+            {
+                return Json(new { status = false, msg = "用户名或密码错误！" });
+            }
             HttpContext.Response.Cookies.Append("User", user.ToJson());
-            return View();
+            return Json(new { status = true,msg="登录成功！" });
         }
 
 
