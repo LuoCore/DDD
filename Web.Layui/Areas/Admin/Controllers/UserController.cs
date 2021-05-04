@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Infrastructure.Common;
 
 namespace Web.Layui.Areas.Admin.Controllers
 {
@@ -27,9 +28,8 @@ namespace Web.Layui.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(Application.Models.ViewModels.UserLoginViewModel vm)
         {
-           var user= _userService.Login(vm);
-            await HttpContext.Response.Cookies.Append("User", user.)
-           
+            var user = _userService.Login(vm);
+            HttpContext.Response.Cookies.Append("User", user.ToJson());
             return View();
         }
 
@@ -61,7 +61,7 @@ namespace Web.Layui.Areas.Admin.Controllers
                 foreach (var item in notificationDatas.Where(x => x.Key == "User").ToList())
                 {
                     strMsg.Append(item.Value);
-                }  
+                }
                 return Json(new { status = false, msg = strMsg.ToString() });
             }
 

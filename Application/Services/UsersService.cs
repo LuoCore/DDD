@@ -4,6 +4,7 @@ using Application.Models.ViewModels;
 using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
 using Domain.Models.User.CommandModels;
+using Infrastructure.Entitys;
 using Infrastructure.Factory;
 using Infrastructure.Interface.IFactory;
 using Infrastructure.Repository;
@@ -38,10 +39,13 @@ namespace Application.Services
             Bus.SendCommand(registerCommand);
         }
 
-        public UserViewModel Login(UserLoginViewModel vm)
+        public async Task<UserViewModel> Login(UserLoginViewModel vm)
         {
             UserViewModel userRes = new UserViewModel();
-            var userData = DbRepository.Login(vm.UserName, vm.Password);
+            var userData =await Task.Run<User>(() =>
+            {
+                return DbRepository.Login(vm.UserName, vm.Password);
+            });
             if (userData != null)
             {
                 userRes.UserName = userData.UserName;

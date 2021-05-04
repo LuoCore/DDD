@@ -10,7 +10,7 @@ namespace Infrastructure.Common
         /// </summary>
         /// <param name="o">对象</param>
         /// <returns>JSON字符串</returns>
-        public static string ToJSON(this object o)
+        public static string ToJson(this object o)
         {
             if (o == null)
             {
@@ -36,17 +36,6 @@ namespace Infrastructure.Common
             }
         }
 
-        /// <summary>
-        /// 序列化成Json格式的字符串
-        /// </summary>
-        /// <param name="Value"></param>
-        /// <returns></returns>
-        public static String ToJson(this Object Value)
-        {
-            JavaScriptSerializer js = new JavaScriptSerializer();
-            js.MaxJsonLength = Int32.MaxValue;
-            string json = js.Serialize(Value);
-            return json;
-        }
+      
     }
 }
