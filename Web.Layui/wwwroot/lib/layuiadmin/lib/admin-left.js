@@ -1,11 +1,4 @@
-/**
 
- @Name：layuiAdmin iframe版核心模块
- @Author：贤心
- @Site：http://www.layui.com/admin/
- @License：LPPL
-    
- */
  
 layui.define('view', function(exports){
   var $ = layui.jquery
@@ -27,7 +20,7 @@ layui.define('view', function(exports){
 
   //通用方法
   ,admin = {
-    v: '2020.8.2 std'
+    v: '2021'
     
     //数据的异步请求
     ,req: view.req
@@ -183,7 +176,10 @@ layui.define('view', function(exports){
         ,skin: 'layui-anim layui-anim-rl layui-layer-adminRight'
         ,area: '300px'
       }, options));
-    }
+      }
+     
+
+
     
     //主题设置
     ,theme: function(options){

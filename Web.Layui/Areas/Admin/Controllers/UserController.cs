@@ -34,7 +34,7 @@ namespace Web.Layui.Areas.Admin.Controllers
                 return Json(new { status = false, msg = "验证码错误！" });
             }
             var user = await _userService.Login(vm);
-            if (user == null)
+            if (user == null||string.IsNullOrWhiteSpace(user.UserName))
             {
                 return Json(new { status = false, msg = "用户名或密码错误！" });
             }
