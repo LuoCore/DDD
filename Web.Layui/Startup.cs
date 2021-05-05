@@ -27,6 +27,8 @@ namespace Web.Layui
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            //解析上下文,HttpContext.Current会围绕这个业务逻辑
+            services.AddHttpContextAccessor();
             //用于配置 HstsOptions 的委托。
             services.AddHsts(options =>
             {
@@ -52,7 +54,7 @@ namespace Web.Layui
 
            
 
-         
+
 
             // Adding MediatR for Domain Events
             // 领域命令、领域事件等注入
@@ -79,6 +81,7 @@ namespace Web.Layui
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+           
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

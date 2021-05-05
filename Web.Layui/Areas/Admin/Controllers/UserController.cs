@@ -10,7 +10,7 @@ using Infrastructure.Common;
 namespace Web.Layui.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class UserController : Controller
+    public class UserController :  Controller
     {
         private readonly Application.Interface.IServices.IUsersService _userService;
         // 将领域通知处理程序注入Controller
@@ -38,8 +38,11 @@ namespace Web.Layui.Areas.Admin.Controllers
             {
                 return Json(new { status = false, msg = "用户名或密码错误！" });
             }
+            HttpContext.GetEndpoint();
             HttpContext.Response.Cookies.Append("User", user.ToJson());
+            HttpContext.Request.Cookies.TryGetValue("User", out string value);
             return Json(new { status = true,msg="登录成功！" });
+     
         }
 
 
