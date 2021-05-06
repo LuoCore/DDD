@@ -89,5 +89,18 @@ namespace Web.Layui.Areas.Admin.Controllers
             HttpContext.Session.SetString("SecurityCode", verifCode.CheckCode);
             return File(verifCode.CreateCheckCodeByteArray(), "image/" + System.Drawing.Imaging.ImageFormat.Gif.ToString());
         }
+
+        public IActionResult Permission()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> PermissionTable(Application.Models.ViewModels.UserLoginViewModel vm)
+        {
+           
+            return Json(new { status = true, msg = "登录成功！" });
+
+        }
+
     }
 }

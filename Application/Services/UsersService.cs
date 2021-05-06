@@ -47,7 +47,9 @@ namespace Application.Services
                 UserViewModel userRes = new UserViewModel();
                 try
                 {
-                    Infrastructure.Entitys.User userData = DbRepository.ReadUser(new User { UserName = vm.UserName, Password = vm.Password });
+                    Domain.Models.Entitys.UserEntity userReq = new Domain.Models.Entitys.UserEntity();
+                    userReq.User = new User() { UserName=vm.UserName,Password=vm.Password };
+                    User userData = DbRepository.ReadUser(userReq);
                     if (userData != null)
                     {
                         userRes.UserId = userData.UserId;

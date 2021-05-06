@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Models.Entitys
+namespace Domain.Models
 {
     /// <summary>
     /// 定义领域实体基类
     /// </summary>
-    public abstract class DomainModelBase
+    public abstract class BaseEntity
     {
         /// <summary>
         /// 唯一标识
@@ -21,7 +21,7 @@ namespace Domain.Models.Entitys
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            var compareTo = obj as DomainModelBase;
+            var compareTo = obj as BaseEntity;
 
             if (ReferenceEquals(this, compareTo)) return true;
             if (ReferenceEquals(null, compareTo)) return false;
@@ -34,7 +34,7 @@ namespace Domain.Models.Entitys
         /// <param name="a">领域实体a</param>
         /// <param name="b">领域实体b</param>
         /// <returns></returns>
-        public static bool operator ==(DomainModelBase a, DomainModelBase b)
+        public static bool operator ==(BaseEntity a, BaseEntity b)
         {
             if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
                 return true;
@@ -50,7 +50,7 @@ namespace Domain.Models.Entitys
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static bool operator !=(DomainModelBase a, DomainModelBase b)
+        public static bool operator !=(BaseEntity a, BaseEntity b)
         {
             return !(a == b);
         }

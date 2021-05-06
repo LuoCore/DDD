@@ -18,12 +18,17 @@ namespace Domain.Models.User.CommandModels
             return true;
         }
         // set 受保护，只能通过构造函数方法赋值
-        public PermissionCreateCommandModel(Guid gid, string Name)
+        public PermissionCreateCommandModel(Guid gid, string permissionName, Models.Entitys.PermissionEntity.PermissionTypeEnum permissionType,string permissionAction,string permissionParentId,bool isValid)
         {
+            this.AggregateId = gid;
             Permission = new Infrastructure.Entitys.Permission()
             {
                 PermissionId = gid.ToString(),
-                PermissionName = Name
+                PermissionName = permissionName,
+                PermissionType=(int) permissionType,
+                PermissionAction= permissionAction,
+                PermissionParentId= permissionParentId,
+                IsValid= isValid
             };
         }
 

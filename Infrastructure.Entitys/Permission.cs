@@ -20,6 +20,8 @@ namespace Infrastructure.Entitys
 
         public string PermissionAction { get; set; }
 
+        public string PermissionParentId { get; set; }
+
         public bool IsValid { get; set; }
     }
 }

@@ -10,11 +10,14 @@ namespace Domain.Interface.IRepository
     {
 
         public List<User> ReadUserAll();
-        bool CreateUser(User model);
-        public User ReadUser(User model);
+        bool CreateUser(Models.Entitys.UserEntity model);
+        public List<Models.Entitys.UserEntity> ReadUserAll(Models.Entitys.UserEntity m);
 
-        public Infrastructure.Entitys.Permission ReadPermission(Infrastructure.Entitys.Permission m);
-        public bool CreatePermission(Permission m);
+        public Models.Entitys.UserEntity ReadUser(Models.Entitys.UserEntity m);
+
+        public Permission ReadPermission(Models.Entitys.PermissionEntity m);
+        public List<Models.Entitys.PermissionEntity> ReadPermissionAll(Models.Entitys.PermissionEntity m);
+        public bool CreatePermission(Models.Entitys.PermissionEntity m);
 
 
     }

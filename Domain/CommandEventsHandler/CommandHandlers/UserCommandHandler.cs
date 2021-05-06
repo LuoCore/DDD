@@ -61,20 +61,28 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 // 返回，结束当前线程
                 return Task.FromResult(false);
             }
-           
+
+           var dmData= new Models.Entitys.UserEntity(request.AggregateId, request.User.UserName, request.User.Password, request.User.Email, request.User.Phone, request.User.CreateName);
             // 判断邮箱是否存在
             // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
-            if (_userRepository.ReadUser(new User() { UserName=request.User.UserName }) != null)
+            UserEntity user = new UserEntity() { User=new UserEntity().User.UserName= dmData.User.UserName };
+            user.User = new User() { UserName = dmData.User.UserName };
+            var existingStudent = _userRepository.ReadUser(user);
+            if (existingStudent != null && existingStudent.Id != dmData.Id)
             {
-                //引发错误事件
-                Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));
-                return Task.FromResult(false);
+                if (!existingStudent.Equals(dmData))
+                {
 
+                    Bus.RaiseEvent(new DomainNotification("", "该用户已存在！"));
+                    return Task.FromResult(false);
+
+                }
             }
+            
 
 
             //提交
-            if (_userRepository.CreateUser(request.User))
+            if (_userRepository.CreateUser(dmData))
             {
                 // 提交成功后，这里需要发布领域事件
                 // 比如欢迎用户注册邮件呀，短信呀等

@@ -10,6 +10,7 @@ namespace Domain.Models.User.CommandModels
         // set 受保护，只能通过构造函数方法赋值
         public UserCreateCommandModel(Guid userId, string userName, string email, string password, string phone, string createname)
         {
+            this.AggregateId = userId;
             User = new Infrastructure.Entitys.User();
             User.UserId = userId.ToString();
             User.UserName = userName;

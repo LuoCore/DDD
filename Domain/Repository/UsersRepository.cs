@@ -5,7 +5,7 @@ using Infrastructure.Interface.IFactory;
 using Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Infrastructure.Common;
 
 namespace Domain.Repository
 {
@@ -16,74 +16,126 @@ namespace Domain.Repository
 
         }
 
-        public bool CreateUser(User model)
+        public bool CreateUser(Models.Entitys.UserEntity m)
         {
             bool sqlExe = true;
             Factory.GetDbContext((db) =>
             {
-                sqlExe = db.Insertable<User>(new 
+                m.User.CreateTime = db.GetDate();
+                sqlExe = db.Insertable<User>(new
                 {
-                    UserId=model.UserId,
-                    UserName=model.UserName,
-                    Password=model.Password,
-                    Email=model.Email,
-                    Phone=model.Phone,
-                    CreateTime=DateTime.Now,
-                    CreateName=model.CreateName
+                    m.User.UserId,
+                    m.User.UserName,
+                    m.User.Password,
+                    m.User.Phone,
+                    m.User.Email,
+                    m.User.CreateTime,
+                    m.User.CreateName
                 })
                 .IgnoreColumns(ignoreNullColumn: true)
-                .ExecuteCommand()>0;
+                .ExecuteCommand() > 0;
             });
             return sqlExe;
         }
 
-        public List<User> ReadUserAll()
+        public List<Models.Entitys.UserEntity> ReadUserAll(Models.Entitys.UserEntity m)
         {
-            List<User> models = new List<User>();
+            List<Models.Entitys.UserEntity> resList = new List<Models.Entitys.UserEntity>();
             Factory.GetDbContext((db) =>
             {
-                models = db.Queryable<User>().ToList();
+               List<User> users= db.Queryable<User>()
+                .WhereIF(!string.IsNullOrWhiteSpace(m.User.UserName),
+                        x => x.UserName.Equals(m.User.UserName))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.User.Password),
+                        x => x.Password.Equals(m.User.Password))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.User.Email),
+                        x => x.Email.Equals(m.User.Email))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.User.Phone),
+                        x => x.Phone.Equals(m.User.Phone))
+                .ToList();
+                users.ForEach(x =>
+                {
+                    resList.Add(new Models.Entitys.UserEntity()
+                    {
+                        User = x
+                    });
+                });
             });
-            return models;
+            return resList;
         }
 
-        public User ReadUser(User model) 
+        public Models.Entitys.UserEntity ReadUser(Models.Entitys.UserEntity m)
         {
-            User m = new User();
+            Models.Entitys.UserEntity res = new Models.Entitys.UserEntity();
             Factory.GetDbContext((db) =>
             {
-                m = db.Queryable<User>()
-                .WhereIF(!string.IsNullOrWhiteSpace(model.UserName),x => x.UserName == model.UserName)
-                .WhereIF(!string.IsNullOrWhiteSpace(model.Password), x => x.Password == model.Password)
-                .WhereIF(!string.IsNullOrWhiteSpace(model.Email), x => x.Email == model.Email)
-                .WhereIF(!string.IsNullOrWhiteSpace(model.Phone), x => x.Phone == model.Phone)
+                res.User = db.Queryable<User>()
+                .WhereIF(!string.IsNullOrWhiteSpace(m.User.UserName),
+                        x => x.UserName.Equals(m.User.UserName))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.User.Password),
+                        x => x.Password.Equals(m.User.Password))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.User.Email),
+                        x => x.Email.Equals(m.User.Email))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.User.Phone),
+                        x => x.Phone.Equals(m.User.Phone))
                 .First();
             });
-            return m;
+            return res;
         }
 
 
-        public Infrastructure.Entitys.Permission ReadPermission(Infrastructure.Entitys.Permission m) 
+        public Permission ReadPermission(Models.Entitys.PermissionEntity m)
         {
             Permission res = new Permission();
             Factory.GetDbContext((db) =>
             {
                 res = db.Queryable<Permission>()
-                .WhereIF(!string.IsNullOrWhiteSpace(m.PermissionName), x => x.PermissionName == m.PermissionName)
+                .WhereIF(!string.IsNullOrWhiteSpace(m.Permission.PermissionId), x => x.PermissionId.Equals(m.Permission.PermissionId))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.Permission.PermissionName), x => x.PermissionName.Contains(m.Permission.PermissionName))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.Permission.PermissionParentId), x => x.PermissionParentId.Equals(m.Permission.PermissionParentId))
+                .WhereIF(m.Permission.PermissionType > 0, x => x.PermissionType.Equals(m.Permission.PermissionType))
+                .WhereIF(m.IsValid == null, x => x.PermissionType.Equals(m.Permission.PermissionType))
                 .First();
             });
-            return m;
+            return res;
         }
 
-        public bool CreatePermission(Permission m)
+        public List<Models.Entitys.PermissionEntity> ReadPermissionAll(Models.Entitys.PermissionEntity m)
+        {
+            List<Models.Entitys.PermissionEntity> res = new List<Models.Entitys.PermissionEntity>();
+            Factory.GetDbContext((db) =>
+            {
+                var permissionList = db.Queryable<Permission>()
+                .WhereIF(!string.IsNullOrWhiteSpace(m.Permission.PermissionId), x => x.PermissionId.Equals(m.Permission.PermissionId))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.Permission.PermissionName), x => x.PermissionName.Contains(m.Permission.PermissionName))
+                .WhereIF(!string.IsNullOrWhiteSpace(m.Permission.PermissionParentId), x => x.PermissionParentId.Equals(m.Permission.PermissionParentId))
+                .WhereIF(m.Permission.PermissionType > 0, x => x.PermissionType.Equals(m.Permission.PermissionType))
+                .WhereIF(m.IsValid == null, x => x.PermissionType.Equals(m.Permission.PermissionType))
+                .ToList();
+                permissionList.ForEach(x =>
+                {
+                    res.Add(new Models.Entitys.PermissionEntity()
+                    {
+                        Permission = x
+                    });
+                });
+            });
+            return res;
+        }
+
+        public bool CreatePermission(Models.Entitys.PermissionEntity m)
         {
             bool sqlExe = true;
             Factory.GetDbContext((db) =>
             {
-                sqlExe = db.Insertable<Permission>(new 
+                sqlExe = db.Insertable<Permission>(new
                 {
-                   m.PermissionId,
-                    m.PermissionName,
+                    m.Permission.PermissionId,
+                    m.Permission.PermissionName,
+                    m.Permission.PermissionType,
+                    m.Permission.PermissionAction,
+                    m.Permission.PermissionParentId,
+                    m.Permission.IsValid
                 })
                 .IgnoreColumns(ignoreNullColumn: true)
                 .ExecuteCommand() > 0;
