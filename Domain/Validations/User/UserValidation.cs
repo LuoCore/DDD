@@ -3,6 +3,7 @@ using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Infrastructure.Common;
 
 namespace Domain.Validations.User
 {
@@ -13,7 +14,7 @@ namespace Domain.Validations.User
     /// 注意这里的 T 是命令模型
     /// </summary>
     /// <typeparam name="T">泛型类</typeparam>
-    public abstract class UserValidation<T> : AbstractValidator<T> where T : Domain.Models.User.CommandModels.UserCommandModel
+    public abstract class UserValidation<T> : AbstractValidator<T> where T : Infrastructure.Entitys.User
     {
         //受保护方法，验证Name
         protected void ValidateName()
@@ -45,8 +46,7 @@ namespace Domain.Validations.User
         //验证Guid
         protected void ValidateId()
         {
-            RuleFor(c => c.UserId)
-                .NotEqual(Guid.Empty);
+            RuleFor(c => c.UserId.ToGuid()).NotEqual(Guid.Empty);
         }
 
         // 表达式

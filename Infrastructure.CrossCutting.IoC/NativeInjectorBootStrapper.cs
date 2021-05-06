@@ -31,13 +31,16 @@ namespace Infrastructure.CrossCutting.IoC
         {
             services.AddScoped<ISqlSugarFactory, SqlSugarFactory>();
 
+            var DataBasePath = Infrastructure.Common.FilePathHelper.GetCurrentProjectRootPath;
 
             AddSqlSugarClient<ISqlSugarFactory>(services, (sp, cc) =>
             {
-                var ConnectStr = sp.GetService<IConfiguration>().GetConnectionString("SqlserverConnection");
-                var ConnectStr2 = sp.GetService<IConfiguration>().GetConnectionString("SqlserverConnection");
+                //var ConnectStr = sp.GetService<IConfiguration>().GetConnectionString("SqlserverConnection");
+                var ConnectStr =sp.GetService<IConfiguration>().GetConnectionString("SqlLiteConnection");
+                ConnectStr=  string.Format(ConnectStr, DataBasePath);
+                var ConnectStr2 = ConnectStr;
                 cc.ConnectionString = ConnectStr;//主库
-                cc.DbType = DbType.SqlServer;
+                cc.DbType = DbType.Sqlite;
                 cc.InitKeyType = InitKeyType.Attribute;//从特性读取主键和自增列信息
                 cc.IsAutoCloseConnection = true;//开启自动释放模式和EF原理一样我就不多解释了
                 //从库

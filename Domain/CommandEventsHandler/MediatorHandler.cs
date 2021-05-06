@@ -38,7 +38,7 @@ namespace Domain.CommandEventsHandler
             return _mediator.Publish(@event);
         }
 
-        public Task SendCommand<T>(T command) where T : Command
+        public Task<bool> SendCommand<T>(T command) where T : Command
         {
             //这个是正确的
             return _mediator.Send(command);//请注意 入参 的类型

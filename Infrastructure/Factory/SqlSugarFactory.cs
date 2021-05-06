@@ -99,7 +99,7 @@ namespace Infrastructure.Factory
                         Console.Write("ExecSql:" + exp.Sql);
                     };
                 }
-            };
+            }
         }
 
 

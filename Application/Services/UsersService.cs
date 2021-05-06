@@ -31,33 +31,34 @@ namespace Application.Services
         }
 
 
-        public void Register(UserCreateViewModel vm)
+        public async Task<Boolean> UserRegister(UserCreateViewModel vm)
         {
             //这里引入领域设计中的写命令 还没有实现
             //请注意这里如果是平时的写法，必须要引入Student领域模型，会造成污染
             var registerCommand = new UserCreateCommandModel(Guid.NewGuid(), vm.UserName, vm.Email, vm.Password, vm.Phone, "用户注册");
-            Bus.SendCommand(registerCommand);
+            return await Bus.SendCommand(registerCommand);
         }
 
-        public async Task<UserViewModel> Login(UserLoginViewModel vm)
+        public async Task<UserViewModel> UserLogin(UserLoginViewModel vm)
         {
-           
+
             return await Task.Run<UserViewModel>(() =>
             {
                 UserViewModel userRes = new UserViewModel();
                 try
                 {
-                    Infrastructure.Entitys.User userData = DbRepository.Login(vm.UserName, vm.Password);
+                    Infrastructure.Entitys.User userData = DbRepository.ReadUser(new User { UserName = vm.UserName, Password = vm.Password });
                     if (userData != null)
                     {
+                        userRes.UserId = userData.UserId;
                         userRes.UserName = userData.UserName;
                         userRes.Phone = userData.Phone;
                         userRes.Email = userData.Email;
                     }
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
-                    return null; 
+                    return null;
                 }
                 return userRes;
 

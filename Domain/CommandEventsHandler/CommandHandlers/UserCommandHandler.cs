@@ -21,8 +21,9 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class UserCommandHandler : CommandHandler, 
-        IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>
+    public class UserCommandHandler : CommandHandler,
+        IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>,
+        IRequestHandler<Domain.Models.User.CommandModels.PermissionCreateCommandModel, bool>
     {
         // 注入仓储接口
         private readonly IUsersRepository _userRepository;
@@ -37,7 +38,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
         /// <param name="uow"></param>
         /// <param name="bus"></param>
         /// <param name="cache"></param>
-        public UserCommandHandler(IUsersRepository userRepository,IMediatorHandler bus) : base(bus)
+        public UserCommandHandler(IUsersRepository userRepository, IMediatorHandler bus) : base(bus)
         {
             _userRepository = userRepository;
             Bus = bus;
@@ -60,14 +61,10 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 // 返回，结束当前线程
                 return Task.FromResult(false);
             }
-
-            // 实例化领域模型，这里才真正的用到了领域模型
-            // 注意这里是通过构造函数方法实现
-            var userReq = new Domain.Models.User.UserDomainModel(Guid.NewGuid(), request.UserName, request.Password,request.Email, request.Phone, request.CreateName);
-
+           
             // 判断邮箱是否存在
             // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
-            if (_userRepository.ReadName(userReq.UserName.ToString()) != null)
+            if (_userRepository.ReadUser(new User() { UserName=request.User.UserName }) != null)
             {
                 //引发错误事件
                 Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));
@@ -76,29 +73,48 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             }
 
 
-
-            // 统一提交
-            if (_userRepository.Create(new User()
-            {
-                UserId= userReq.Id.ToString(),
-                UserName= userReq.UserName,
-                Email=userReq.Email,
-                Password=userReq.Password,
-                Phone=userReq.Phone,
-                CreateName= request.CreateName,
-                CreateTime=DateTime.Now
-            }))
+            //提交
+            if (_userRepository.CreateUser(request.User))
             {
                 // 提交成功后，这里需要发布领域事件
                 // 比如欢迎用户注册邮件呀，短信呀等
+              var ddd= Bus.RaiseEvent(new UserCreateEventModel(request.User));
 
-                Bus.RaiseEvent(new UserCreateEventModel(userReq.Id, userReq.UserName, userReq.Email, userReq.Password, userReq.Phone));
-              
             }
 
             return Task.FromResult(true);
         }
 
-        
+        public Task<bool> Handle(PermissionCreateCommandModel request, CancellationToken cancellationToken)
+        {
+            // 命令验证
+            if (!request.IsValid())
+            {
+                // 错误信息收集
+                NotifyValidationErrors(request);
+                // 返回，结束当前线程
+                return Task.FromResult(false);
+            }
+
+            // 判断邮箱是否存在
+            // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
+            if (_userRepository.ReadPermission(new Permission() { PermissionName=request.Permission.PermissionName}) != null)
+            {
+                //引发错误事件
+                Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));
+                return Task.FromResult(false);
+            }
+
+
+            //提交
+            if (_userRepository.CreatePermission(request.Permission))
+            {
+                // 提交成功后，这里需要发布领域事件
+                // 比如欢迎用户注册邮件呀，短信呀等
+                Bus.RaiseEvent(new PermissionCreateEventModel(request.Permission));
+            }
+
+            return Task.FromResult(true);
+        }
     }
 }

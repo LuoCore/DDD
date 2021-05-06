@@ -8,7 +8,8 @@ namespace Application.Interface.IServices
 {
     public interface IUsersService
     {
-        void Register(Models.ViewModels.UserCreateViewModel userViewModel);
-        public  Task<UserViewModel> Login(UserLoginViewModel vm);
+
+        public Task<Boolean> UserRegister(UserCreateViewModel vm);
+        public Task<UserViewModel> UserLogin(UserLoginViewModel vm);
     }
 }

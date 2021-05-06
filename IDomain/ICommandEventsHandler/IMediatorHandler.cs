@@ -19,7 +19,7 @@ namespace Domain.Interface.ICommandEventsHandler
         /// <typeparam name="T"> 泛型 </typeparam>
         /// <param name="command"> 命令模型，比如RegisterStudentCommand </param>
         /// <returns></returns>
-        Task SendCommand<T>(T command) where T : Command;
+        Task<Boolean> SendCommand<T>(T command) where T : Command;
 
 
         /// <summary>

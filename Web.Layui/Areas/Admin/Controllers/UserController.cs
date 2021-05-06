@@ -10,7 +10,7 @@ using Infrastructure.Common;
 namespace Web.Layui.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class UserController :  Controller
+    public class UserController : Controller
     {
         private readonly Application.Interface.IServices.IUsersService _userService;
         // 将领域通知处理程序注入Controller
@@ -33,16 +33,16 @@ namespace Web.Layui.Areas.Admin.Controllers
             {
                 return Json(new { status = false, msg = "验证码错误！" });
             }
-            var user = await _userService.Login(vm);
-            if (user == null||string.IsNullOrWhiteSpace(user.UserName))
+            var user = await _userService.UserLogin(vm);
+            if (user == null || string.IsNullOrWhiteSpace(user.UserName))
             {
                 return Json(new { status = false, msg = "用户名或密码错误！" });
             }
             HttpContext.GetEndpoint();
             HttpContext.Response.Cookies.Append("User", user.ToJson());
             HttpContext.Request.Cookies.TryGetValue("User", out string value);
-            return Json(new { status = true,msg="登录成功！" });
-     
+            return Json(new { status = true, msg = "登录成功！" });
+
         }
 
 
@@ -54,7 +54,7 @@ namespace Web.Layui.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(Application.Models.ViewModels.UserCreateViewModel vm)
         {
-            _userService.Register(new Application.Models.ViewModels.UserCreateViewModel()
+            bool regBool = await _userService.UserRegister(new Application.Models.ViewModels.UserCreateViewModel()
             {
                 UserName = vm.UserName,
                 Password = vm.Password,
@@ -62,7 +62,7 @@ namespace Web.Layui.Areas.Admin.Controllers
                 Phone = vm.Phone
             });
             // 是否存在消息通知
-            if (!await _notifications.AsyncHasNotifications())
+            if (regBool)
             {
                 return Json(new { status = true, msg = "注册成功！" });
             }
@@ -74,7 +74,11 @@ namespace Web.Layui.Areas.Admin.Controllers
                 {
                     strMsg.Append(item.Value);
                 }
-                return Json(new { status = false, msg = strMsg.ToString() });
+                if (strMsg.Length < 1)
+                {
+                    strMsg.Append("注册发生异常！");
+                }
+                return Json(new { status = false, msg = strMsg });
             }
 
         }

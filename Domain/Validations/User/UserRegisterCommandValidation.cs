@@ -9,7 +9,7 @@ namespace Domain.Validations.User
     /// 添加学生命令模型验证
     /// 继承 StudentValidation 基类
     /// </summary>
-    public class UserRegisterCommandValidation : UserValidation<Domain.Models.User.CommandModels.UserCreateCommandModel>
+    public class UserRegisterCommandValidation : UserValidation<Infrastructure.Entitys.User>
     {
         public UserRegisterCommandValidation()
         {

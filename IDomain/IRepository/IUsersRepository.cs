@@ -8,11 +8,14 @@ namespace Domain.Interface.IRepository
 {
     public interface IUsersRepository : ISqlSugarRepository
     {
-        public List<User> Read();
 
-        bool Create(User model);
-        public User ReadId(string userId);
-        public User ReadName(string username);
-        public User Login(string username, string pwd);
+        public List<User> ReadUserAll();
+        bool CreateUser(User model);
+        public User ReadUser(User model);
+
+        public Infrastructure.Entitys.Permission ReadPermission(Infrastructure.Entitys.Permission m);
+        public bool CreatePermission(Permission m);
+
+
     }
 }

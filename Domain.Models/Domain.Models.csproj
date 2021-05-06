@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IDomain\Domain.Interface.csproj" />
+    <ProjectReference Include="..\Infrastructure.Common\Infrastructure.Common.csproj" />
   </ItemGroup>
 
 </Project>
