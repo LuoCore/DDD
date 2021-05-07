@@ -69,37 +69,26 @@
                     , { field: 'PermissionParentId', title: '权限父级' }
                     , { field: 'IsValid', title: '是否有效' }
                     , { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
-                ]]
+                ]],
+                loading: false,
+                page: true
             });
 
-            //搜索角色
-            form.on('select(LAY-user-adminrole-type)', function (data) {
-                //执行重载
-                table.reload('LAY-user-back-role', {
-                    where: {
-                        role: data.value
-                    }
-                });
-            });
+
 
 
             //事件
             var active = {
                 query: function () {
-                    table.render({
-                        elem: '#table-permission',
-                        url: '/Admin/User/PermissionTable',
+                    table.reload('table-permission', {
                         method: 'post',
-                        cols: [[
-                            { type: 'checkbox', fixed: 'left' }
-                            , { field: 'PermissionId', width: 80, title: '权限编号', sort: true }
-                            , { field: 'PermissionName', title: '权限名称' }
-                            , { field: 'PermissionType', title: '权限类型' }
-                            , { field: 'PermissionAction', title: '权限动作' }
-                            , { field: 'PermissionParentId', title: '权限父级' }
-                            , { field: 'IsValid', title: '是否有效' }
-                            , { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
-                        ]]
+                        url: '/Admin/User/PermissionTable',
+                        where: {
+                            
+                        }, //设定异步数据接口的额外参数
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
                     });
                 },
                 delete: function () {
@@ -127,7 +116,7 @@
                     layer.open({
                         type: 2
                         , title: '添加新角色'
-                        , content: 'roleform.html'
+                        , content: '/Admin/User/PermissionForm'
                         , area: ['500px', '480px']
                         , btn: ['确定', '取消']
                         , yes: function (index, layero) {

@@ -15,7 +15,7 @@ namespace Application.Models.ViewModels.User
         public string PermissionId { get; set; }
         public string PermissionName { get; set; }
 
-        public string PermissionType { get; set; }
+        public int PermissionType { get; set; }
 
         public string PermissionAction { get; set; }
 

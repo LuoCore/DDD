@@ -102,5 +102,13 @@ namespace Web.Layui.Areas.Admin.Controllers
             return Json(res);
 
         }
+
+      
+        public  IActionResult PermissionForm(PermissionViewModel vm)
+        {
+            return View();
+
+        }
+        
     }
 }
