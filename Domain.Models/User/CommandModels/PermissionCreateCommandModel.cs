@@ -21,7 +21,7 @@ namespace Domain.Models.User.CommandModels
         public PermissionCreateCommandModel(Guid gid, string permissionName, Models.Entitys.PermissionEntity.PermissionTypeEnum permissionType,string permissionAction,string permissionParentId,bool isValid)
         {
             this.AggregateId = gid;
-            Permission = new Infrastructure.Entitys.Permission()
+            PERMISSION = new Infrastructure.Entitys.Permission()
             {
                 PermissionId = gid.ToString(),
                 PermissionName = permissionName,
@@ -32,6 +32,6 @@ namespace Domain.Models.User.CommandModels
             };
         }
 
-        public Infrastructure.Entitys.Permission Permission { get; protected set; }
+        public Infrastructure.Entitys.Permission PERMISSION { get; protected set; }
     }
 }

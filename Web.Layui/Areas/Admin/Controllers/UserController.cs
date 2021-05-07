@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Infrastructure.Common;
+using Application.Models.ViewModels.User;
 
 namespace Web.Layui.Areas.Admin.Controllers
 {
@@ -26,7 +27,7 @@ namespace Web.Layui.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Login(Application.Models.ViewModels.UserLoginViewModel vm)
+        public async Task<IActionResult> Login(Application.Models.ViewModels.User.UserLoginViewModel vm)
         {
             string verifiCode = HttpContext.Session.GetString("SecurityCode");
             if (!verifiCode.Equals(vm.VerifiCode))
@@ -52,9 +53,9 @@ namespace Web.Layui.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Register(Application.Models.ViewModels.UserCreateViewModel vm)
+        public async Task<IActionResult> Register(Application.Models.ViewModels.User.UserCreateViewModel vm)
         {
-            bool regBool = await _userService.UserRegister(new Application.Models.ViewModels.UserCreateViewModel()
+            bool regBool = await _userService.UserRegister(new Application.Models.ViewModels.User.UserCreateViewModel()
             {
                 UserName = vm.UserName,
                 Password = vm.Password,
@@ -95,12 +96,11 @@ namespace Web.Layui.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> PermissionTable(Application.Models.ViewModels.UserLoginViewModel vm)
+        public async Task<IActionResult> PermissionTable(PermissionViewModel vm)
         {
-           
-            return Json(new { status = true, msg = "登录成功！" });
+            var res = await _userService.QueryPermission(vm);
+            return Json(res);
 
         }
-
     }
 }

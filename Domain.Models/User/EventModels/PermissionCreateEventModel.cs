@@ -7,10 +7,10 @@ namespace Domain.Models.User.EventModels
 {
     public class PermissionCreateEventModel : Infrastructure.CommandEventsHandler.Event
     {
-        public PermissionCreateEventModel(Infrastructure.Entitys.Permission permission)
+        public PermissionCreateEventModel(Models.Entitys.PermissionEntity permission)
         {
-            Permission = permission;
-            AggregateId = Permission.PermissionId.ToGuid();
+            Permission = permission.PERMISSION;
+            AggregateId = permission.Id;
         }
         public Infrastructure.Entitys.Permission Permission { get; set; }
     }

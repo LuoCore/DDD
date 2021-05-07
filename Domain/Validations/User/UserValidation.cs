@@ -46,7 +46,7 @@ namespace Domain.Validations.User
         //验证Guid
         protected void ValidateId()
         {
-            RuleFor(c => c.UserId.ToGuid()).NotEqual(Guid.Empty);
+            RuleFor(c => c.UserId.StringToGuid()).NotEqual(Guid.Empty);
         }
 
         // 表达式

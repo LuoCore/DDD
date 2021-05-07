@@ -1,4 +1,5 @@
 ﻿using Application.Models.ViewModels;
+using Application.Models.ViewModels.User;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,5 +12,8 @@ namespace Application.Interface.IServices
 
         public Task<Boolean> UserRegister(UserCreateViewModel vm);
         public Task<UserViewModel> UserLogin(UserLoginViewModel vm);
+
+        public Task<Boolean> CreatePermission(PermissionCreateViewModel vm);
+        public  Task<LayuiTableViewModel<PermissionViewModel>> QueryPermission(PermissionViewModel vm);
     }
 }

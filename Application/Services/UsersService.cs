@@ -1,6 +1,7 @@
 ﻿using Application.Interface;
 using Application.Interface.IServices;
 using Application.Models.ViewModels;
+using Application.Models.ViewModels.User;
 using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
 using Domain.Models.User.CommandModels;
@@ -11,6 +12,8 @@ using Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Infrastructure.Common;
+using static Domain.Models.Entitys.PermissionEntity;
 
 namespace Application.Services
 {
@@ -48,14 +51,14 @@ namespace Application.Services
                 try
                 {
                     Domain.Models.Entitys.UserEntity userReq = new Domain.Models.Entitys.UserEntity();
-                    userReq.User = new User() { UserName=vm.UserName,Password=vm.Password };
-                    User userData = DbRepository.ReadUser(userReq);
+                    userReq.USER = new User() { UserName = vm.UserName, Password = vm.Password };
+                    Domain.Models.Entitys.UserEntity userData = DbRepository.ReadUser(userReq);
                     if (userData != null)
                     {
-                        userRes.UserId = userData.UserId;
-                        userRes.UserName = userData.UserName;
-                        userRes.Phone = userData.Phone;
-                        userRes.Email = userData.Email;
+                        userRes.UserId = userData.USER.UserId;
+                        userRes.UserName = userData.USER.UserName;
+                        userRes.Phone = userData.USER.Phone;
+                        userRes.Email = userData.USER.Email;
                     }
                 }
                 catch (Exception ex)
@@ -66,5 +69,68 @@ namespace Application.Services
 
             });
         }
+
+
+
+        public async Task<Boolean> CreatePermission(PermissionCreateViewModel vm)
+        {
+           
+
+            var CreateCommand = new PermissionCreateCommandModel(Guid.NewGuid(), vm.PermissionName,vm.PermissionType.StringToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
+            return await Bus.SendCommand(CreateCommand);
+        }
+
+
+        public async Task<LayuiTableViewModel<PermissionViewModel>> QueryPermission(PermissionViewModel vm)
+        {
+
+            return await Task.Run(() =>
+            {
+                LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
+                try
+                {
+                    Domain.Models.Entitys.PermissionEntity reqData = new Domain.Models.Entitys.PermissionEntity();
+                    reqData.PERMISSION = new Permission()
+                    {
+                        PermissionId=vm.PermissionParentId,
+                        PermissionName = vm.PermissionName,
+                        PermissionAction = vm.PermissionAction,
+                        PermissionParentId=vm.PermissionParentId,
+                        PermissionType=(int)vm.PermissionType.StringToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(),
+                        IsValid=vm.IsValid
+                    };
+                    var resData = DbRepository.ReadPermissionAll(reqData);
+                    res.data = new List<PermissionViewModel>();
+                    resData.ForEach(x =>
+                    {
+                        res.data.Add(new PermissionViewModel()
+                        {
+                            PermissionId=x.PERMISSION.PermissionId,
+                            PermissionName = x.PERMISSION.PermissionName,
+                            PermissionAction = x.PERMISSION.PermissionAction,
+                            PermissionParentId = x.PERMISSION.PermissionParentId,
+                            PermissionType = x.PERMISSION.PermissionType.IntToEnum<PermissionTypeEnum>().EnumToStrin<PermissionTypeEnum>(),
+                            IsValid = x.PERMISSION.IsValid
+                        });
+                    });
+                    res.code = 0;
+                    res.count = res.data.Count;
+                    if (res.count < 1) 
+                    {
+                        res.code = -1;
+                        res.msg = "没有数据！"; 
+                    }
+                }
+                catch (Exception ex)
+                {
+                    res.code = -1;
+                    res.msg = "异常错误：" + ex;
+                }
+                return res;
+
+            });
+        }
+
+
     }
 }

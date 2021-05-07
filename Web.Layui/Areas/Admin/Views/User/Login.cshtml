@@ -88,13 +88,13 @@
             border-color: burlywood;
         }
 
-        .layui-field-title legend {
+            .layui-field-title legend {
                 margin: 0 auto;
             }
+
         .captcha-img {
             line-height: 40px;
         }
-        
     </style>
 </head>
 <body>
@@ -143,10 +143,30 @@
         layui.use(['form', 'layer', 'jquery'], function () {
             var form = layui.form,
                 layer = layui.layer,
-                $ = layui.$
+                $ = layui.$;
             $('.close').click(function () {
                 window.location.replace("/");
             });
+
+
+            //监听键盘回车事件
+            this.enterEsc = function (event) {
+                if (event.keyCode === 13) {
+                    if ($('div').hasClass('layui-layer layui-layer-dialog')) {
+                        //当回车的时候，点击弹窗中的确定
+                        $('.layui-layer').find('.layui-layer-btn').find('.layui-layer-btn0').trigger('click');
+                        return false; //阻止系统默认回车事件
+                    }
+                    else {
+
+                        $('.layui-input-block').find('.layui-btn').trigger('click');
+                    }
+                }
+            };
+            $(document).on('keydown', this.enterEsc);
+
+
+
             //监听提交
             form.on('submit(formLogin)', function (data) {
 
@@ -163,9 +183,11 @@
                     success: function (data) {
                         layer.close(index);
                         if (data.status) {
+
                             layer.alert(data.msg, { icon: 1 }, function (index) {
                                 window.location.replace("/Admin");
                             });
+
                         } else {
                             layer.alert('登录失败，' + data.msg, { icon: 2 });
                         }

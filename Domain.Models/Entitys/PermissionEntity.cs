@@ -8,13 +8,13 @@ namespace Domain.Models.Entitys
     {
         public PermissionEntity()
         {
-            Permission = new Infrastructure.Entitys.Permission();
+            PERMISSION = new Infrastructure.Entitys.Permission();
         }
         public PermissionEntity(Guid id, string permissionName, PermissionTypeEnum permissionType, string permissionAction, string permissionParentId,bool? isValid)
         {
             this.Id = id;
             IsValid = isValid;
-            Permission = new Infrastructure.Entitys.Permission
+            PERMISSION = new Infrastructure.Entitys.Permission
             {
                 PermissionId = id.ToString(),
                 PermissionName = permissionName,
@@ -23,7 +23,7 @@ namespace Domain.Models.Entitys
                 PermissionParentId= permissionParentId
             };
         }
-        public Infrastructure.Entitys.Permission Permission { get; set; }
+        public Infrastructure.Entitys.Permission PERMISSION { get; set; }
         public bool? IsValid { get; set; }
         public enum PermissionTypeEnum 
         {

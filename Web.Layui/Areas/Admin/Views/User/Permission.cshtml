@@ -27,10 +27,12 @@
                 </div>
             </div>
         </div>
+
         <div class="layui-card-body">
             <div style="padding-bottom: 10px;">
-                <button class="layui-btn layuiadmin-btn-role" data-type="batchdel">删除</button>
-                <button class="layui-btn layuiadmin-btn-role" data-type="add">添加</button>
+                <button class="layui-btn layuiadmin-btn-event" data-type="query">查询</button>
+                <button class="layui-btn layuiadmin-btn-event" data-type="delete">删除</button>
+                <button class="layui-btn layuiadmin-btn-event" data-type="add">添加</button>
             </div>
 
             <table id="table-permission" lay-filter="table-permission"></table>
@@ -56,20 +58,18 @@
                 , form = layui.form
                 , table = layui.table;
 
-
-            //角色管理
             table.render({
-                elem: '#table-permission'
-                , url: layui.setter.base + 'json/useradmin/role.js' //模拟接口
-                , cols: [[
+                elem: '#table-permission',
+                cols: [[
                     { type: 'checkbox', fixed: 'left' }
-                    , { field: 'id', width: 80, title: 'ID', sort: true }
-                    , { field: 'rolename', title: '角色名' }
-                    , { field: 'limits', title: '拥有权限' }
-                    , { field: 'descr', title: '具体描述' }
+                    , { field: 'PermissionId', width: 80, title: '权限编号', sort: true }
+                    , { field: 'PermissionName', title: '权限名称' }
+                    , { field: 'PermissionType', title: '权限类型' }
+                    , { field: 'PermissionAction', title: '权限动作' }
+                    , { field: 'PermissionParentId', title: '权限父级' }
+                    , { field: 'IsValid', title: '是否有效' }
                     , { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
                 ]]
-                , text: '对不起，加载出现异常！'
             });
 
             //搜索角色
@@ -82,9 +82,27 @@
                 });
             });
 
+
             //事件
             var active = {
-                batchdel: function () {
+                query: function () {
+                    table.render({
+                        elem: '#table-permission',
+                        url: '/Admin/User/PermissionTable',
+                        method: 'post',
+                        cols: [[
+                            { type: 'checkbox', fixed: 'left' }
+                            , { field: 'PermissionId', width: 80, title: '权限编号', sort: true }
+                            , { field: 'PermissionName', title: '权限名称' }
+                            , { field: 'PermissionType', title: '权限类型' }
+                            , { field: 'PermissionAction', title: '权限动作' }
+                            , { field: 'PermissionParentId', title: '权限父级' }
+                            , { field: 'IsValid', title: '是否有效' }
+                            , { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
+                        ]]
+                    });
+                },
+                delete: function () {
                     var checkStatus = table.checkStatus('LAY-user-back-role')
                         , checkData = checkStatus.data; //得到选中的数据
 
@@ -131,7 +149,8 @@
                     });
                 }
             }
-            $('.layui-btn.layuiadmin-btn-role').on('click', function () {
+            $('.layui-btn.layuiadmin-btn-event').on('click', function () {
+                console.log("点击按钮");
                 var type = $(this).data('type');
                 active[type] ? active[type].call(this) : '';
             });

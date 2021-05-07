@@ -23,10 +23,57 @@ namespace Infrastructure.Common
     public static class DataConvert
     {
 
+
+
+        public static T StringToEnum<T>(this string str)
+        {
+            try
+            {
+                return (T)Enum.Parse(typeof(T), str);
+            }
+            catch (Exception)
+            {
+
+               return default(T);
+            }
+           
+        }
+        public static T IntToEnum<T>(this int value)
+        {
+            try
+            {
+                return (T)Enum.ToObject(typeof(T), value); 
+            }
+            catch (Exception)
+            {
+
+                return default(T);
+            }
+          
+        }
+
+        public static string EnumToStrin<T>(this object value)
+        {
+            try
+            {
+                return Enum.GetName(typeof(T), value);
+            }
+            catch (Exception)
+            {
+
+                return string.Empty;
+            }
+           
+        }
+
+
+       
+
+
         /*
          * string TO guid
          */
-        public static Guid ToGuid(this string str)
+        public static Guid StringToGuid(this string str)
         {
             Match m = Regex.Match(str, @"^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$", RegexOptions.IgnoreCase);
             Guid gv = new Guid();
@@ -164,7 +211,7 @@ namespace Infrastructure.Common
         /// </summary>  
         /// <param name="o"></param>  
         /// <returns></returns>  
-        public static Dictionary<String, String> ToDictionary(this Object o)
+        public static Dictionary<String, String> ObjToDictionary(this Object o)
         {
             Dictionary<String, String> map = new Dictionary<String, String>();
 
@@ -206,7 +253,7 @@ namespace Infrastructure.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static DataTable ToDataTable<T>(this IList<T> list)
+        public static DataTable ListToDataTable<T>(this IList<T> list)
         {
             DataTable table = CreateTable<T>();
             Type entityType = typeof(T);
@@ -226,7 +273,7 @@ namespace Infrastructure.Common
         /// </summary>
         /// <param name="list">集合</param>
         /// <returns></returns>
-        public static DataTable ToDataTable(this IList list)
+        public static DataTable ListToDataTable(this IList list)
         {
             DataTable result = new DataTable();
             if (list.Count > 0)
@@ -259,7 +306,7 @@ namespace Infrastructure.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="rows"></param>
         /// <returns></returns>
-        public static IList<T> ToList<T>(this IList<DataRow> rows)
+        public static IList<T> ListDataRowToList<T>(this IList<DataRow> rows)
         {
             IList<T> list = null;
             if (rows != null)
@@ -267,7 +314,7 @@ namespace Infrastructure.Common
                 list = new List<T>();
                 foreach (DataRow row in rows)
                 {
-                    T item = ToModel<T>(row);
+                    T item = DataRowToModel<T>(row);
                     list.Add(item);
                 }
             }
@@ -279,7 +326,7 @@ namespace Infrastructure.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="table"></param>
         /// <returns></returns>
-        public static IList<T> ToList<T>(this DataTable table)
+        public static IList<T> DataTableToList<T>(this DataTable table)
         {
             if (table == null)
                 return null;
@@ -288,7 +335,7 @@ namespace Infrastructure.Common
             foreach (DataRow row in table.Rows)
                 rows.Add(row);
 
-            return ToList<T>(rows);
+            return ListDataRowToList<T>(rows);
         }
         /// <summary>
         /// DataRow 转 Model 
@@ -296,7 +343,7 @@ namespace Infrastructure.Common
         /// <typeparam name="T"></typeparam>
         /// <param name="row"></param>
         /// <returns></returns>
-        public static T ToModel<T>(this DataRow row)
+        public static T DataRowToModel<T>(this DataRow row)
         {
             string columnName;
             T obj = default(T);
@@ -346,7 +393,7 @@ namespace Infrastructure.Common
         /// </summary>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public static byte[] Bitmap2Byte(this Bitmap bitmap)
+        public static byte[] BitmapToByte(this Bitmap bitmap)
         {
             using (MemoryStream stream = new MemoryStream())
             {

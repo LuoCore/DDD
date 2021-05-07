@@ -38,3 +38,5 @@
 /LuoCore.WebMVC/obj
 obj
 bin
+/DataBase/DDD.mdf
+/DataBase/DDD_log.ldf
