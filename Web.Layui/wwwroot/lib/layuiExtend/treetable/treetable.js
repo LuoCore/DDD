@@ -13,25 +13,25 @@ layui.define(['layer', 'table'], function (exports) {
             // 获取数据
             if (param.data) {
                 treetable.init(param, param.data);
-                // 渲染表格
-                table.render(param);
+                
             } else {
-                $.getJSON(param.url, param.where, function (res) {
-                    treetable.init(param, res.data);
-                    // 渲染表格
-                    table.render(param);
-                });
+                if (param.method == 'post') {
+                    
+                    $.post(param.url, param.where, function (res, status) {
+                        treetable.init(param, res.data);
+                    });
+                }
+                else {
+                    $.getJSON(param.url, param.where, function (res) {
+                        treetable.init(param, res.data);
+                        // 渲染表格
+                      
+                    });
+                }
+               
             }
         },
-        // 重载
-        reload = (param) => {
-            $.getJSON(param.url, param.where, function (res) {
-                treetable.init(param, res.data);
-                // 渲染表格
-                table.reload(tableId, obj);
-            });;
-           
-        },
+       
         // 渲染表格
         init: function (param, data) {
             var mData = [];
@@ -110,7 +110,8 @@ layui.define(['layer', 'table'], function (exports) {
                     doneCallback(res, curr, count);
                 }
             };
-
+            // 渲染表格
+            table.render(param);
            
         },
         // 计算缩进的数量
@@ -199,7 +200,7 @@ layui.define(['layer', 'table'], function (exports) {
         }
     };
 
-    layui.link(layui.cache.base + 'treetable-lay/treetable.css');
+    layui.link(layui.cache.base + '/treetable.css');
 
     // 给图标列绑定事件
     $('body').on('click', '.treeTable .treeTable-icon', function () {

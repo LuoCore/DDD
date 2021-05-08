@@ -60,10 +60,10 @@
             treetable.render({
                 treeColIndex: 2,
                 treeSpid: -1,
+                data:[],
                 treeIdName: 'PermissionId',
                 treePidName: 'PermissionName',
                 elem: '#table-permission',
-                page: false,
                 cols: [[
                     { type: 'numbers', fixed: 'left' },
                     { field: 'PermissionId', width: 80, title: '权限编号', sort: true },
@@ -86,8 +86,13 @@
             //事件
             var active = {
                 query: function () {
-                    layer.load(2);
-                    treetable.reload('table-permission', {
+                  
+                    treetable.render({
+                        elem: '#table-permission',
+                        treeColIndex: 2,
+                        treeSpid:'',
+                        treeIdName: 'PermissionId',
+                        treePidName: 'PermissionName',
                         method: 'post',
                         url: '/Admin/User/PermissionTable',
                         where: {
@@ -98,7 +103,17 @@
                         },
                         done: function () {
                             layer.closeAll('loading');
-                        }
+                        },
+                        cols: [[
+                            { type: 'numbers', fixed: 'left' },
+                            { field: 'PermissionId', width: 80, title: '权限编号', sort: true },
+                            { field: 'PermissionName', title: '权限名称' },
+                            { field: 'PermissionType', title: '权限类型' },
+                            { field: 'PermissionAction', title: '权限动作' },
+                            { field: 'PermissionParentId', title: '权限父级' },
+                            { field: 'IsValid', title: '是否有效' },
+                            { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
+                        ]]
                     });
                 },
                 delete: function () {
