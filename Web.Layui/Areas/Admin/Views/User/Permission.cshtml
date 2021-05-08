@@ -36,14 +36,8 @@
             </div>
 
             <table id="table-permission" lay-filter="table-permission"></table>
-            <script type="text/html" id="buttonTpl">
-                {{#  if(d.check == true){ }}
-                <button class="layui-btn layui-btn-xs">已审核</button>
-                {{#  } else { }}
-                <button class="layui-btn layui-btn-primary layui-btn-xs">未审核</button>
-                {{#  } }}
-            </script>
-            <script type="text/html" id="table-useradmin-admin">
+
+            <script type="text/html" id="table-action">
                 <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
                 <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
             </script>
@@ -53,41 +47,57 @@
 
 @section scripts{
     <script>
-        layui.use(['jquery', 'form', 'table'], function () {
-            var $ = layui.$
-                , form = layui.form
-                , table = layui.table;
+        layui.config({
+            base: '/lib/layuiExtend/treetable/'
+        });
+        layui.use(['treetable', 'jquery'], function () {
+            let treetable = layui.treetable,
+                $ = layui.jquery;
 
-            table.render({
+
+
+
+            treetable.render({
+                treeColIndex: 2,
+                treeSpid: -1,
+                treeIdName: 'PermissionId',
+                treePidName: 'PermissionName',
                 elem: '#table-permission',
+                page: false,
                 cols: [[
-                    { type: 'checkbox', fixed: 'left' }
-                    , { field: 'PermissionId', width: 80, title: '权限编号', sort: true }
-                    , { field: 'PermissionName', title: '权限名称' }
-                    , { field: 'PermissionType', title: '权限类型' }
-                    , { field: 'PermissionAction', title: '权限动作' }
-                    , { field: 'PermissionParentId', title: '权限父级' }
-                    , { field: 'IsValid', title: '是否有效' }
-                    , { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
+                    { type: 'numbers', fixed: 'left' },
+                    { field: 'PermissionId', width: 80, title: '权限编号', sort: true },
+                    { field: 'PermissionName', title: '权限名称' },
+                    { field: 'PermissionType', title: '权限类型' },
+                    { field: 'PermissionAction', title: '权限动作' },
+                    { field: 'PermissionParentId', title: '权限父级' },
+                    { field: 'IsValid', title: '是否有效' },
+                    { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
                 ]],
                 loading: false,
-                page: true
+                page: true,
+                done: function () {
+                    layer.closeAll('loading');
+                }
             });
-
 
 
 
             //事件
             var active = {
                 query: function () {
-                    table.reload('table-permission', {
+                    layer.load(2);
+                    treetable.reload('table-permission', {
                         method: 'post',
                         url: '/Admin/User/PermissionTable',
                         where: {
-                            
+
                         }, //设定异步数据接口的额外参数
                         page: {
                             curr: 1 //重新从第 1 页开始
+                        },
+                        done: function () {
+                            layer.closeAll('loading');
                         }
                     });
                 },

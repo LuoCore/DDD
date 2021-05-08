@@ -76,7 +76,7 @@ namespace Application.Services
         {
            
 
-            var CreateCommand = new PermissionCreateCommandModel(Guid.NewGuid(), vm.PermissionName,vm.PermissionType.StringToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
+            var CreateCommand = new PermissionCreateCommandModel(Guid.NewGuid(), vm.PermissionName,vm.PermissionType.IntToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
             return await Bus.SendCommand(CreateCommand);
         }
 
@@ -96,7 +96,7 @@ namespace Application.Services
                         PermissionName = vm.PermissionName,
                         PermissionAction = vm.PermissionAction,
                         PermissionParentId=vm.PermissionParentId,
-                        PermissionType=(int)vm.PermissionType.StringToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(),
+                        PermissionType=(int)vm.PermissionType.IntToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(),
                         IsValid=vm.IsValid
                     };
                     var resData = DbRepository.ReadPermissionAll(reqData);
@@ -109,14 +109,42 @@ namespace Application.Services
                             PermissionName = x.PERMISSION.PermissionName,
                             PermissionAction = x.PERMISSION.PermissionAction,
                             PermissionParentId = x.PERMISSION.PermissionParentId,
-                            PermissionType = x.PERMISSION.PermissionType.IntToEnum<PermissionTypeEnum>().EnumToStrin<PermissionTypeEnum>(),
+                            PermissionType = x.PERMISSION.PermissionType,
                             IsValid = x.PERMISSION.IsValid
                         });
+                    });
+                    res.data.Add(new PermissionViewModel()
+                    {
+                        PermissionId = "1-1-1",
+                        PermissionName = "名称1",
+                        PermissionAction = "这是个动作",
+                        PermissionParentId = "",
+                        PermissionType = 1,
+                        IsValid = true
+                    });
+                    res.data.Add(new PermissionViewModel()
+                    {
+                        PermissionId = "1-1-22",
+                        PermissionName = "名称3",
+                        PermissionAction = "这是个动作",
+                        PermissionParentId = "1-1-1",
+                        PermissionType = 1,
+                        IsValid = true
+                    });
+                    res.data.Add(new PermissionViewModel()
+                    {
+                        PermissionId = "1-1-1",
+                        PermissionName = "名称3",
+                        PermissionAction = "这是个动作",
+                        PermissionParentId = "1-1-22",
+                        PermissionType = 1,
+                        IsValid = true
                     });
                     res.code = 0;
                     res.count = res.data.Count;
                     if (res.count < 1) 
                     {
+                        
                         res.code = -1;
                         res.msg = "没有数据！"; 
                     }
