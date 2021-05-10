@@ -65,10 +65,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             var dmData = new Models.Entitys.UserEntity(request.AggregateId, request.User.UserName, request.User.Password, request.User.Email, request.User.Phone, request.User.CreateName);
             // 判断邮箱是否存在
             // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
-            UserEntity user = new UserEntity()
-            {
-                USER = new User() { UserName = dmData.USER.UserName }
-            };
+            UserEntity user = new UserEntity(dmData.ENTITY_USER.UserName, null, null, null, null);
             var existingUSER = _userRepository.ReadUser(user);
             if (existingUSER != null && existingUSER.Id != dmData.Id)
             {
@@ -107,13 +104,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             }
 
             var dmData = new Models.Entitys.PermissionEntity(request.AggregateId,request.PERMISSION.PermissionName,(PermissionEntity.PermissionTypeEnum)request.PERMISSION.PermissionType,request.PERMISSION.PermissionAction,request.PERMISSION.PermissionParentId,request.PERMISSION.IsValid);
-            PermissionEntity permission = new PermissionEntity()
-            {
-                PERMISSION = new Permission() 
-                {
-                    PermissionName= request.PERMISSION.PermissionName
-                }
-            };
+            PermissionEntity permission = new PermissionEntity(request.PERMISSION.PermissionName,null,null,null,null);
             var existingPermission = _userRepository.ReadPermission(permission);
             if (existingPermission != null && existingPermission.Id != dmData.Id)
             {

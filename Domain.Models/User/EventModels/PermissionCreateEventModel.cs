@@ -9,7 +9,7 @@ namespace Domain.Models.User.EventModels
     {
         public PermissionCreateEventModel(Models.Entitys.PermissionEntity permission)
         {
-            Permission = permission.PERMISSION;
+            Permission = permission.ENTITY_PERMISSION;
             AggregateId = permission.Id;
         }
         public Infrastructure.Entitys.Permission Permission { get; set; }

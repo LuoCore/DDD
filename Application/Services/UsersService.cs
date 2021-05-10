@@ -50,15 +50,15 @@ namespace Application.Services
                 UserViewModel userRes = new UserViewModel();
                 try
                 {
-                    Domain.Models.Entitys.UserEntity userReq = new Domain.Models.Entitys.UserEntity();
-                    userReq.USER = new User() { UserName = vm.UserName, Password = vm.Password };
+                    Domain.Models.Entitys.UserEntity userReq = new Domain.Models.Entitys.UserEntity(vm.UserName, vm.Password, null, null, null);
+
                     Domain.Models.Entitys.UserEntity userData = DbRepository.ReadUser(userReq);
                     if (userData != null)
                     {
-                        userRes.UserId = userData.USER.UserId;
-                        userRes.UserName = userData.USER.UserName;
-                        userRes.Phone = userData.USER.Phone;
-                        userRes.Email = userData.USER.Email;
+                        userRes.UserId = userData.ENTITY_USER.UserId;
+                        userRes.UserName = userData.ENTITY_USER.UserName;
+                        userRes.Phone = userData.ENTITY_USER.Phone;
+                        userRes.Email = userData.ENTITY_USER.Email;
                     }
                 }
                 catch (Exception ex)
@@ -74,9 +74,9 @@ namespace Application.Services
 
         public async Task<Boolean> CreatePermission(PermissionCreateViewModel vm)
         {
-           
 
-            var CreateCommand = new PermissionCreateCommandModel(Guid.NewGuid(), vm.PermissionName,vm.PermissionType.IntToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
+
+            var CreateCommand = new PermissionCreateCommandModel(Guid.NewGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
             return await Bus.SendCommand(CreateCommand);
         }
 
@@ -89,28 +89,27 @@ namespace Application.Services
                 LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
                 try
                 {
-                    Domain.Models.Entitys.PermissionEntity reqData = new Domain.Models.Entitys.PermissionEntity();
-                    reqData.PERMISSION = new Permission()
-                    {
-                        PermissionId=vm.PermissionParentId,
-                        PermissionName = vm.PermissionName,
-                        PermissionAction = vm.PermissionAction,
-                        PermissionParentId=vm.PermissionParentId,
-                        PermissionType=(int)vm.PermissionType.IntToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(),
-                        IsValid=vm.IsValid
-                    };
+                    Domain.Models.Entitys.PermissionEntity reqData = new Domain.Models.Entitys.PermissionEntity
+                    (
+                        vm.PermissionName,
+                        vm.PermissionType.IntToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(),
+                        vm.PermissionAction,
+                        vm.PermissionParentId,
+                        vm.IsValid
+                     );
+
                     var resData = DbRepository.ReadPermissionAll(reqData);
                     res.data = new List<PermissionViewModel>();
                     resData.ForEach(x =>
                     {
                         res.data.Add(new PermissionViewModel()
                         {
-                            PermissionId=x.PERMISSION.PermissionId,
-                            PermissionName = x.PERMISSION.PermissionName,
-                            PermissionAction = x.PERMISSION.PermissionAction,
-                            PermissionParentId = x.PERMISSION.PermissionParentId,
-                            PermissionType = x.PERMISSION.PermissionType,
-                            IsValid = x.PERMISSION.IsValid
+                            PermissionId = x.ENTITY_PERMISSION.PermissionId,
+                            PermissionName = x.ENTITY_PERMISSION.PermissionName,
+                            PermissionAction = x.ENTITY_PERMISSION.PermissionAction,
+                            PermissionParentId = x.ENTITY_PERMISSION.PermissionParentId,
+                            PermissionType = x.ENTITY_PERMISSION.PermissionType,
+                            IsValid = x.ENTITY_PERMISSION.IsValid
                         });
                     });
                     res.data.Add(new PermissionViewModel()
@@ -120,6 +119,7 @@ namespace Application.Services
                         PermissionAction = "这是个动作",
                         PermissionParentId = "",
                         PermissionType = 1,
+                        PermissionLeve = true,
                         IsValid = true
                     });
                     res.data.Add(new PermissionViewModel()
@@ -129,24 +129,36 @@ namespace Application.Services
                         PermissionAction = "这是个动作",
                         PermissionParentId = "1-1-1",
                         PermissionType = 1,
+                        PermissionLeve = true,
                         IsValid = true
                     });
                     res.data.Add(new PermissionViewModel()
                     {
-                        PermissionId = "1-1-1",
+                        PermissionId = "1-1-13",
                         PermissionName = "名称3",
                         PermissionAction = "这是个动作",
                         PermissionParentId = "1-1-22",
                         PermissionType = 1,
+                        PermissionLeve = false,
+                        IsValid = true
+                    });
+                    res.data.Add(new PermissionViewModel()
+                    {
+                        PermissionId = "1-2-1",
+                        PermissionName = "名称3",
+                        PermissionAction = "这是个动作",
+                        PermissionParentId = "1-1-22",
+                        PermissionType = 1,
+                        PermissionLeve = false,
                         IsValid = true
                     });
                     res.code = 0;
                     res.count = res.data.Count;
-                    if (res.count < 1) 
+                    if (res.count < 1)
                     {
-                        
+
                         res.code = -1;
-                        res.msg = "没有数据！"; 
+                        res.msg = "没有数据！";
                     }
                 }
                 catch (Exception ex)

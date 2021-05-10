@@ -9,7 +9,7 @@ namespace Domain.Models.User.EventModels
     {
         public UserCreateEventModel(Domain.Models.Entitys.UserEntity user)
         {
-            User = user.USER;
+            User = user.ENTITY_USER;
             AggregateId = user.Id;
         }
         public Infrastructure.Entitys.User User { get; set; }

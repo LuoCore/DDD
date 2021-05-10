@@ -21,6 +21,8 @@ namespace Application.Models.ViewModels.User
 
         public string PermissionParentId { get; set; }
 
+        public bool PermissionLeve { get; set; }
+
         public bool IsValid { get; set; }
     }
 }

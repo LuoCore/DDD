@@ -47,38 +47,42 @@
 
 @section scripts{
     <script>
-        layui.config({
-            base: '/lib/layuiExtend/treetable/'
-        });
-        layui.use(['treetable', 'jquery'], function () {
-            let treetable = layui.treetable,
+
+        layui.use(['table', 'jquery'], function () {
+            let table = layui.table,
                 $ = layui.jquery;
 
 
 
+            // 字段配置
+            const tableCols = [[
+                { type: 'numbers', fixed: 'left' },
+                {
+                    field: 'id', title: '权限编号', minWidth: 100, event: 'collapse',
+                    templet: function (d) {
+                        if (Boolean(d.permissionLeve)) {
+                            return '<div style="position: relative;\n' + 'padding: 0 10px 0 20px;">' + d.permissionId + '<i style="left: 0px;" lay-tips="展开" class="layui-icon layui-colla-icon layui-icon-right"></i></div>'
+                        }
+                        else {
+                            return '<div style="position: relative;\n' + 'padding: 0 10px 0 20px;">' + d.permissionId + '</div>'
+                        }
+                    }
+                },
+                { field: 'permissionName', title: '权限名称' },
+                { field: 'permissionType', title: '权限类型' },
+                { field: 'permissionAction', title: '权限动作' },
+                { field: 'permissionParentId', title: '权限父级' },
+                { field: 'permissionLeve', title: '权限父级' },
+                { field: 'isValid', title: '是否有效' },
+                { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
+            ]];
 
-            treetable.render({
-                treeColIndex: 2,
-                treeSpid: -1,
-                data:[],
-                treeIdName: 'PermissionId',
-                treePidName: 'PermissionName',
+       
+            // tableTree 渲染表格
+            table.render({
                 elem: '#table-permission',
-                cols: [[
-                    { type: 'numbers', fixed: 'left' },
-                    { field: 'PermissionId', width: 80, title: '权限编号', sort: true },
-                    { field: 'PermissionName', title: '权限名称' },
-                    { field: 'PermissionType', title: '权限类型' },
-                    { field: 'PermissionAction', title: '权限动作' },
-                    { field: 'PermissionParentId', title: '权限父级' },
-                    { field: 'IsValid', title: '是否有效' },
-                    { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
-                ]],
-                loading: false,
                 page: true,
-                done: function () {
-                    layer.closeAll('loading');
-                }
+                cols: tableCols
             });
 
 
@@ -86,34 +90,12 @@
             //事件
             var active = {
                 query: function () {
-                  
-                    treetable.render({
-                        elem: '#table-permission',
-                        treeColIndex: 2,
-                        treeSpid:'',
-                        treeIdName: 'PermissionId',
-                        treePidName: 'PermissionName',
+                    table.reload('table-permission',{
                         method: 'post',
                         url: '/Admin/User/PermissionTable',
                         where: {
 
                         }, //设定异步数据接口的额外参数
-                        page: {
-                            curr: 1 //重新从第 1 页开始
-                        },
-                        done: function () {
-                            layer.closeAll('loading');
-                        },
-                        cols: [[
-                            { type: 'numbers', fixed: 'left' },
-                            { field: 'PermissionId', width: 80, title: '权限编号', sort: true },
-                            { field: 'PermissionName', title: '权限名称' },
-                            { field: 'PermissionType', title: '权限类型' },
-                            { field: 'PermissionAction', title: '权限动作' },
-                            { field: 'PermissionParentId', title: '权限父级' },
-                            { field: 'IsValid', title: '是否有效' },
-                            { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
-                        ]]
                     });
                 },
                 delete: function () {

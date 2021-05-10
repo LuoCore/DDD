@@ -6,15 +6,26 @@ namespace Domain.Models.Entitys
 {
     public class UserEntity : BaseEntity
     {
-        public UserEntity()
+
+        public UserEntity(string usetName, string password, string email, string phone, string createName)
         {
-            USER = new Infrastructure.Entitys.User();
+           
+            ENTITY_USER = new Infrastructure.Entitys.User
+            {
+                UserName = usetName,
+                Password = password,
+                Phone = phone,
+                Email = email,
+                CreateName = createName
+            };
         }
+
         public UserEntity(Guid userId, string usetName,string password, string email, string phone,string createName)
         {
-            USER = new Infrastructure.Entitys.User
+            Id = userId;
+            ENTITY_USER = new Infrastructure.Entitys.User
             {
-                UserId=userId.ToString(),
+                UserId= Id.ToString(),
                 UserName= usetName,
                 Password= password,
                 Phone = phone,
@@ -22,6 +33,6 @@ namespace Domain.Models.Entitys
                 CreateName= createName
             };
         }
-        public Infrastructure.Entitys.User USER { get; set; }
+        public Infrastructure.Entitys.User ENTITY_USER { get;protected set; }
     }
 }

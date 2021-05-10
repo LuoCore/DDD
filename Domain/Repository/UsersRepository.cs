@@ -118,8 +118,8 @@ namespace Domain.Repository
                     x => x.PermissionParentId.Equals(m.PERMISSION.PermissionParentId))
                 .WhereIF(m.PERMISSION.PermissionType > 0,
                     x => x.PermissionType.Equals(m.PERMISSION.PermissionType))
-                .WhereIF(m.IsValid == null,
-                    x => x.PermissionType.Equals(m.PERMISSION.PermissionType))
+                .WhereIF(m.IsValid != null,
+                    x => x.PermissionType.Equals(m.PERMISSION.IsValid))
                 .ToList();
                 permissionList.ForEach(x =>
                 {
