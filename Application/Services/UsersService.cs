@@ -112,46 +112,51 @@ namespace Application.Services
                             IsValid = x.ENTITY_PERMISSION.IsValid
                         });
                     });
-                    res.data.Add(new PermissionViewModel()
+                    
+                    res.code = 0;
+                    res.count = res.data.Count;
+                    if (res.count < 1)
                     {
-                        PermissionId = "1-1-1",
-                        PermissionName = "名称1",
-                        PermissionAction = "这是个动作",
-                        PermissionParentId = "",
-                        PermissionType = 1,
-                        PermissionLeve = true,
-                        IsValid = true
-                    });
-                    res.data.Add(new PermissionViewModel()
+
+                        res.code = -1;
+                        res.msg = "没有数据！";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    res.code = -1;
+                    res.msg = "异常错误：" + ex;
+                }
+                return res;
+
+            });
+        }
+
+        public async Task<LayuiSelectViewModel> GetPermissionSelect()
+        {
+
+            return await Task.Run(() =>
+            {
+                LayuiSelectViewModel res = new LayuiSelectViewModel();
+                try
+                {
+                    Domain.Models.Entitys.PermissionEntity reqData = new Domain.Models.Entitys.PermissionEntity();
+
+                    var resData = DbRepository.ReadPermissionAll(reqData);
+                    res.data = new List<PermissionViewModel>();
+                    resData.ForEach(x =>
                     {
-                        PermissionId = "1-1-22",
-                        PermissionName = "名称3",
-                        PermissionAction = "这是个动作",
-                        PermissionParentId = "1-1-1",
-                        PermissionType = 1,
-                        PermissionLeve = true,
-                        IsValid = true
+                        res.data.Add(new PermissionViewModel()
+                        {
+                            PermissionId = x.ENTITY_PERMISSION.PermissionId,
+                            PermissionName = x.ENTITY_PERMISSION.PermissionName,
+                            PermissionAction = x.ENTITY_PERMISSION.PermissionAction,
+                            PermissionParentId = x.ENTITY_PERMISSION.PermissionParentId,
+                            PermissionType = x.ENTITY_PERMISSION.PermissionType,
+                            IsValid = x.ENTITY_PERMISSION.IsValid
+                        });
                     });
-                    res.data.Add(new PermissionViewModel()
-                    {
-                        PermissionId = "1-1-13",
-                        PermissionName = "名称3",
-                        PermissionAction = "这是个动作",
-                        PermissionParentId = "1-1-22",
-                        PermissionType = 1,
-                        PermissionLeve = false,
-                        IsValid = true
-                    });
-                    res.data.Add(new PermissionViewModel()
-                    {
-                        PermissionId = "1-2-1",
-                        PermissionName = "名称3",
-                        PermissionAction = "这是个动作",
-                        PermissionParentId = "1-1-22",
-                        PermissionType = 1,
-                        PermissionLeve = false,
-                        IsValid = true
-                    });
+
                     res.code = 0;
                     res.count = res.data.Count;
                     if (res.count < 1)

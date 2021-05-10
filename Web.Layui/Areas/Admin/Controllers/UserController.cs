@@ -109,6 +109,14 @@ namespace Web.Layui.Areas.Admin.Controllers
             return View();
 
         }
-        
+
+        [HttpPost]
+        public async Task<IActionResult> PermissionSelect(PermissionViewModel vm)
+        {
+            var res = await _userService.QueryPermission(vm);
+            return Json(res);
+
+        }
+
     }
 }

@@ -7,6 +7,25 @@ namespace Domain.Models.Entitys
     public class UserEntity : BaseEntity
     {
 
+        public UserEntity(string usetName)
+        {
+
+            ENTITY_USER = new Infrastructure.Entitys.User
+            {
+                UserName = usetName,
+              
+            };
+        }
+        public UserEntity(string usetName, string password)
+        {
+
+            ENTITY_USER = new Infrastructure.Entitys.User
+            {
+                UserName = usetName,
+                Password=password
+
+            };
+        }
         public UserEntity(string usetName, string password, string email, string phone, string createName)
         {
            

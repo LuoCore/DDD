@@ -6,7 +6,11 @@ namespace Domain.Models.Entitys
 {
     public class PermissionEntity : BaseEntity
     {
-
+        public PermissionEntity(string permissionParentId)
+        {
+            ENTITY_PERMISSION = new Infrastructure.Entitys.Permission();
+            ENTITY_PERMISSION.PermissionParentId = permissionParentId;
+        }
         public PermissionEntity(string permissionName, PermissionTypeEnum? permissionType, string permissionAction, string permissionParentId, bool? isValid)
         {
             IsValid = isValid;

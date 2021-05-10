@@ -31,7 +31,7 @@
         <div class="layui-card-body">
             <div style="padding-bottom: 10px;">
                 <button class="layui-btn layuiadmin-btn-event" data-type="query">查询</button>
-                <button class="layui-btn layuiadmin-btn-event" data-type="delete">删除</button>
+                <button class="layui-btn layuiadmin-btn-event layui-btn-danger" data-type="delete">删除</button>
                 <button class="layui-btn layuiadmin-btn-event" data-type="add">添加</button>
             </div>
 
@@ -56,7 +56,7 @@
 
             // 字段配置
             const tableCols = [[
-                { type: 'numbers', fixed: 'left' },
+                { type: 'checkbox', fixed: 'left' },
                 {
                     field: 'id', title: '权限编号', minWidth: 100, event: 'collapse',
                     templet: function (d) {
@@ -74,15 +74,16 @@
                 { field: 'permissionParentId', title: '权限父级' },
                 { field: 'permissionLeve', title: '权限父级' },
                 { field: 'isValid', title: '是否有效' },
-                { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-useradmin-admin' }
+                { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-action' }
             ]];
 
-       
+
             // tableTree 渲染表格
             table.render({
                 elem: '#table-permission',
                 page: true,
-                cols: tableCols
+                cols: tableCols,
+                loading:false
             });
 
 
@@ -90,7 +91,7 @@
             //事件
             var active = {
                 query: function () {
-                    table.reload('table-permission',{
+                    table.reload('table-permission', {
                         method: 'post',
                         url: '/Admin/User/PermissionTable',
                         where: {
@@ -120,13 +121,13 @@
                     });
                 },
                 add: function () {
-                    layer.open({
-                        type: 2
-                        , title: '添加新角色'
-                        , content: '/Admin/User/PermissionForm'
-                        , area: ['500px', '480px']
-                        , btn: ['确定', '取消']
-                        , yes: function (index, layero) {
+                    let index = layer.open({
+                        type: 2,
+                        title: '添加新角色',
+                        area: ['auto', '500px'],
+                        content: '/Admin/User/PermissionForm',
+                        btn: ['确定', '取消'],
+                        yes: function (index, layero) {
                             var iframeWindow = window['layui-layer-iframe' + index]
                                 , submit = layero.find('iframe').contents().find("#LAY-user-role-submit");
 
@@ -143,6 +144,7 @@
                             submit.trigger('click');
                         }
                     });
+                    layer.iframeAuto(index);
                 }
             }
             $('.layui-btn.layuiadmin-btn-event').on('click', function () {
