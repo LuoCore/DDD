@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Infrastructure.Common;
 
 namespace Domain.Models.Entitys
 {
@@ -11,15 +12,19 @@ namespace Domain.Models.Entitys
             ENTITY_PERMISSION = new Infrastructure.Entitys.Permission();
             ENTITY_PERMISSION.PermissionParentId = permissionParentId;
         }
-        public PermissionEntity(string permissionName, PermissionTypeEnum? permissionType, string permissionAction, string permissionParentId, bool? isValid)
+        public PermissionEntity(string permissionName)
+        {
+           
+            ENTITY_PERMISSION = new Infrastructure.Entitys.Permission();
+            ENTITY_PERMISSION.PermissionName = permissionName;
+            
+        }
+        public PermissionEntity(string permissionName, PermissionTypeEnum permissionType, string permissionAction, string permissionParentId, bool? isValid)
         {
             IsValid = isValid;
             ENTITY_PERMISSION = new Infrastructure.Entitys.Permission();
             ENTITY_PERMISSION.PermissionName = permissionName;
-            if (permissionType == null)
-            {
-                ENTITY_PERMISSION.PermissionType = (int)permissionType;
-            }
+            ENTITY_PERMISSION.PermissionType = permissionType.EnumToInt<PermissionTypeEnum>();
 
             ENTITY_PERMISSION.PermissionAction = permissionAction;
             ENTITY_PERMISSION.PermissionParentId = permissionParentId;

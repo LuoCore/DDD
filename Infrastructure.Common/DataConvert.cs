@@ -9,7 +9,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Infrastructure.Common
@@ -66,8 +65,20 @@ namespace Infrastructure.Common
            
         }
 
+        public static int EnumToInt<T>(this Enum value) where T: Enum
+        {
+            try
+            {
+                return (int)Enum.ToObject(typeof(T), value);
+            }
+            catch (Exception)
+            {
 
-       
+                return -1;
+            }
+
+        }
+
 
 
         /*

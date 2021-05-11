@@ -107,7 +107,7 @@ namespace Web.Layui.Areas.Admin.Controllers
 
         public IActionResult PermissionForm(PermissionViewModel vm)
         {
-            return View();
+            return PartialView();
 
         }
         [HttpPost]
@@ -143,7 +143,7 @@ namespace Web.Layui.Areas.Admin.Controllers
             var resSelect = new LayuiSelectViewModel()
             {
                 Name = "顶级",
-                value = null
+                value = ""
             };
             var resData = await _userService.GetPermissionSelect(resSelect.value);
             if (resData != null && resData.Count > 0)

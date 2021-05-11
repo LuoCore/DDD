@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Infrastructure.Common;
 
 namespace Domain.CommandEventsHandler.CommandHandlers
 {
@@ -22,8 +23,8 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 说明：
     /// </summary>
     public class UserCommandHandler : CommandHandler,
-        IRequestHandler<Domain.Models.User.CommandModels.UserCreateCommandModel, bool>,
-        IRequestHandler<Domain.Models.User.CommandModels.PermissionCreateCommandModel, bool>
+        IRequestHandler<UserCreateCommandModel, bool>,
+        IRequestHandler<PermissionCreateCommandModel, bool>
     {
         // 注入仓储接口
         private readonly IUsersRepository _userRepository;
@@ -103,7 +104,13 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 return Task.FromResult(false);
             }
 
-            var dmData = new Models.Entitys.PermissionEntity(request.AggregateId,request.PERMISSION.PermissionName,(PermissionEntity.PermissionTypeEnum)request.PERMISSION.PermissionType,request.PERMISSION.PermissionAction,request.PERMISSION.PermissionParentId,request.PERMISSION.IsValid);
+            var dmData = new Models.Entitys.PermissionEntity(
+                request.AggregateId,
+                request.PERMISSION.PermissionName,
+                request.PERMISSION.PermissionType.IntToEnum<PermissionEntity.PermissionTypeEnum>(),
+                request.PERMISSION.PermissionAction,
+                request.PERMISSION.PermissionParentId,
+                request.PERMISSION.IsValid);
             PermissionEntity permission = new PermissionEntity(request.PERMISSION.PermissionName,null,null,null,null);
             var existingPermission = _userRepository.ReadPermission(permission);
             if (existingPermission != null && existingPermission.Id != dmData.Id)

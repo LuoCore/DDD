@@ -42,8 +42,12 @@
     <div class="layui-form-item">
         <label class="layui-form-label">是否有效</label>
         <div class="layui-input-inline">
-            <input name="IsValid" type="checkbox" lay-filter="switch" lay-skin="switch" lay-text="是|否">
+            <input name="IsValid" value="true" type="checkbox" lay-filter="switch" lay-skin="switch" lay-text="是|否" checked/>
         </div>
+    </div>
+  
+    <div class="layui-form-item layui-hide">
+        <button class="layui-btn" lay-submit lay-filter="luo-submit" id="luo-submit">提交</button>
     </div>
 
 </div>
@@ -64,6 +68,7 @@
                 xmSelect = layui.xmSelect;
             var PermissionParentId = xmSelect.render({
                 el: '#PermissionParentId',
+                name: "PermissionParentId",
                 model: { label: { type: 'text' } },
                 tree: {
                     show: true,
@@ -82,18 +87,29 @@
                 type: "Post",
                 url: "/Admin/User/PermissionSelect",
                 dataType: "json",
+                async: false,
                 success: function (data) {
                     PermissionParentId.update({
                         data: data
                     });
+                    //设置默认值
+                    PermissionParentId.setValue([{ name: '顶级', value: "" }], null, true);
                 },
                 error: function (jqXHR) {
                     alert("发生错误：" + jqXHR.status);
                 }
             });
-            //设置默认值
-            PermissionParentId.setValue([{ name: '顶级', value: "" }], null, true);
-
+          
+            //监听提交
+            form.on('submit(luo-submit)', function (data) {
+                //layer.alert(JSON.stringify(data.field), {
+                //    title: '最终的提交信息'
+                //});
+                //var selectArr = PermissionParentId.getValue('valueStr');
+                //console.log(selectArr);
+                return false;
+            });
+           
         });
 
     </script>

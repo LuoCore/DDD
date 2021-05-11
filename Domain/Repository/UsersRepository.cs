@@ -64,20 +64,21 @@ namespace Domain.Repository
 
         public Models.Entitys.UserEntity ReadUser(Models.Entitys.UserEntity m)
         {
-            Models.Entitys.UserEntity res =null;
+            Models.Entitys.UserEntity res = null;
             Factory.GetDbContext((db) =>
             {
-               var data = db.Queryable<User>()
-                .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_USER.UserName),
-                        x => x.UserName.Equals(m.ENTITY_USER.UserName))
-                .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_USER.Password),
-                        x => x.Password.Equals(m.ENTITY_USER.Password))
-                .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_USER.Email),
-                        x => x.Email.Equals(m.ENTITY_USER.Email))
-                .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_USER.Phone),
-                        x => x.Phone.Equals(m.ENTITY_USER.Phone))
-                .First();
-                res = new Models.Entitys.UserEntity(data.UserId.StringToGuid(), data.UserName, data.Password, data.Email, data.Phone, data.CreateName);
+                var data = db.Queryable<User>()
+                 .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_USER.UserName),
+                         x => x.UserName.Equals(m.ENTITY_USER.UserName))
+                 .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_USER.Password),
+                         x => x.Password.Equals(m.ENTITY_USER.Password))
+                 .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_USER.Email),
+                         x => x.Email.Equals(m.ENTITY_USER.Email))
+                 .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_USER.Phone),
+                         x => x.Phone.Equals(m.ENTITY_USER.Phone))
+                 .First();
+                if (data != null)
+                    res = new Models.Entitys.UserEntity(data.UserId.StringToGuid(), data.UserName, data.Password, data.Email, data.Phone, data.CreateName);
             });
             return res;
         }
@@ -100,7 +101,7 @@ namespace Domain.Repository
                 .WhereIF(m.IsValid == null,
                     x => x.PermissionType.Equals(m.ENTITY_PERMISSION.PermissionType))
                 .First();
-                res = new Models.Entitys.PermissionEntity(data.PermissionId.StringToGuid(),data.PermissionName,data.PermissionType.IntToEnum<PermissionTypeEnum>(),data.PermissionAction,data.PermissionParentId,data.IsValid);
+                res = new Models.Entitys.PermissionEntity(data.PermissionId.StringToGuid(), data.PermissionName, data.PermissionType.IntToEnum<PermissionTypeEnum>(), data.PermissionAction, data.PermissionParentId, data.IsValid);
             });
             return res;
         }
@@ -118,14 +119,14 @@ namespace Domain.Repository
 
                 if (m.ENTITY_PERMISSION.PermissionParentId == null)
                 {
-                    dataBase.Where(x => x.PermissionParentId.Equals("")||x.PermissionParentId.Equals("0"));
+                    dataBase.Where(x => x.PermissionParentId.Equals("") || x.PermissionParentId.Equals("0"));
                 }
-                else 
+                else
                 {
                     dataBase.WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_PERMISSION.PermissionParentId),
                     x => x.PermissionParentId.Equals(m.ENTITY_PERMISSION.PermissionParentId));
                 }
-                
+
 
                 dataBase.WhereIF(m.ENTITY_PERMISSION.PermissionType > 0,
                     x => x.PermissionType.Equals(m.ENTITY_PERMISSION.PermissionType))
@@ -135,7 +136,7 @@ namespace Domain.Repository
                 var datas = dataBase.ToList();
                 datas.ForEach(x =>
                 {
-                    res.Add(new Models.Entitys.PermissionEntity(x.PermissionId.StringToGuid(),x.PermissionName,x.PermissionType.IntToEnum<PermissionTypeEnum>(),x.PermissionAction,x.PermissionParentId,x.IsValid));
+                    res.Add(new Models.Entitys.PermissionEntity(x.PermissionId.StringToGuid(), x.PermissionName, x.PermissionType.IntToEnum<PermissionTypeEnum>(), x.PermissionAction, x.PermissionParentId, x.IsValid));
                 });
             });
             return res;
