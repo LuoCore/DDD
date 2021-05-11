@@ -72,7 +72,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 if (!existingUSER.Equals(dmData))
                 {
 
-                    Bus.RaiseEvent(new DomainNotification("", "该用户已存在！"));
+                    Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));
                     return Task.FromResult(false);
 
                 }
@@ -111,7 +111,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 if (!existingPermission.Equals(dmData))
                 {
 
-                    Bus.RaiseEvent(new DomainNotification("", "权限名称重复！"));
+                    Bus.RaiseEvent(new DomainNotification("Permission", "权限名称重复！"));
                     return Task.FromResult(false);
 
                 }

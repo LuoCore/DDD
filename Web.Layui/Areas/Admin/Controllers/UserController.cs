@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Infrastructure.Common;
 using Application.Models.ViewModels.User;
+using Application.Models.ViewModels;
 
 namespace Web.Layui.Areas.Admin.Controllers
 {
@@ -103,18 +104,54 @@ namespace Web.Layui.Areas.Admin.Controllers
 
         }
 
-      
-        public  IActionResult PermissionForm(PermissionViewModel vm)
+
+        public IActionResult PermissionForm(PermissionViewModel vm)
         {
             return View();
 
         }
+        [HttpPost]
+        public async Task<IActionResult> PermissionCreate(PermissionCreateViewModel vm)
+        {
+            bool commandBool = await _userService.CreatePermission(vm);
+            // 是否存在消息通知
+            if (commandBool)
+            {
+                return Json(new { status = true, msg = "成功！" });
+            }
+            else
+            {
+                var notificationDatas = _notifications.GetNotifications();
+                StringBuilder strMsg = new StringBuilder();
+                foreach (var item in notificationDatas.Where(x => x.Key == "Permission").ToList())
+                {
+                    strMsg.Append(item.Value);
+                }
+                if (strMsg.Length < 1)
+                {
+                    strMsg.Append("发生异常！");
+                }
+                return Json(new { status = false, msg = strMsg });
+            }
+
+        }
 
         [HttpPost]
-        public async Task<IActionResult> PermissionSelect(PermissionViewModel vm)
+        public async Task<IActionResult> PermissionSelect()
         {
-            var res = await _userService.QueryPermission(vm);
-            return Json(res);
+            List<LayuiSelectViewModel> listSelect = new List<LayuiSelectViewModel>();
+            var resSelect = new LayuiSelectViewModel()
+            {
+                Name = "顶级",
+                value = null
+            };
+            var resData = await _userService.GetPermissionSelect(resSelect.value);
+            if (resData != null && resData.Count > 0)
+            {
+                resSelect.children = resData;
+            }
+            listSelect.Add(resSelect);
+            return Json(listSelect);
 
         }
 

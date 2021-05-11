@@ -5,12 +5,12 @@
 }
 
 
-    
+
 <div class="layui-form" lay-filter="layuiadmin-form-admin" id="layuiadmin-form-admin" style="padding: 20px 30px 0 0;">
     <div class="layui-form-item">
         <label class="layui-form-label">上级菜单</label>
         <div class="layui-input-inline">
-            <div id="demo4" class="xm-select-demo"></div>
+            <div id="PermissionParentId" class="xm-select-demo"></div>
         </div>
     </div>
 
@@ -21,27 +21,28 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">手机</label>
+        <label class="layui-form-label">权限动作</label>
         <div class="layui-input-inline">
-            <input type="text" name="phone" lay-verify="phone" placeholder="请输入号码" autocomplete="off" class="layui-input">
+            <input name="PermissionAction" type="text" placeholder="权限动作" autocomplete="off" class="layui-input">
         </div>
     </div>
+
+
     <div class="layui-form-item">
-        <label class="layui-form-label">邮箱</label>
+        <label class="layui-form-label">权限类型</label>
         <div class="layui-input-inline">
-            <input type="text" name="email" lay-verify="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+            <select name="PermissionType" lay-verify="required" lay-search="">
+                <option value="0">菜单</option>
+                <option value="1">按钮</option>
+            </select>
         </div>
     </div>
+
+
     <div class="layui-form-item">
-        <label class="layui-form-label">角色</label>
+        <label class="layui-form-label">是否有效</label>
         <div class="layui-input-inline">
-            <input type="text" name="role" lay-verify="required" placeholder="请输入角色类型" autocomplete="off" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">审核状态</label>
-        <div class="layui-input-inline">
-            <input type="checkbox" lay-filter="switch" name="switch" lay-skin="switch" lay-text="通过|待审核">
+            <input name="IsValid" type="checkbox" lay-filter="switch" lay-skin="switch" lay-text="是|否">
         </div>
     </div>
 
@@ -61,8 +62,8 @@
             var $ = layui.$,
                 form = layui.form,
                 xmSelect = layui.xmSelect;
-            var demo4 = xmSelect.render({
-                el: '#demo4',
+            var PermissionParentId = xmSelect.render({
+                el: '#PermissionParentId',
                 model: { label: { type: 'text' } },
                 tree: {
                     show: true,
@@ -75,53 +76,25 @@
                     }
                 },
                 height: 'auto',
-            })
+            });
 
-            //这里模拟ajax
-            setTimeout(function () {
-                demo4.update({
-                    data: [
-                        {
-                            name: '销售员', value: -1, children: [
-                                { name: '张三', value: 100, children: [] },
-                                { name: '李四1', value: 2 },
-                                { name: '王五1', value: 3, disabled: true },
-                            ]
-                        },
-                        {
-                            name: '奖品', value: -2, children: [
-                                {
-                                    name: '奖品3', value: -3, children: [
-                                        { name: '苹果3', value: 14 },
-                                        { name: '香蕉3', value: 15 },
-                                        { name: '葡萄3', value: 16 },
-                                    ]
-                                },
-                                { name: '苹果2', value: 4, disabled: true },
-                                { name: '香蕉2', value: 5 },
-                                { name: '葡萄2', value: 6 },
-                            ]
-                        },
-                    ]
-                })
-
-                //设置默认值
-                demo4.setValue([
-                    { name: '李四1', value: 2 },
-                    { name: '苹果3', value: 14 },
-                ], null, true)
-
-            }, 300)
-
-
-
+            $.ajax({
+                type: "Post",
+                url: "/Admin/User/PermissionSelect",
+                dataType: "json",
+                success: function (data) {
+                    PermissionParentId.update({
+                        data: data
+                    });
+                },
+                error: function (jqXHR) {
+                    alert("发生错误：" + jqXHR.status);
+                }
+            });
+            //设置默认值
+            PermissionParentId.setValue([{ name: '顶级', value: "" }], null, true);
 
         });
-                //基于 layui 表格的树形扩展 tableTreeDj
-                 //xmSelect下拉多选
-                //tableTree 表格树 tableTree
-                //eleTree 树组件
-                //tableSelect 下拉表格选择器
-                //authtree 无限级权限控制树
+
     </script>
 }

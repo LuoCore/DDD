@@ -16,11 +16,11 @@ namespace Domain.Models.Entitys
             IsValid = isValid;
             ENTITY_PERMISSION = new Infrastructure.Entitys.Permission();
             ENTITY_PERMISSION.PermissionName = permissionName;
-            if (permissionType == null) 
+            if (permissionType == null)
             {
                 ENTITY_PERMISSION.PermissionType = (int)permissionType;
             }
-            
+
             ENTITY_PERMISSION.PermissionAction = permissionAction;
             ENTITY_PERMISSION.PermissionParentId = permissionParentId;
         }
@@ -38,10 +38,11 @@ namespace Domain.Models.Entitys
         }
         public Infrastructure.Entitys.Permission ENTITY_PERMISSION { get; protected set; }
         public bool? IsValid { get; set; }
+    
         public enum PermissionTypeEnum
         {
-            菜单 = 1,
-            按钮 = 2
+            菜单,
+            按钮
         }
     }
 }

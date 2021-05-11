@@ -112,7 +112,7 @@ namespace Application.Services
                             IsValid = x.ENTITY_PERMISSION.IsValid
                         });
                     });
-                    
+
                     res.code = 0;
                     res.count = res.data.Count;
                     if (res.count < 1)
@@ -132,44 +132,47 @@ namespace Application.Services
             });
         }
 
-        public async Task<LayuiSelectViewModel> GetPermissionSelect()
+        public async Task<List<LayuiSelectViewModel>> GetPermissionSelect(string permissionParentId)
         {
 
             return await Task.Run(() =>
             {
-                LayuiSelectViewModel res = new LayuiSelectViewModel();
+                List<LayuiSelectViewModel> res = new List<LayuiSelectViewModel>();
+                
                 try
                 {
-                    Domain.Models.Entitys.PermissionEntity reqData = new Domain.Models.Entitys.PermissionEntity();
 
+                    
+
+
+                    Domain.Models.Entitys.PermissionEntity reqData = new Domain.Models.Entitys.PermissionEntity(permissionParentId);
                     var resData = DbRepository.ReadPermissionAll(reqData);
-                    res.data = new List<PermissionViewModel>();
+
+                   
+
                     resData.ForEach(x =>
                     {
-                        res.data.Add(new PermissionViewModel()
+                        var selectModel = new LayuiSelectViewModel()
                         {
-                            PermissionId = x.ENTITY_PERMISSION.PermissionId,
-                            PermissionName = x.ENTITY_PERMISSION.PermissionName,
-                            PermissionAction = x.ENTITY_PERMISSION.PermissionAction,
-                            PermissionParentId = x.ENTITY_PERMISSION.PermissionParentId,
-                            PermissionType = x.ENTITY_PERMISSION.PermissionType,
-                            IsValid = x.ENTITY_PERMISSION.IsValid
-                        });
+                            Name = x.ENTITY_PERMISSION.PermissionName,
+                            value = x.ENTITY_PERMISSION.PermissionId
+                        };
+                        selectModel.disabled = !Convert.ToBoolean(x.IsValid);
+                        var sm=  GetPermissionSelect(selectModel.value);
+                        if (sm.Result != null && sm.Result.Count > 0) 
+                        {
+                            selectModel.children = new List<LayuiSelectViewModel>();
+                            selectModel.children = sm.Result;
+                            selectModel.disabled = true;
+                        }
+                        res.Add(selectModel);
                     });
 
-                    res.code = 0;
-                    res.count = res.data.Count;
-                    if (res.count < 1)
-                    {
-
-                        res.code = -1;
-                        res.msg = "没有数据！";
-                    }
+                 
                 }
                 catch (Exception ex)
                 {
-                    res.code = -1;
-                    res.msg = "异常错误：" + ex;
+                  
                 }
                 return res;
 

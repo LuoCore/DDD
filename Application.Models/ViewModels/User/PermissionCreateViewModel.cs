@@ -10,7 +10,16 @@ namespace Application.Models.ViewModels.User
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class PermissionCreateViewModel:PermissionViewModel
+    public class PermissionCreateViewModel
     {
+        public string PermissionName { get; set; }
+
+        public int PermissionType { get; set; }
+
+        public string PermissionAction { get; set; }
+
+        public string PermissionParentId { get; set; }
+
+        public bool IsValid { get; set; }
     }
 }

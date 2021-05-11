@@ -110,18 +110,29 @@ namespace Domain.Repository
             List<Models.Entitys.PermissionEntity> res = new List<Models.Entitys.PermissionEntity>();
             Factory.GetDbContext((db) =>
             {
-                var datas = db.Queryable<Permission>()
-               .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_PERMISSION.PermissionId),
-                    x => x.PermissionId.Equals(m.ENTITY_PERMISSION.PermissionId))
-                .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_PERMISSION.PermissionName),
-                    x => x.PermissionName.Contains(m.ENTITY_PERMISSION.PermissionName))
-                .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_PERMISSION.PermissionParentId),
-                    x => x.PermissionParentId.Equals(m.ENTITY_PERMISSION.PermissionParentId))
-                .WhereIF(m.ENTITY_PERMISSION.PermissionType > 0,
+                var dataBase = db.Queryable<Permission>()
+                 .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_PERMISSION.PermissionId),
+                      x => x.PermissionId.Equals(m.ENTITY_PERMISSION.PermissionId))
+                  .WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_PERMISSION.PermissionName),
+                      x => x.PermissionName.Contains(m.ENTITY_PERMISSION.PermissionName));
+
+                if (m.ENTITY_PERMISSION.PermissionParentId == null)
+                {
+                    dataBase.Where(x => x.PermissionParentId.Equals("")||x.PermissionParentId.Equals("0"));
+                }
+                else 
+                {
+                    dataBase.WhereIF(!string.IsNullOrWhiteSpace(m.ENTITY_PERMISSION.PermissionParentId),
+                    x => x.PermissionParentId.Equals(m.ENTITY_PERMISSION.PermissionParentId));
+                }
+                
+
+                dataBase.WhereIF(m.ENTITY_PERMISSION.PermissionType > 0,
                     x => x.PermissionType.Equals(m.ENTITY_PERMISSION.PermissionType))
                 .WhereIF(m.IsValid != null,
-                    x => x.PermissionType.Equals(m.ENTITY_PERMISSION.IsValid))
-                .ToList();
+                    x => x.PermissionType.Equals(m.ENTITY_PERMISSION.IsValid));
+
+                var datas = dataBase.ToList();
                 datas.ForEach(x =>
                 {
                     res.Add(new Models.Entitys.PermissionEntity(x.PermissionId.StringToGuid(),x.PermissionName,x.PermissionType.IntToEnum<PermissionTypeEnum>(),x.PermissionAction,x.PermissionParentId,x.IsValid));
