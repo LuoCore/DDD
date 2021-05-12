@@ -143,7 +143,7 @@ namespace Web.Layui.Areas.Admin.Controllers
             var resSelect = new LayuiSelectViewModel()
             {
                 Name = "顶级",
-                value = ""
+                value = "0"
             };
             var resData = await _userService.GetPermissionSelect(resSelect.value);
             if (resData != null && resData.Count > 0)

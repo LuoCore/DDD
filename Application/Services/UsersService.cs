@@ -50,15 +50,15 @@ namespace Application.Services
                 UserViewModel userRes = new UserViewModel();
                 try
                 {
-                    Domain.Models.Entitys.UserEntity userReq = new Domain.Models.Entitys.UserEntity(vm.UserName, vm.Password, null, null, null);
+          
 
-                    Domain.Models.Entitys.UserEntity userData = DbRepository.ReadUser(userReq);
+                    var userData = DbRepository.ReadUserLogin(vm.UserName, vm.Password);
                     if (userData != null)
                     {
-                        userRes.UserId = userData.ENTITY_USER.UserId;
-                        userRes.UserName = userData.ENTITY_USER.UserName;
-                        userRes.Phone = userData.ENTITY_USER.Phone;
-                        userRes.Email = userData.ENTITY_USER.Email;
+                        userRes.UserId = userData.UserId;
+                        userRes.UserName = userData.UserName;
+                        userRes.Phone = userData.Phone;
+                        userRes.Email = userData.Email;
                     }
                 }
                 catch (Exception ex)
@@ -89,27 +89,17 @@ namespace Application.Services
                 LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
                 try
                 {
-                    Domain.Models.Entitys.PermissionEntity reqData = new Domain.Models.Entitys.PermissionEntity
-                    (
-                        vm.PermissionName,
-                        vm.PermissionType.IntToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(),
-                        vm.PermissionAction,
-                        vm.PermissionParentId,
-                        vm.IsValid
-                     );
-
-                    var resData = DbRepository.ReadPermissionAll(reqData);
+                    var resData = DbRepository.ReadPermissionParentIdList(vm.PermissionParentId);
                     res.data = new List<PermissionViewModel>();
                     resData.ForEach(x =>
                     {
                         res.data.Add(new PermissionViewModel()
                         {
-                            PermissionId = x.ENTITY_PERMISSION.PermissionId,
-                            PermissionName = x.ENTITY_PERMISSION.PermissionName,
-                            PermissionAction = x.ENTITY_PERMISSION.PermissionAction,
-                            PermissionParentId = x.ENTITY_PERMISSION.PermissionParentId,
-                            PermissionType = x.ENTITY_PERMISSION.PermissionType,
-                            IsValid = x.ENTITY_PERMISSION.IsValid
+                            PermissionName = x.PermissionName,
+                            PermissionAction = x.PermissionAction,
+                            PermissionParentId = x.PermissionParentId,
+                            PermissionType = x.PermissionType,
+                            IsValid = x.IsValid
                         });
                     });
 
@@ -141,21 +131,13 @@ namespace Application.Services
                 
                 try
                 {
-
-                    
-
-
-                    Domain.Models.Entitys.PermissionEntity reqData = new Domain.Models.Entitys.PermissionEntity(permissionParentId);
-                    var resData = DbRepository.ReadPermissionAll(reqData);
-
-                   
-
+                    var resData = DbRepository.ReadPermissionParentIdList(permissionParentId);
                     resData.ForEach(x =>
                     {
                         var selectModel = new LayuiSelectViewModel()
                         {
-                            Name = x.ENTITY_PERMISSION.PermissionName,
-                            value = x.ENTITY_PERMISSION.PermissionId
+                            Name = x.PermissionName,
+                            value = x.PermissionId
                         };
                         selectModel.disabled = !Convert.ToBoolean(x.IsValid);
                         var sm=  GetPermissionSelect(selectModel.value);
@@ -167,8 +149,6 @@ namespace Application.Services
                         }
                         res.Add(selectModel);
                     });
-
-                 
                 }
                 catch (Exception ex)
                 {

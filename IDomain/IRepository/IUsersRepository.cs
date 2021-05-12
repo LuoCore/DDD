@@ -9,13 +9,21 @@ namespace Domain.Interface.IRepository
     public interface IUsersRepository : ISqlSugarRepository
     {
 
-     
-        public bool CreateUser(Models.Entitys.UserEntity m);
-        public List<Models.Entitys.UserEntity> ReadUserAll(Models.Entitys.UserEntity m);
-        public Models.Entitys.UserEntity ReadUser(Models.Entitys.UserEntity m);
 
-        public Models.Entitys.PermissionEntity ReadPermission(Models.Entitys.PermissionEntity m);
-        public List<Models.Entitys.PermissionEntity> ReadPermissionAll(Models.Entitys.PermissionEntity m);
+        public bool CreateUser(Models.Entitys.UserEntity m);
+
+        public List<User> ReadUserAll();
+
+        public User ReadUserLogin(string userName, string userPassword);
+        public User ReadUserName(string userName);
+
+
+
+        public List<Permission> ReadPermissionParentIdList(string ParentId);
+
+        public Permission ReadPermissionNameType(string nameValue, int type);
+        public List<Permission> ReadPermissionAll();
+
         public bool CreatePermission(Models.Entitys.PermissionEntity m);
 
 

@@ -63,19 +63,21 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 return Task.FromResult(false);
             }
 
-            var dmData = new Models.Entitys.UserEntity(request.AggregateId, request.User.UserName, request.User.Password, request.User.Email, request.User.Phone, request.User.CreateName);
+            var dmData = new Models.Entitys.UserEntity(Guid.NewGuid(),
+                request.User.UserName,
+                request.User.Password, 
+                request.User.Email, 
+                request.User.Phone, 
+                request.User.CreateName);
             // 判断邮箱是否存在
             // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
-            UserEntity user = new UserEntity(dmData.ENTITY_USER.UserName, null, null, null, null);
-            var existingUSER = _userRepository.ReadUser(user);
-            if (existingUSER != null && existingUSER.Id != dmData.Id)
+            var existingUSER = _userRepository.ReadUserName(dmData.ENTITY_USER.UserName);
+            if (existingUSER != null)
             {
-                if (!existingUSER.Equals(dmData))
+                if (existingUSER.Equals(dmData))
                 {
-
                     Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));
                     return Task.FromResult(false);
-
                 }
             }
 
@@ -105,23 +107,18 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             }
 
             var dmData = new Models.Entitys.PermissionEntity(
-                request.AggregateId,
+                Guid.NewGuid(),
                 request.PERMISSION.PermissionName,
                 request.PERMISSION.PermissionType.IntToEnum<PermissionEntity.PermissionTypeEnum>(),
                 request.PERMISSION.PermissionAction,
                 request.PERMISSION.PermissionParentId,
                 request.PERMISSION.IsValid);
-            PermissionEntity permission = new PermissionEntity(request.PERMISSION.PermissionName,null,null,null,null);
-            var existingPermission = _userRepository.ReadPermission(permission);
-            if (existingPermission != null && existingPermission.Id != dmData.Id)
+
+            var existingPermission = _userRepository.ReadPermissionNameType(request.PERMISSION.PermissionName, dmData.ENTITY_PERMISSION.PermissionType);
+            if (existingPermission != null)
             {
-                if (!existingPermission.Equals(dmData))
-                {
-
-                    Bus.RaiseEvent(new DomainNotification("Permission", "权限名称重复！"));
-                    return Task.FromResult(false);
-
-                }
+                Bus.RaiseEvent(new DomainNotification("Permission", "权限名称重复！"));
+                return Task.FromResult(false);
             }
            
 

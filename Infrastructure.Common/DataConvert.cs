@@ -51,7 +51,7 @@ namespace Infrastructure.Common
           
         }
 
-        public static string EnumToStrin<T>(this object value)
+        public static string EnumToString<T>(this T value)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace Infrastructure.Common
            
         }
 
-        public static int EnumToInt<T>(this Enum value) where T: Enum
+        public static int EnumToInt<T>(this T value)where T:Enum
         {
             try
             {
@@ -86,6 +86,7 @@ namespace Infrastructure.Common
          */
         public static Guid StringToGuid(this string str)
         {
+            if (string.IsNullOrWhiteSpace(str)) { return Guid.Empty; }
             Match m = Regex.Match(str, @"^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$", RegexOptions.IgnoreCase);
             Guid gv = new Guid();
             if (m.Success)
