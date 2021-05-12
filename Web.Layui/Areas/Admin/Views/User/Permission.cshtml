@@ -52,13 +52,13 @@
             let table = layui.table,
                 $ = layui.jquery;
 
-
+            alert
 
             // 字段配置
             const tableCols = [[
                 { type: 'checkbox', fixed: 'left' },
                 {
-                    field: 'id', title: '权限编号', minWidth: 100, event: 'collapse',
+                    field: 'permissionId', title: '权限编号', minWidth: 100, event: 'collapse',
                     templet: function (d) {
                         if (Boolean(d.permissionLeve)) {
                             return '<div style="position: relative;\n' + 'padding: 0 10px 0 20px;">' + d.permissionId + '<i style="left: 0px;" lay-tips="展开" class="layui-icon layui-colla-icon layui-icon-right"></i></div>'
@@ -72,7 +72,6 @@
                 { field: 'permissionType', title: '权限类型' },
                 { field: 'permissionAction', title: '权限动作' },
                 { field: 'permissionParentId', title: '权限父级' },
-                { field: 'permissionLeve', title: '权限父级' },
                 { field: 'isValid', title: '是否有效' },
                 { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-action' }
             ]];
@@ -83,8 +82,95 @@
                 elem: '#table-permission',
                 page: true,
                 cols: tableCols,
-                loading:false
+                loading: false
             });
+
+            //监听工具条
+            table.on('tool(table-permission)',
+                function (obj) {
+
+                    var data = obj.data;
+                    if (obj.event === 'collapse') {
+                        var trObj = layui.$(this).parent('tr'); //当前行
+                        var tdObj = trObj.children('td').eq(1);
+                        let layTips = tdObj.find("div").find("div").find("i").attr("lay-tips")
+                        if (layTips != "展开") {
+
+                            return;
+                        }
+
+                        var accordion = true //开启手风琴，那么在进行折叠操作时，始终只会展现当前展开的表格。
+                        var content = '<table></table>' //内容
+                        //表格行折叠方法
+                        collapseTable({
+                            elem: trObj,
+                            accordion: accordion,
+                            content: content,
+                            success: function (trObjChildren, index) { //成功回调函数
+                                //trObjChildren 展开tr层DOM
+                                //index 当前层索引
+                                trObjChildren.find('table').attr("id", index);
+                                table.render({
+                                    elem: "#" + index,
+                                    method: 'post',
+                                    url: '/Admin/User/PermissionTable',
+                                    where: {
+                                        ParentId: data.permissionId
+                                    },
+                                    limit: 3,
+                                    cellMinWidth: 80,
+                                    cols: tableCols
+                                });
+
+                            }
+                        });
+
+                    }
+                });
+            function collapseTable(options) {
+                var trObj = options.elem;
+                if (!trObj) return;
+                var accordion = options.accordion,
+                    success = options.success,
+                    content = options.content || '';
+                var tableView = trObj.parents('.layui-table-view'); //当前表格视图
+                var id = tableView.attr('lay-id'); //当前表格标识
+                var index = trObj.data('index'); //当前行索引
+                var leftTr = tableView.find('.layui-table-fixed.layui-table-fixed-l tr[data-index="' + index + '"]'); //左侧当前固定行
+                var rightTr = tableView.find('.layui-table-fixed.layui-table-fixed-r tr[data-index="' + index + '"]'); //右侧当前固定行
+                var colspan = trObj.find('td').length; //获取合并长度
+                var trObjChildren = trObj.next(); //展开行Dom
+                var indexChildren = id + '-' + index + '-children'; //展开行索引
+                var leftTrChildren = tableView.find('.layui-table-fixed.layui-table-fixed-l tr[data-index="' + indexChildren + '"]'); //左侧展开固定行
+                var rightTrChildren = tableView.find('.layui-table-fixed.layui-table-fixed-r tr[data-index="' + indexChildren + '"]'); //右侧展开固定行
+                var lw = leftTr.width() + 15; //左宽
+                var rw = rightTr.width() + 15; //右宽
+                //不存在就创建展开行
+                if (trObjChildren.data('index') != indexChildren) {
+                    //装载HTML元素
+                    var tr = '<tr data-index="' + indexChildren + '"><td colspan="' + colspan + '"><div style="height: auto;padding-left:' + lw + 'px;padding-right:' + rw + 'px" class="layui-table-cell">' + content + '</div></td></tr>';
+                    trObjChildren = trObj.after(tr).next().hide(); //隐藏展开行
+                    var fixTr = '<tr data-index="' + indexChildren + '"></tr>';//固定行
+                    leftTrChildren = leftTr.after(fixTr).next().hide(); //左固定
+                    rightTrChildren = rightTr.after(fixTr).next().hide(); //右固定
+                }
+                //展开|折叠箭头图标
+                trObj.find('td[lay-event="collapse"] i.layui-colla-icon').toggleClass("layui-icon-right layui-icon-down");
+                //显示|隐藏展开行
+                trObjChildren.toggle();
+                //开启手风琴折叠和折叠箭头
+                if (accordion) {
+                    trObj.siblings().find('td[lay-event="collapse"] i.layui-colla-icon').removeClass("layui-icon-down").addClass("layui-icon-right");
+                    trObjChildren.siblings('[data-index$="-children"]').hide(); //展开
+                    rightTrChildren.siblings('[data-index$="-children"]').hide(); //左固定
+                    leftTrChildren.siblings('[data-index$="-children"]').hide(); //右固定
+                }
+                success(trObjChildren, indexChildren); //回调函数
+                heightChildren = trObjChildren.height(); //展开高度固定
+                rightTrChildren.height(heightChildren + 115).toggle(); //左固定
+                leftTrChildren.height(heightChildren + 115).toggle(); //右固定
+            }
+
 
 
 
@@ -95,7 +181,7 @@
                         method: 'post',
                         url: '/Admin/User/PermissionTable',
                         where: {
-
+                            ParentId: "0"
                         }, //设定异步数据接口的额外参数
                     });
                 },
@@ -134,8 +220,9 @@
                             //监听提交
                             iframeWindow.layui.form.on('submit(luo-submit)', function (data) {
                                 var field = data.field; //获取提交的字段
-                                console.log(field);
-                               
+                                layer.alert(JSON.stringify(field), {
+                                    title: '提交信息'
+                                });
                                 //提交 Ajax 成功后，静态更新表格中的数据
                                 $.ajax({
                                     type: "Post",

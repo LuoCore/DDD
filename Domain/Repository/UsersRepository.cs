@@ -18,7 +18,7 @@ namespace Domain.Repository
 
         public bool CreateUser(Models.Entitys.UserEntity m)
         {
-            bool sqlExe = true;
+            bool sqlExe = false ;
             Factory.GetDbContext((db) =>
             {
                 m.ENTITY_USER.CreateTime = db.GetDate();
@@ -75,23 +75,39 @@ namespace Domain.Repository
 
 
 
-
+        public bool ReadPermissionParentIdAny(string ParentId)
+        {
+            bool parentIdAny = false;
+            Factory.GetDbContext((db) =>
+            {
+                parentIdAny = db.Queryable<Permission>()
+                .Where(x => x.PermissionParentId == ParentId)
+                .Any();
+            });
+            return parentIdAny;
+        }
         public List<Permission> ReadPermissionParentIdList(string ParentId)
         {
             List<Permission> res = new List<Permission>();
             Factory.GetDbContext((db) =>
             {
-                var dataBase = db.Queryable<Permission>().Where(x=>x.PermissionParentId==ParentId).ToList();
+                res = db.Queryable<Permission>()
+                .Where(x=>x.PermissionParentId==ParentId)
+                .ToList();
             });
             return res;
         }
 
-        public Permission ReadPermissionNameType(string nameValue,int type)
+        public Permission ReadPermissionNameType(string nameValue,int type,string pid)
         {
             Permission res = new Permission();
             Factory.GetDbContext((db) =>
             {
-                var dataBase = db.Queryable<Permission>().Where(x => x.PermissionName == nameValue&&x.PermissionType== type).First();
+                res = db.Queryable<Permission>()
+                .Where(x => x.PermissionName == nameValue
+                &&x.PermissionType== type
+                &&x.PermissionParentId==pid)
+                .First();
             });
             return res;
         }
@@ -101,14 +117,14 @@ namespace Domain.Repository
             List<Permission> res = new List<Permission>();
             Factory.GetDbContext((db) =>
             {
-                var dataBase = db.Queryable<Permission>().ToList();
+                res = db.Queryable<Permission>().ToList();
             });
             return res;
         }
 
         public bool CreatePermission(Models.Entitys.PermissionEntity m)
         {
-            bool sqlExe = true;
+            bool sqlExe = false;
             Factory.GetDbContext((db) =>
             {
               

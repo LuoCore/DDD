@@ -18,10 +18,10 @@ namespace Domain.Interface.IRepository
         public User ReadUserName(string userName);
 
 
-
+        public bool ReadPermissionParentIdAny(string ParentId);
         public List<Permission> ReadPermissionParentIdList(string ParentId);
 
-        public Permission ReadPermissionNameType(string nameValue, int type);
+        public Permission ReadPermissionNameType(string nameValue, int type, string pid);
         public List<Permission> ReadPermissionAll();
 
         public bool CreatePermission(Models.Entitys.PermissionEntity m);

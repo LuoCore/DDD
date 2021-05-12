@@ -81,7 +81,7 @@ namespace Application.Services
         }
 
 
-        public async Task<LayuiTableViewModel<PermissionViewModel>> QueryPermission(PermissionViewModel vm)
+        public async Task<LayuiTableViewModel<PermissionViewModel>> QueryPermissionParentId(string parentId)
         {
 
             return await Task.Run(() =>
@@ -89,18 +89,22 @@ namespace Application.Services
                 LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
                 try
                 {
-                    var resData = DbRepository.ReadPermissionParentIdList(vm.PermissionParentId);
+                    var resData = DbRepository.ReadPermissionParentIdList(parentId);
                     res.data = new List<PermissionViewModel>();
                     resData.ForEach(x =>
                     {
-                        res.data.Add(new PermissionViewModel()
+                        PermissionViewModel model = new PermissionViewModel()
                         {
+                            PermissionId = x.PermissionId,
                             PermissionName = x.PermissionName,
                             PermissionAction = x.PermissionAction,
                             PermissionParentId = x.PermissionParentId,
                             PermissionType = x.PermissionType,
                             IsValid = x.IsValid
-                        });
+                        };
+                        model.PermissionLeve = DbRepository.ReadPermissionParentIdAny(model.PermissionId);
+                        res.data.Add(model);
+                        
                     });
 
                     res.code = 0;

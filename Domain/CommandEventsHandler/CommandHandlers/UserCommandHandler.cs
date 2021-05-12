@@ -114,8 +114,8 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 request.PERMISSION.PermissionParentId,
                 request.PERMISSION.IsValid);
 
-            var existingPermission = _userRepository.ReadPermissionNameType(request.PERMISSION.PermissionName, dmData.ENTITY_PERMISSION.PermissionType);
-            if (existingPermission != null)
+            var existingPermission = _userRepository.ReadPermissionNameType(request.PERMISSION.PermissionName, dmData.ENTITY_PERMISSION.PermissionType, dmData.ENTITY_PERMISSION.PermissionParentId);
+            if (existingPermission != null&& !string.IsNullOrWhiteSpace(existingPermission.PermissionId))
             {
                 Bus.RaiseEvent(new DomainNotification("Permission", "权限名称重复！"));
                 return Task.FromResult(false);

@@ -97,9 +97,9 @@ namespace Web.Layui.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> PermissionTable(PermissionViewModel vm)
+        public async Task<IActionResult> PermissionTable(string ParentId)
         {
-            var res = await _userService.QueryPermission(vm);
+            var res = await _userService.QueryPermissionParentId(ParentId);
             return Json(res);
 
         }
@@ -131,7 +131,7 @@ namespace Web.Layui.Areas.Admin.Controllers
                 {
                     strMsg.Append("发生异常！");
                 }
-                return Json(new { status = false, msg = strMsg });
+                return Json(new { status = false, msg = strMsg.ToString() });
             }
 
         }
