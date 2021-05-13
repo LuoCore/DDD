@@ -80,7 +80,50 @@ namespace Application.Services
             return await Bus.SendCommand(CreateCommand);
         }
 
+        public async Task<LayuiTableViewModel<PermissionViewModel>> GetPermissionAll() 
+        {
 
+            return await Task.Run(() =>
+            {
+                LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
+                try
+                {
+                    var resData = DbRepository.ReadPermissionAll();
+                    res.data = new List<PermissionViewModel>();
+                    resData.ForEach(x =>
+                    {
+                        PermissionViewModel model = new PermissionViewModel()
+                        {
+                            PermissionId = x.PermissionId,
+                            PermissionName = x.PermissionName,
+                            PermissionAction = x.PermissionAction,
+                            PermissionParentId = x.PermissionParentId,
+                            PermissionType = x.PermissionType,
+                            IsValid = x.IsValid
+                        };
+                        model.PermissionLeve = DbRepository.ReadPermissionParentIdAny(model.PermissionId);
+                        res.data.Add(model);
+                    });
+
+                    res.code = 0;
+                    res.count = res.data.Count;
+                    if (res.count < 1)
+                    {
+
+                        res.code = -1;
+                        res.msg = "没有数据！";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    res.code = -1;
+                    res.msg = "异常错误：" + ex;
+                }
+                return res;
+
+            });
+
+        }
         public async Task<LayuiTableViewModel<PermissionViewModel>> QueryPermissionParentId(string parentId)
         {
 
@@ -104,7 +147,6 @@ namespace Application.Services
                         };
                         model.PermissionLeve = DbRepository.ReadPermissionParentIdAny(model.PermissionId);
                         res.data.Add(model);
-                        
                     });
 
                     res.code = 0;

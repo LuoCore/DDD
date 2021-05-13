@@ -18,6 +18,7 @@ namespace Domain.Interface.IRepository
         public User ReadUserName(string userName);
 
 
+
         public bool ReadPermissionParentIdAny(string ParentId);
         public List<Permission> ReadPermissionParentIdList(string ParentId);
 

@@ -17,5 +17,6 @@ namespace Application.Interface.IServices
         public  Task<LayuiTableViewModel<PermissionViewModel>> QueryPermissionParentId(string parentId);
       
         Task<List<LayuiSelectViewModel>> GetPermissionSelect(string permissionParentId);
+        public  Task<LayuiTableViewModel<PermissionViewModel>> GetPermissionAll();
     }
 }

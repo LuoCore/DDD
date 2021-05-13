@@ -97,9 +97,9 @@ namespace Web.Layui.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> PermissionTable(string ParentId)
+        public async Task<IActionResult> PermissionTable()
         {
-            var res = await _userService.QueryPermissionParentId(ParentId);
+            var res = await _userService.GetPermissionAll();
             return Json(res);
 
         }
