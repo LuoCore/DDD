@@ -191,7 +191,6 @@ namespace Application.Services
                         {
                             selectModel.children = new List<LayuiSelectViewModel>();
                             selectModel.children = sm.Result;
-                            selectModel.disabled = true;
                         }
                         res.Add(selectModel);
                     });
