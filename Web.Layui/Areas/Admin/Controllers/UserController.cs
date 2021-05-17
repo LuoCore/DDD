@@ -23,10 +23,19 @@ namespace Web.Layui.Areas.Admin.Controllers
             // 强类型转换
             _notifications = (Domain.Notifications.DomainNotificationHandler)notifications;
         }
+        /// <summary>
+        /// 用户登录界面
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Login()
         {
             return View();
         }
+        /// <summary>
+        /// 用户登录
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Login(Application.Models.ViewModels.User.UserLoginViewModel vm)
         {
@@ -43,16 +52,44 @@ namespace Web.Layui.Areas.Admin.Controllers
             HttpContext.GetEndpoint();
             HttpContext.Response.Cookies.Append("User", user.ToJson());
             HttpContext.Request.Cookies.TryGetValue("User", out string value);
+
+
+            Identity ticket = new Identity
+                 (1,
+                     PlatFormUserEntity.AccessId,
+                     DateTime.Now,
+                     DateTime.Now.AddDays(1),
+                     true,
+                     PlatFormUserEntity.ToJson().ToUrlEncode(),
+                     "/"
+                 );
+
+            //Session["User"] = PlatFormUserEntity;
+            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));
+            cookie.HttpOnly = true;
+            HttpContext.Response.Cookies.Remove(cookie.Name);
+            HttpContext.Response.Cookies.Add(cookie);
+
+
+
             return Json(new { status = true, msg = "登录成功！" });
 
         }
 
 
-
+        /// <summary>
+        /// 用户注册界面
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Register()
         {
             return View();
         }
+        /// <summary>
+        /// 用户注册
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Register(Application.Models.ViewModels.User.UserCreateViewModel vm)
         {
@@ -84,32 +121,52 @@ namespace Web.Layui.Areas.Admin.Controllers
             }
 
         }
-
+        /// <summary>
+        /// 验证码
+        /// </summary>
+        /// <returns></returns>
         public IActionResult ValidateCode()
         {
             var verifCode = new Infrastructure.Utility.VerificationCode(4, Infrastructure.Utility.VerificationCode.CodeType.数字);
             HttpContext.Session.SetString("SecurityCode", verifCode.CheckCode);
             return File(verifCode.CreateCheckCodeByteArray(), "image/" + System.Drawing.Imaging.ImageFormat.Gif.ToString());
         }
-
+        /// <summary>
+        /// 权限管理页面
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Permission()
         {
             return View();
         }
+        /// <summary>
+        /// 权限管理表格查询
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> PermissionTable()
+        public async Task<IActionResult> PermissionTable(string parentId)
         {
-            var res = await _userService.GetPermissionAll();
+            var res = await _userService.GetRecursivePermission(parentId);
             return Json(res);
 
         }
 
-
+        /// <summary>
+        /// 权限维护界面
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
         public IActionResult PermissionForm(PermissionViewModel vm)
         {
             return PartialView();
 
         }
+        /// <summary>
+        /// 权限 创建
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> PermissionCreate(PermissionCreateViewModel vm)
         {
@@ -135,7 +192,10 @@ namespace Web.Layui.Areas.Admin.Controllers
             }
 
         }
-
+        /// <summary>
+        /// 获取树形权限下拉框
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> PermissionSelect()
         {

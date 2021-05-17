@@ -124,6 +124,65 @@ namespace Application.Services
             });
 
         }
+
+
+        private List<PermissionViewModel> RecursivePermission(string pid) 
+        {
+            List<PermissionViewModel> res = new List<PermissionViewModel>();
+            var resData = DbRepository.ReadPermissionParentIdList(pid);
+            resData.ForEach(x =>
+            {
+                PermissionViewModel model = new PermissionViewModel()
+                {
+                    PermissionId = x.PermissionId,
+                    PermissionName = x.PermissionName,
+                    PermissionAction = x.PermissionAction,
+                    PermissionParentId = x.PermissionParentId,
+                    PermissionType = x.PermissionType,
+                    IsValid = x.IsValid
+                };
+                res.Add(model);
+                res.AddRange(RecursivePermission(model.PermissionId));
+            });
+            return res;
+           
+        }
+
+
+        public async Task<LayuiTableViewModel<PermissionViewModel>> GetRecursivePermission(string pid)
+        {
+
+            return await Task.Run(() =>
+            {
+                LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
+                try
+                {
+                    var resData = DbRepository.ReadPermissionParentIdList(pid);
+                    res.data = new List<PermissionViewModel>();
+                    res.data = RecursivePermission(pid);
+                   
+
+                    res.code = 0;
+                    res.count = res.data.Count;
+                    if (res.count < 1)
+                    {
+
+                        res.code = -1;
+                        res.msg = "没有数据！";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    res.code = -1;
+                    res.msg = "异常错误：" + ex;
+                }
+                return res;
+
+            });
+
+        }
+  
+
         public async Task<LayuiTableViewModel<PermissionViewModel>> QueryPermissionParentId(string parentId)
         {
 
