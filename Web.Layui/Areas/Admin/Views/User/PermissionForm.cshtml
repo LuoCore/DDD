@@ -6,7 +6,7 @@
 
 
 
-<div class="layui-form" lay-filter="layuiadmin-form-admin" id="layuiadmin-form-admin" style="padding: 20px 30px 0 0;">
+<div class="layui-form layui-container" lay-filter="form-Permission" id="form-Permission">
     <div class="layui-form-item">
         <label class="layui-form-label">上级菜单</label>
         <div class="layui-input-inline">
@@ -73,78 +73,80 @@
         }).extend({ //设定模块别名
             xmSelect: 'xm-select/xm-select' //如果 mymod.js 是在根目录，也可以不用设定别名
         });
-        layui.use(['jquery', 'form', 'xmSelect'], function () {
-            var $ = layui.$,
-                form = layui.form,
-                xmSelect = layui.xmSelect;
-
-
-            //选择父级权限
-            $.ajax({
-                type: "Post",
-                url: "/Admin/User/PermissionSelect",
-                dataType: "json",
-                async: false,
-                success: function (data) {
-
-                   var PermissionParentId = xmSelect.render({
-                        el: '#PermissionParentId',
-                        name: "PermissionParentId",
-                        model: { label: { type: 'text' } },
-                        tree: {
-                            //是否显示树状结构
-                            show: true,
-                            //是否展示三角图标
-                            showFolderIcon: true,
-                            //是否显示虚线
-                            showLine: true,
-                            //间距
-                            indent: 10,
-                            //默认展开节点的数组, 为 true 时, 展开所有节点
-                            expandedKeys: true,
-                            //是否严格遵守父子模式
-                            strict: false,
-                            //是否开启极简模式
-                            simple: false,
-                            //点击节点是否展开
-                            clickExpand: true,
-                            //点击节点是否选中
-                            clickCheck: true
-                        },
-                       data: data,
-                       on: function (data) {
-                           if (data.isAdd) {
-                               return data.change.slice(0, 1)
-                           }
-                       },
-                       height: 'auto'
-                    });
-                    //设置默认值
-                    PermissionParentId.setValue([{ name: '顶级', value: "0" }], null, true);
-                },
-                error: function (jqXHR) {
-                    alert("发生错误：" + jqXHR.status);
-                }
-            });
-
+        function FormShow_Load(formobj) {
+           
             
+            layui.use(['jquery', 'form', 'xmSelect'], function () {
+                var $ = layui.$,
+                    form = layui.form,
+                    xmSelect = layui.xmSelect;
 
 
-           
+                //选择父级权限
+                $.ajax({
+                    type: "Post",
+                    url: "/Admin/User/PermissionSelect",
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
 
-           
-          
-            //监听提交
-            form.on('submit(luo-submit)', function (data) {
-                //layer.alert(JSON.stringify(data.field), {
-                //    title: '最终的提交信息'
-                //});
-                //var selectArr = PermissionParentId.getValue('valueStr');
-                //console.log(selectArr);
-                return false;
+                        var PermissionParentId = xmSelect.render({
+                            el: '#PermissionParentId',
+                            name: "PermissionParentId",
+                            model: { label: { type: 'text' } },
+                            tree: {
+                                //是否显示树状结构
+                                show: true,
+                                //是否展示三角图标
+                                showFolderIcon: true,
+                                //是否显示虚线
+                                showLine: true,
+                                //间距
+                                indent: 10,
+                                //默认展开节点的数组, 为 true 时, 展开所有节点
+                                expandedKeys: true,
+                                //是否严格遵守父子模式
+                                strict: false,
+                                //是否开启极简模式
+                                simple: false,
+                                //点击节点是否展开
+                                clickExpand: true,
+                                //点击节点是否选中
+                                clickCheck: true
+                            },
+                            data: data,
+                            on: function (data) {
+                                if (data.isAdd) {
+                                    return data.change.slice(0, 1)
+                                }
+                            },
+                            height: 'auto'
+                        });
+                        //设置默认值
+                        PermissionParentId.setValue([{ name: '顶级', value: "0" }], null, true);
+                    },
+                    error: function (jqXHR) {
+                        alert("发生错误：" + jqXHR.status);
+                    }
+                });
+
+                debugger;
+                //获取表单区域所有值
+                var data1 = form.val("form-Permission");
+                console.log(data1);
+                //给表单赋值
+                form.val("form-Permission", {
+                    "PermissionParentId": formobj.permissionParentId,
+                    "PermissionName": formobj.permissionName,
+                    "PermissionAction": formobj.permissionAction,
+                    "PermissionType": formobj.permissionType,
+                    "IsValid": formobj.isValid
+                });
+                
             });
-           
-        });
+            
+        }
+        
 
     </script>
 }

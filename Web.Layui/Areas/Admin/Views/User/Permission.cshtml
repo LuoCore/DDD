@@ -131,14 +131,16 @@
 
             treeTable.on('tool(table-permission)', function (obj) {
 
-                debugger;
                 switch (obj.event) {
                     case 'edit':
-                        var data = checkStatus.data;
-                        layer.alert(JSON.stringify(data));
+                        permissionFormShow("/Admin/User/PermissionCreate", obj.data);
+                        // 同步更新缓存对应的值
+                        //obj.update({
+                        //    username: '123',
+                        //    title: 'xxx'
+                        //});
                         break;
                     case 'del':
-                        debugger;
                         let permissionIds = new Array([obj.data.permissionId]);
                         ajaxDeleteAction(permissionIds);
                         break;
@@ -146,47 +148,33 @@
                 //var data = obj.data;  // 获得当前行数据
                 //var event = obj.event; // 获得lay-event对应的值
                 //obj.del(); // 删除对应行，并更新缓存
-                //// 同步更新缓存对应的值
-                //obj.update({
-                //    username: '123',
-                //    title: 'xxx'
-                //});
+
             });
 
 
 
             //事件
-            var active = {
-                query: function () {
-                    var selectArr = PermissionParent.getValue('valueStr');
+            let active = {
+                query: () => {
+                    let selectArr = PermissionParent.getValue('valueStr');
                     treeTable.reload('table-permission', {
                         method: 'post',
                         url: '/Admin/User/PermissionTable',
                         where: {
                             parentId: selectArr
-                        }, //设定异步数据接口的额外参数
-                    });
-                },
-                delete: function () {
-                    var checkData = permissionTable.checkStatus(false);
-
-
-                    if (checkData.length === 0) {
-                        return layer.msg('请选择数据');
-                    }
-
-                    layer.confirm('确定删除吗？', function (index) {
-
-                        let permissionIds = new Array()
-                        for (var i = 0; i < checkData.length; i++) {
-                            permissionIds.push(checkData[i].permissionId);
                         }
-                        //执行 Ajax 后重载
-                        ajaxDeleteAction(permissionIds);
-
                     });
                 },
-                add: function () { PermissionFormShow();}
+                delete: () => {
+                    let checkData = permissionTable.checkStatus(false);
+                    let permissionIds = new Array()
+                    for (var i = 0; i < checkData.length; i++) {
+                        permissionIds.push(checkData[i].permissionId);
+                    }
+                    //执行 Ajax 后重载
+                    ajaxDeleteAction(permissionIds);
+                },
+                add: () => permissionFormShow("/Admin/User/PermissionCreate")
             }
             $('.layui-btn.layuiadmin-btn-event').on('click', function () {
                 var type = $(this).data('type');
@@ -194,48 +182,60 @@
             });
 
 
-            function ajaxDeleteAction(permissionIds)
-            {
-                $.ajax({
-                    type: 'Post',
-                    url: '/Admin/User/DeletePermissionArray',
-                    /* contentType: 'application/json',*/
-                    data: { permissionIdArray: permissionIds },
-                    dataType: 'json',
-                    headers: {},
-                    success: function (result) {
-                        if (result.status) {
-                            treeTable.reload('table-permission');
-                            layer.alert(result.msg);
+            const ajaxDeleteAction = (permissionIds) => {
+
+                if (permissionIds.length === 0) {
+                    return layer.msg('请选择数据');
+                }
+                layer.confirm('确定删除吗？', function (index) {
+
+                    $.ajax({
+                        type: 'Post',
+                        url: '/Admin/User/DeletePermissionArray',
+                        /* contentType: 'application/json',*/
+                        data: { permissionIdArray: permissionIds },
+                        dataType: 'json',
+                        headers: {},
+                        success: function (result) {
+                            if (result.status) {
+                                treeTable.reload('table-permission');
+                                layer.alert(result.msg);
+                            }
+                            else {
+                                layer.msg(result.msg);
+                            }
+                        },
+                        error: function (e, msg) {
+                            alert('数据接口请求异常：' + msg);
                         }
-                        else {
-                            layer.msg(result.msg);
-                        }
-                    },
-                    error: function (e, msg) {
-                        alert('数据接口请求异常：' + msg);
-                    }
+                    });
                 });
             }
 
-            function PermissionFormShow()
-            {
+            const permissionFormShow = (postUrl, formObj) => {
                 let index = layer.open({
                     type: 2,
                     title: '添加权限',
-                    area: ['auto', '500px'],
+                    area: ['auto', '80%'],
                     content: '/Admin/User/PermissionForm',
                     btn: ['确定', '取消'],
+                    success: (layero, index)=> {
+                        debugger;
+                        var iframe = window['layui-layer-iframe' + index];
+                        iframe.FormShow_Load(formObj);
+                    },
                     yes: function (index, layero) {
-                        var iframeWindow = window['layui-layer-iframe' + index]
+                        let iframeWindow = window['layui-layer-iframe' + index]
                             , submit = layero.find('iframe').contents().find("#luo-submit");
+
+
                         //监听提交
                         iframeWindow.layui.form.on('submit(luo-submit)', function (data) {
-                            var field = data.field; //获取提交的字段
+                            let field = data.field; //获取提交的字段
                             //提交 Ajax 成功后，静态更新表格中的数据
                             $.ajax({
                                 type: "Post",
-                                url: "/Admin/User/PermissionCreate",
+                                url: postUrl,
                                 data: {
                                     PermissionName: field.PermissionName,
                                     PermissionType: field.PermissionType,
@@ -252,7 +252,6 @@
                                     else {
                                         layer.alert(result.msg);
                                     }
-
                                 },
                                 error: function (jqXHR) {
                                     alert("发生错误：" + jqXHR.status);
