@@ -27,6 +27,8 @@ namespace Domain.Interface.IRepository
 
         public bool CreatePermission(Models.Entitys.PermissionEntity m);
 
+        public bool DeletePermission(string permissionId);
+
 
     }
 }

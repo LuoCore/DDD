@@ -1,5 +1,6 @@
 using Infrastructure.CrossCutting.IoC;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +38,7 @@ namespace Web.Layui
                 options.MaxAge = TimeSpan.FromDays(60);//设置严格传输安全标头的最大生存期参数。
                 options.ExcludedHosts.Add("");//不会添加 HSTS 标头的主机名列表
             });
+
             services.AddSameSiteCookiePolicy();
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -52,9 +54,14 @@ namespace Web.Layui
                 options.Cookie.IsEssential = true;
             });
 
-           
-
-
+            services.AddAuthorization();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,o =>
+                    {
+                        o.LoginPath = new PathString("/Admin/User/Login");
+                        o.ForwardSignOut = new PathString("/");
+                        //o.AccessDeniedPath = new PathString("/Error/Forbidden");
+                    });
 
             // Adding MediatR for Domain Events
             // 领域命令、领域事件等注入
@@ -65,7 +72,7 @@ namespace Web.Layui
             // 单写一层用来添加依赖项，从展示层 Presentation 中隔离
             NativeInjectorBootStrapper.RegisterServices(services);
 
-           
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,15 +88,27 @@ namespace Web.Layui
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-           
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseAuthorization();
 
             app.UseSession();
+            //注意app.UseAuthentication方法一定要放在下面的app.UseMvc方法前面，否者后面就算调用HttpContext.SignInAsync进行用户登录后，使用
+            //HttpContext.User还是会显示用户没有登录，并且HttpContext.User.Claims读取不到登录用户的任何信息。
+            //这说明Asp.Net OWIN框架中MiddleWare的调用顺序会对系统功能产生很大的影响，各个MiddleWare的调用顺序一定不能反
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            //Cookie 策略中间件
+            var cookiePolicyOptions = new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+            };
+            app.UseCookiePolicy(cookiePolicyOptions);
+
 
             app.UseEndpoints(endpoints =>
             {
@@ -101,7 +120,7 @@ namespace Web.Layui
                   pattern: "{area:exists}/{controller=Home}/{action=Main}/{id?}"
                 );
             });
-       
+
         }
     }
 }

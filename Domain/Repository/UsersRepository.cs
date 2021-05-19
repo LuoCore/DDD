@@ -143,5 +143,30 @@ namespace Domain.Repository
             return sqlExe;
         }
 
+        public bool DeletePermission(string permissionId)
+        {
+            bool sqlExe = false;
+            Factory.GetDbContext((db) =>
+            {
+
+                try
+                {
+                    db.BeginTran();
+                    db.Deleteable<Permission>().Where(x => x.PermissionId == permissionId).ExecuteCommand();
+                    db.Deleteable<Permission>().Where(x => x.PermissionParentId == permissionId).ExecuteCommand();
+                    db.CommitTran();
+                    sqlExe = true;
+                }
+                catch (Exception)
+                {
+                    db.RollbackTran();
+                    sqlExe=false;
+                }
+                
+                
+            });
+            return sqlExe;
+        }
+
     }
 }

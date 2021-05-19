@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-           
+
         </div>
 
         <div class="layui-card-body">
@@ -45,7 +45,7 @@
             treeTable: 'treetable-lay/treeTable', //如果 mymod.js 是在根目录，也可以不用设定别名
             xmSelect: 'xm-select/xm-select'
         });
-        layui.use(['jquery', 'treeTable','xmSelect'], function () {
+        layui.use(['jquery', 'treeTable', 'xmSelect'], function () {
             let table = layui.table,
                 $ = layui.jquery,
                 treeTable = layui.treeTable,
@@ -60,7 +60,7 @@
                 async: false,
                 success: function (data) {
 
-                     PermissionParent = xmSelect.render({
+                    PermissionParent = xmSelect.render({
                         el: '#PermissionParent',
                         name: "PermissionParent",
                         model: { label: { type: 'text' } },
@@ -91,7 +91,7 @@
                             }
                         },
                         height: 'auto'
-                     });
+                    });
                     PermissionParent.setValue([{ name: '顶级', value: "0" }], null, true);
                 },
                 error: function (jqXHR) {
@@ -115,7 +115,7 @@
 
 
             // 渲染树形表格
-            var insTb = treeTable.render({
+            var permissionTable = treeTable.render({
                 elem: '#table-permission',
                 tree: {
                     iconIndex: 1,           // 折叠图标显示在第几列
@@ -129,6 +129,30 @@
 
 
 
+            treeTable.on('tool(table-permission)', function (obj) {
+
+                debugger;
+                switch (obj.event) {
+                    case 'edit':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                        break;
+                    case 'del':
+                        debugger;
+                        let permissionIds = new Array([obj.data.permissionId]);
+                        ajaxDeleteAction(permissionIds);
+                        break;
+                };
+                //var data = obj.data;  // 获得当前行数据
+                //var event = obj.event; // 获得lay-event对应的值
+                //obj.del(); // 删除对应行，并更新缓存
+                //// 同步更新缓存对应的值
+                //obj.update({
+                //    username: '123',
+                //    title: 'xxx'
+                //});
+            });
+
 
 
             //事件
@@ -139,13 +163,13 @@
                         method: 'post',
                         url: '/Admin/User/PermissionTable',
                         where: {
-                            parentId:selectArr
+                            parentId: selectArr
                         }, //设定异步数据接口的额外参数
                     });
                 },
                 delete: function () {
-                    var checkStatus = table.checkStatus('LAY-user-back-role')
-                        , checkData = checkStatus.data; //得到选中的数据
+                    var checkData = permissionTable.checkStatus(false);
+
 
                     if (checkData.length === 0) {
                         return layer.msg('请选择数据');
@@ -153,67 +177,94 @@
 
                     layer.confirm('确定删除吗？', function (index) {
 
+                        let permissionIds = new Array()
+                        for (var i = 0; i < checkData.length; i++) {
+                            permissionIds.push(checkData[i].permissionId);
+                        }
                         //执行 Ajax 后重载
-                        /*
-                        admin.req({
-                          url: 'xxx'
-                          //,……
-                        });
-                        */
-                        table.reload('LAY-user-back-role');
-                        layer.msg('已删除');
+                        ajaxDeleteAction(permissionIds);
+
                     });
                 },
-                add: function () {
-                    let index = layer.open({
-                        type: 2,
-                        title: '添加权限',
-                        area: ['auto', '500px'],
-                        content: '/Admin/User/PermissionForm',
-                        btn: ['确定', '取消'],
-                        yes: function (index, layero) {
-                            var iframeWindow = window['layui-layer-iframe' + index]
-                                , submit = layero.find('iframe').contents().find("#luo-submit");
-
-                            //监听提交
-                            iframeWindow.layui.form.on('submit(luo-submit)', function (data) {
-                                var field = data.field; //获取提交的字段
-                               
-                                //提交 Ajax 成功后，静态更新表格中的数据
-                                $.ajax({
-                                    type: "Post",
-                                    url: "/Admin/User/PermissionCreate",
-                                    data: {
-                                        PermissionName: field.PermissionName,
-                                        PermissionType: field.PermissionType,
-                                        PermissionAction: field.PermissionAction,
-                                        PermissionParentId: field.PermissionParentId,
-                                        IsValid: field.IsValid,
-                                    },
-                                    dataType: "json",
-                                    success: function (result) {
-                                        layer.alert(JSON.stringify(result), {
-                                            title: '最终的提交信息'
-                                        });
-                                    },
-                                    error: function (jqXHR) {
-                                        alert("发生错误：" + jqXHR.status);
-                                    }
-                                });
-                                table.reload('table-permission');
-                                layer.close(index); //关闭弹层
-                            });
-
-                            submit.trigger('click');
-                        }
-                    });
-                    layer.iframeAuto(index);
-                }
+                add: function () { PermissionFormShow();}
             }
             $('.layui-btn.layuiadmin-btn-event').on('click', function () {
                 var type = $(this).data('type');
                 active[type] ? active[type].call(this) : '';
             });
+
+
+            function ajaxDeleteAction(permissionIds)
+            {
+                $.ajax({
+                    type: 'Post',
+                    url: '/Admin/User/DeletePermissionArray',
+                    /* contentType: 'application/json',*/
+                    data: { permissionIdArray: permissionIds },
+                    dataType: 'json',
+                    headers: {},
+                    success: function (result) {
+                        if (result.status) {
+                            treeTable.reload('table-permission');
+                            layer.alert(result.msg);
+                        }
+                        else {
+                            layer.msg(result.msg);
+                        }
+                    },
+                    error: function (e, msg) {
+                        alert('数据接口请求异常：' + msg);
+                    }
+                });
+            }
+
+            function PermissionFormShow()
+            {
+                let index = layer.open({
+                    type: 2,
+                    title: '添加权限',
+                    area: ['auto', '500px'],
+                    content: '/Admin/User/PermissionForm',
+                    btn: ['确定', '取消'],
+                    yes: function (index, layero) {
+                        var iframeWindow = window['layui-layer-iframe' + index]
+                            , submit = layero.find('iframe').contents().find("#luo-submit");
+                        //监听提交
+                        iframeWindow.layui.form.on('submit(luo-submit)', function (data) {
+                            var field = data.field; //获取提交的字段
+                            //提交 Ajax 成功后，静态更新表格中的数据
+                            $.ajax({
+                                type: "Post",
+                                url: "/Admin/User/PermissionCreate",
+                                data: {
+                                    PermissionName: field.PermissionName,
+                                    PermissionType: field.PermissionType,
+                                    PermissionAction: field.PermissionAction,
+                                    PermissionParentId: field.PermissionParentId,
+                                    IsValid: field.IsValid,
+                                },
+                                dataType: "json",
+                                success: function (result) {
+                                    if (result.status) {
+                                        treeTable.reload('table-permission');
+                                        layer.close(index); //关闭弹层
+                                    }
+                                    else {
+                                        layer.alert(result.msg);
+                                    }
+
+                                },
+                                error: function (jqXHR) {
+                                    alert("发生错误：" + jqXHR.status);
+                                }
+                            });
+                        });
+                        submit.trigger('click');
+                    }
+                });
+                layer.iframeAuto(index);
+            }
+
         });
     </script>
 }

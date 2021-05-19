@@ -263,6 +263,12 @@ namespace Application.Services
             });
         }
 
+        public async Task<bool> DeletePermission(string permissionId)
+        {
+            var CommandEvent = new PermissionDeleteCommandModel(permissionId.StringToGuid());
+            return await Bus.SendCommand(CommandEvent);
+        }
+
 
     }
 }

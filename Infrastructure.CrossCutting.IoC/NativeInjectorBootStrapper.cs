@@ -74,6 +74,7 @@ namespace Infrastructure.CrossCutting.IoC
             // 将命令模型和命令处理程序匹配
             services.AddScoped<IRequestHandler<UserCreateCommandModel, bool>, UserCommandHandler>();
             services.AddScoped<IRequestHandler<PermissionCreateCommandModel, bool>, UserCommandHandler>();
+            services.AddScoped<IRequestHandler<PermissionDeleteCommandModel, bool>, UserCommandHandler>();
 
 
             // 注入 仓储层

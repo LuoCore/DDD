@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Infrastructure.Common;
 using Application.Models.ViewModels.User;
 using Application.Models.ViewModels;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Layui.Areas.Admin.Controllers
 {
@@ -39,6 +42,7 @@ namespace Web.Layui.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(Application.Models.ViewModels.User.UserLoginViewModel vm)
         {
+            vm.UserName = vm.UserName.ToLower();
             string verifiCode = HttpContext.Session.GetString("SecurityCode");
             if (!verifiCode.Equals(vm.VerifiCode))
             {
@@ -49,27 +53,41 @@ namespace Web.Layui.Areas.Admin.Controllers
             {
                 return Json(new { status = false, msg = "用户名或密码错误！" });
             }
-            HttpContext.GetEndpoint();
-            HttpContext.Response.Cookies.Append("User", user.ToJson());
-            HttpContext.Request.Cookies.TryGetValue("User", out string value);
+            //HttpContext.GetEndpoint();
+            //HttpContext.Response.Cookies.Append("User", user.ToJson());
+            //HttpContext.Request.Cookies.TryGetValue("User", out string value);
 
 
-            Identity ticket = new Identity
-                 (1,
-                     PlatFormUserEntity.AccessId,
-                     DateTime.Now,
-                     DateTime.Now.AddDays(1),
-                     true,
-                     PlatFormUserEntity.ToJson().ToUrlEncode(),
-                     "/"
-                 );
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim("UserDataInfo", user.ToJson()),
+                new Claim(ClaimTypes.Role, "Administrator"),
+            };
 
-            //Session["User"] = PlatFormUserEntity;
-            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, FormsAuthentication.Encrypt(ticket));
-            cookie.HttpOnly = true;
-            HttpContext.Response.Cookies.Remove(cookie.Name);
-            HttpContext.Response.Cookies.Add(cookie);
+            var claimsIdentity = new ClaimsIdentity(claims, Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
 
+            var authProperties = new AuthenticationProperties
+            {
+                //应该允许刷新身份验证会话。
+                AllowRefresh = false,
+                //认证票据过期的时间。
+                // 一个value将覆盖ExpireTimeSpan选项
+                //CookieAuthenticationOptions设置AddCookie。
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                //身份验证会话是否持久化
+                // 多个请求。当与cookie、控件一起使用时
+                //是否cookie的生存期是绝对的(匹配
+                //认证票据的生命周期)或基于会话的。
+                IsPersistent = false,
+                //颁发身份验证票据的时间。
+                IssuedUtc = DateTimeOffset.UtcNow,
+                //作为http的完整路径或绝对URI
+                //重定向响应值。
+                RedirectUri = "/Admin/User/Login"
+            };
+            await HttpContext.SignInAsync(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
 
             return Json(new { status = true, msg = "登录成功！" });
@@ -95,7 +113,7 @@ namespace Web.Layui.Areas.Admin.Controllers
         {
             bool regBool = await _userService.UserRegister(new Application.Models.ViewModels.User.UserCreateViewModel()
             {
-                UserName = vm.UserName,
+                UserName = vm.UserName.ToLower(),
                 Password = vm.Password,
                 Email = vm.Email,
                 Phone = vm.Phone
@@ -135,6 +153,7 @@ namespace Web.Layui.Areas.Admin.Controllers
         /// 权限管理页面
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         public IActionResult Permission()
         {
             return View();
@@ -212,6 +231,41 @@ namespace Web.Layui.Areas.Admin.Controllers
             }
             listSelect.Add(resSelect);
             return Json(listSelect);
+
+        }
+
+
+        public async Task<IActionResult> DeletePermissionArray(List<string> permissionIdArray) 
+        {
+           
+            if (permissionIdArray.Count < 1) 
+            {
+                return Json(new { status = false, msg = "提交的数据为空" });
+            }
+            StringBuilder resMsg = new StringBuilder();
+            foreach (var itemid in permissionIdArray)
+            {
+                bool commandBool = await _userService.DeletePermission(itemid);
+                if (commandBool)
+                {
+                    resMsg.Append(itemid + "，删除成功！"+Environment.NewLine);
+                }
+                else
+                {
+                    var notificationDatas = _notifications.GetNotifications();
+                    StringBuilder strMsg = new StringBuilder();
+                    foreach (var item in notificationDatas.Where(x => x.Key == "Permission").ToList())
+                    {
+                        strMsg.Append(item.Value);
+                    }
+                    if (strMsg.Length < 1)
+                    {
+                        strMsg.Append("发生异常！");
+                    }
+                    resMsg.Append(itemid + "，删除失败！"+ strMsg.ToString() + Environment.NewLine);
+                }
+            }
+            return Json(new { status = true, msg = resMsg.ToString() });
 
         }
 

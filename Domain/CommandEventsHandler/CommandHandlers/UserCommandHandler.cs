@@ -24,7 +24,8 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// </summary>
     public class UserCommandHandler : CommandHandler,
         IRequestHandler<UserCreateCommandModel, bool>,
-        IRequestHandler<PermissionCreateCommandModel, bool>
+        IRequestHandler<PermissionCreateCommandModel, bool>,
+        IRequestHandler<PermissionDeleteCommandModel, bool>
     {
         // 注入仓储接口
         private readonly IUsersRepository _userRepository;
@@ -129,6 +130,28 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 // 提交成功后，这里需要发布领域事件
                 // 比如欢迎用户注册邮件呀，短信呀等
                 Bus.RaiseEvent(new PermissionCreateEventModel(dmData));
+            }
+
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> Handle(PermissionDeleteCommandModel request, CancellationToken cancellationToken)
+        {
+            if (!request.IsValid())
+            {
+                NotifyValidationErrors(request);
+                return Task.FromResult(false);
+
+            }
+
+            if (_userRepository.DeletePermission(request.PERMISSION_ID.ToString()))
+            {
+                Bus.RaiseEvent(new PermissionDeleteEventModel(request.PERMISSION_ID));
+            }
+            else 
+            {
+                Bus.RaiseEvent(new DomainNotification("Permission", "删除失败！"));
+                return Task.FromResult(false);
             }
 
             return Task.FromResult(true);
