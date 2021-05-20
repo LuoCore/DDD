@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Infrastructure.Common;
+using System.Diagnostics;
 
 namespace Application.Services
 {
@@ -48,7 +49,7 @@ namespace Application.Services
                 {
           
 
-                    var userData = DbRepository.ReadUserLogin(vm.UserName, vm.Password);
+                    var userData = DbRepository.QueryByNamePassword(vm.UserName, vm.Password);
                     if (userData != null)
                     {
                         userRes.UserId = userData.UserId;
@@ -59,6 +60,7 @@ namespace Application.Services
                 }
                 catch (Exception ex)
                 {
+                    Debug.WriteLine(ex);
                     return null;
                 }
                 return userRes;
@@ -68,202 +70,7 @@ namespace Application.Services
 
 
 
-        public async Task<Boolean> CreatePermission(PermissionCreateViewModel vm)
-        {
-
-
-            var CreateCommand = new PermissionCreateCommandModel(Guid.NewGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
-            return await Bus.SendCommand(CreateCommand);
-        }
-
-        public async Task<LayuiTableViewModel<PermissionViewModel>> GetPermissionAll() 
-        {
-
-            return await Task.Run(() =>
-            {
-                LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
-                try
-                {
-                    var resData = DbRepository.ReadPermissionAll();
-                    res.data = new List<PermissionViewModel>();
-                    resData.ForEach(x =>
-                    {
-                        PermissionViewModel model = new PermissionViewModel()
-                        {
-                            PermissionId = x.PermissionId,
-                            PermissionName = x.PermissionName,
-                            PermissionAction = x.PermissionAction,
-                            PermissionParentId = x.PermissionParentId,
-                            PermissionType = x.PermissionType,
-                            IsValid = x.IsValid
-                        };
-                        model.PermissionLeve = DbRepository.ReadPermissionParentIdAny(model.PermissionId);
-                        res.data.Add(model);
-                    });
-
-                    res.code = 0;
-                    res.count = res.data.Count;
-                    if (res.count < 1)
-                    {
-
-                        res.code = -1;
-                        res.msg = "没有数据！";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    res.code = -1;
-                    res.msg = "异常错误：" + ex;
-                }
-                return res;
-
-            });
-
-        }
-
-
-        private List<PermissionViewModel> RecursivePermission(string pid) 
-        {
-            List<PermissionViewModel> res = new List<PermissionViewModel>();
-            var resData = DbRepository.ReadPermissionParentIdList(pid);
-            resData.ForEach(x =>
-            {
-                PermissionViewModel model = new PermissionViewModel()
-                {
-                    PermissionId = x.PermissionId,
-                    PermissionName = x.PermissionName,
-                    PermissionAction = x.PermissionAction,
-                    PermissionParentId = x.PermissionParentId,
-                    PermissionType = x.PermissionType,
-                    IsValid = x.IsValid
-                };
-                res.Add(model);
-                res.AddRange(RecursivePermission(model.PermissionId));
-            });
-            return res;
-           
-        }
-
-
-        public async Task<LayuiTableViewModel<PermissionViewModel>> GetRecursivePermission(string pid)
-        {
-
-            return await Task.Run(() =>
-            {
-                LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
-                try
-                {
-                    var resData = DbRepository.ReadPermissionParentIdList(pid);
-                    res.data = new List<PermissionViewModel>();
-                    res.data = RecursivePermission(pid);
-                   
-
-                    res.code = 0;
-                    res.count = res.data.Count;
-                    if (res.count < 1)
-                    {
-
-                        res.code = -1;
-                        res.msg = "没有数据！";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    res.code = -1;
-                    res.msg = "异常错误：" + ex;
-                }
-                return res;
-
-            });
-
-        }
-  
-
-        public async Task<LayuiTableViewModel<PermissionViewModel>> QueryPermissionParentId(string parentId)
-        {
-
-            return await Task.Run(() =>
-            {
-                LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
-                try
-                {
-                    var resData = DbRepository.ReadPermissionParentIdList(parentId);
-                    res.data = new List<PermissionViewModel>();
-                    resData.ForEach(x =>
-                    {
-                        PermissionViewModel model = new PermissionViewModel()
-                        {
-                            PermissionId = x.PermissionId,
-                            PermissionName = x.PermissionName,
-                            PermissionAction = x.PermissionAction,
-                            PermissionParentId = x.PermissionParentId,
-                            PermissionType = x.PermissionType,
-                            IsValid = x.IsValid
-                        };
-                        model.PermissionLeve = DbRepository.ReadPermissionParentIdAny(model.PermissionId);
-                        res.data.Add(model);
-                    });
-
-                    res.code = 0;
-                    res.count = res.data.Count;
-                    if (res.count < 1)
-                    {
-
-                        res.code = -1;
-                        res.msg = "没有数据！";
-                    }
-                }
-                catch (Exception ex)
-                {
-                    res.code = -1;
-                    res.msg = "异常错误：" + ex;
-                }
-                return res;
-
-            });
-        }
-
-        public async Task<List<LayuiSelectViewModel>> GetPermissionSelect(string permissionParentId)
-        {
-
-            return await Task.Run(() =>
-            {
-                List<LayuiSelectViewModel> res = new List<LayuiSelectViewModel>();
-                
-                try
-                {
-                    var resData = DbRepository.ReadPermissionParentIdList(permissionParentId);
-                    resData.ForEach(x =>
-                    {
-                        var selectModel = new LayuiSelectViewModel()
-                        {
-                            Name = x.PermissionName,
-                            value = x.PermissionId
-                        };
-                        selectModel.disabled = !Convert.ToBoolean(x.IsValid);
-                        var sm=  GetPermissionSelect(selectModel.value);
-                        if (sm.Result != null && sm.Result.Count > 0) 
-                        {
-                            selectModel.children = new List<LayuiSelectViewModel>();
-                            selectModel.children = sm.Result;
-                        }
-                        res.Add(selectModel);
-                    });
-                }
-                catch (Exception ex)
-                {
-                  
-                }
-                return res;
-
-            });
-        }
-
-        public async Task<bool> DeletePermission(string permissionId)
-        {
-            var CommandEvent = new PermissionDeleteCommandModel(permissionId.StringToGuid());
-            return await Bus.SendCommand(CommandEvent);
-        }
+        
 
 
     }

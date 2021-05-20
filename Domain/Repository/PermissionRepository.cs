@@ -19,7 +19,7 @@ namespace Domain.Repository
         {
         }
 
-        public bool QueryPermissionAny(string ParentId)
+        public bool AnyByParentId(string ParentId)
         {
             bool parentIdAny = false;
             Factory.GetDbContext((db) =>
@@ -31,7 +31,7 @@ namespace Domain.Repository
             return parentIdAny;
         }
 
-        public List<Permission> QueryPermissionList()
+        public List<Permission> QueryAll()
         {
             List<Permission> res = new List<Permission>();
             Factory.GetDbContext((db) =>
@@ -40,7 +40,7 @@ namespace Domain.Repository
             });
             return res;
         }
-        public List<Permission> QueryPermissionList(string ParentId)
+        public List<Permission> QueryByParentId(string ParentId)
         {
             List<Permission> res = new List<Permission>();
             Factory.GetDbContext((db) =>
@@ -51,8 +51,7 @@ namespace Domain.Repository
             });
             return res;
         }
-
-        public Permission QueryPermissionFirst(string nameValue, int typeValue, string parentIdValue)
+        public Permission QueryByNameTypeParentId(string nameValue, int typeValue, string parentIdValue)
         {
             Permission res = new Permission();
             Factory.GetDbContext((db) =>

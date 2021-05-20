@@ -34,7 +34,7 @@
             <select name="PermissionType" lay-verify="required" lay-search="">
 
                 @{
-                    Type enumType = typeof(Domain.Models.Entitys.PermissionEntity.PermissionTypeEnum);
+                    Type enumType = typeof(Domain.Models.CommandModels.PermissionCommandModel.PermissionTypeEnum);
                     Array values = Enum.GetValues(enumType);
                     if (values.Length > 0)
                     {
@@ -53,10 +53,10 @@
     <div class="layui-form-item">
         <label class="layui-form-label">是否有效</label>
         <div class="layui-input-inline">
-            <input name="IsValid" value="true" type="checkbox" lay-filter="switch" lay-skin="switch" lay-text="是|否" checked/>
+            <input name="IsValid" value="true" type="checkbox" lay-filter="switch" lay-skin="switch" lay-text="是|否" checked />
         </div>
     </div>
-  
+
     <div class="layui-form-item layui-hide">
         <button class="layui-btn" lay-submit lay-filter="luo-submit" id="luo-submit">提交</button>
     </div>
@@ -74,8 +74,8 @@
             xmSelect: 'xm-select/xm-select' //如果 mymod.js 是在根目录，也可以不用设定别名
         });
         function FormShow_Load(formobj) {
-           
-            
+
+
             layui.use(['jquery', 'form', 'xmSelect'], function () {
                 var $ = layui.$,
                     form = layui.form,
@@ -84,8 +84,8 @@
 
                 //选择父级权限
                 $.ajax({
-                    type: "Post",
-                    url: "/Admin/User/PermissionSelect",
+                    type: "get",
+                    url: "/Admin/Permission/Select",
                     dataType: "json",
                     async: false,
                     success: function (data) {
@@ -142,13 +142,13 @@
                     }
                 });
 
-               
-               
-                
+
+
+
             });
-            
+
         }
-        
+
 
     </script>
 }

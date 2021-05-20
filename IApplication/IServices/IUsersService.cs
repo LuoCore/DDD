@@ -10,16 +10,8 @@ namespace Application.Interface.IServices
     public interface IUsersService
     {
 
-        public Task<Boolean> UserRegister(UserCreateViewModel vm);
-        public Task<UserViewModel> UserLogin(UserLoginViewModel vm);
+        public  Task<Boolean> UserRegister(UserCreateViewModel vm);
 
-        public Task<Boolean> CreatePermission(PermissionCreateViewModel vm);
-        public  Task<LayuiTableViewModel<PermissionViewModel>> QueryPermissionParentId(string parentId);
-        public  Task<LayuiTableViewModel<PermissionViewModel>> GetRecursivePermission(string pid);
-
-
-        Task<List<LayuiSelectViewModel>> GetPermissionSelect(string permissionParentId);
-        public  Task<LayuiTableViewModel<PermissionViewModel>> GetPermissionAll();
-        public  Task<bool> DeletePermission(string permissionId);
+        public  Task<UserViewModel> UserLogin(UserLoginViewModel vm);
     }
 }

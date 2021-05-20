@@ -36,7 +36,7 @@ namespace Domain.Repository
             });
             return sqlExe;
         }
-        public List<User> QueryAllUser()
+        public List<User> QueryAll()
         {
             List<User> res = new List<User>();
             Factory.GetDbContext((db) =>
@@ -45,7 +45,7 @@ namespace Domain.Repository
             });
             return res;
         }
-        public User UserLogin(string userName,string userPassword)
+        public User QueryByNamePassword(string userName,string userPassword)
         {
             User res = new User() ;
             Factory.GetDbContext((db) =>
@@ -57,7 +57,7 @@ namespace Domain.Repository
             });
             return res;
         }
-        public User QueryUserName(string userName)
+        public User QueryByName(string userName)
         {
             User res = new User();
             Factory.GetDbContext((db) =>

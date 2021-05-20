@@ -5,11 +5,8 @@ using Domain.CommandEventsHandler.CommandHandlers;
 using Domain.CommandEventsHandler.EventHandlers;
 using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
-using Domain.Models.User.CommandModels;
-using Domain.Models.User.EventModels;
 using Domain.Notifications;
 using Domain.Repository;
-using Infrastructure.Entitys;
 using Infrastructure.Factory;
 using Infrastructure.Interface.IFactory;
 using MediatR;
@@ -69,19 +66,26 @@ namespace Infrastructure.CrossCutting.IoC
             // 领域通知
             services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
             // 领域事件
-            services.AddScoped<INotificationHandler<UserCreateEventModel>, UserEventHandler>();
+            services.AddScoped<INotificationHandler<Domain.Models.EventModels.User.UserCreateEventModel>, UserEventHandler>();
+            services.AddScoped<INotificationHandler<Domain.Models.EventModels.Permission.PermissionCreateEventModel>, PermissionEventHandler>();
+            services.AddScoped<INotificationHandler<Domain.Models.EventModels.Permission.PermissionUpdateEventModel>, PermissionEventHandler>();
+            services.AddScoped<INotificationHandler<Domain.Models.EventModels.Permission.PermissionDeleteEventModel>, PermissionEventHandler>();
             // 领域层 - 领域命令
             // 将命令模型和命令处理程序匹配
-            services.AddScoped<IRequestHandler<UserCreateCommandModel, bool>, UserCommandHandler>();
-            services.AddScoped<IRequestHandler<PermissionCreateCommandModel, bool>, UserCommandHandler>();
-            services.AddScoped<IRequestHandler<PermissionDeleteCommandModel, bool>, UserCommandHandler>();
+            services.AddScoped<IRequestHandler<Domain.Models.CommandModels.User.CreateUserCommandModel, bool>, UserCommandHandler>();
+            services.AddScoped<IRequestHandler<Domain.Models.CommandModels.Permission.CreatePermissionCommandModel, bool>, PermissionCommandHandler>();
+            services.AddScoped<IRequestHandler<Domain.Models.CommandModels.Permission.UpdatePermissionCommandModel, bool>, PermissionCommandHandler>();
+            services.AddScoped<IRequestHandler<Domain.Models.CommandModels.Permission.DeletePermissionCommandModel, bool>, PermissionCommandHandler>();
+
 
 
             // 注入 仓储层
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IEventStoreRepository, EventStoreRepository>();
             // 注入 服务层
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IPermissionService, PermissionService>();
 
 
         }

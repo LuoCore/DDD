@@ -49,7 +49,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 IsValid=request.IsValid
             };
 
-            var existingEntity = _Repository.QueryPermissionFirst(entity.PermissionName, entity.PermissionType, entity.PermissionParentId);
+            var existingEntity = _Repository.QueryByNameTypeParentId(entity.PermissionName, entity.PermissionType, entity.PermissionParentId);
             if (existingEntity != null && !string.IsNullOrWhiteSpace(existingEntity.PermissionId))
             {
                 Bus.RaiseEvent(new DomainNotification("Permission", "权限名称重复！"));
@@ -90,7 +90,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 IsValid = request.IsValid
             };
 
-            var existingEntity = _Repository.QueryPermissionFirst(entity.PermissionName, entity.PermissionType, entity.PermissionParentId);
+            var existingEntity = _Repository.QueryByNameTypeParentId(entity.PermissionName, entity.PermissionType, entity.PermissionParentId);
 
             if (existingEntity != null && existingEntity.PermissionId == entity.PermissionId)
             {

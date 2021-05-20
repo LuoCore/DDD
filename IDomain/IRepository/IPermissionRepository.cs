@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Entitys;
+using Infrastructure.Interface.IRepository;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,14 +12,13 @@ namespace Domain.Interface.IRepository
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public interface IPermissionRepository
+    public interface IPermissionRepository : ISqlSugarRepository
     {
-        public bool QueryPermissionAny(string ParentId);
+        public bool AnyByParentId(string ParentId);
 
-        public List<Permission> QueryPermissionList();
-        public List<Permission> QueryPermissionList(string ParentId);
-
-        public Permission QueryPermissionFirst(string nameValue, int typeValue, string parentIdValue);
+        public List<Permission> QueryAll();
+        public List<Permission> QueryByParentId(string ParentId);
+        public Permission QueryByNameTypeParentId(string nameValue, int typeValue, string parentIdValue);
 
         public bool CreatePermission(Infrastructure.Entitys.Permission m);
 

@@ -9,9 +9,9 @@ namespace Domain.Interface.IRepository
 
 
         public bool CreateUser(Infrastructure.Entitys.User m);
-        public List<User> QueryAllUser();
-        public User UserLogin(string userName, string userPassword);
-        public User QueryUserName(string userName);
+        public List<User> QueryAll();
+        public User QueryByNamePassword(string userName, string userPassword);
+        public User QueryByName(string userName);
 
 
     }

@@ -51,11 +51,20 @@
                 treeTable = layui.treeTable,
                 xmSelect = layui.xmSelect;
 
+            const [ SelectURL,TableURL,DeleteURL,CreateURL,UpdateURL,ShowFormURL]= [
+                "/Admin/Permission/Select",
+                '/Admin/Permission/Table',
+                '/Admin/Permission/DeleteByIds',
+                "/Admin/Permission/Create",
+                "/Admin/Permission/Update",
+                '/Admin/Permission/PermissionForm'
+            ];
+
             var PermissionParent;
             //选择父级权限
             $.ajax({
-                type: "Post",
-                url: "/Admin/User/PermissionSelect",
+                type: "get",
+                url: SelectURL,
                 dataType: "json",
                 async: false,
                 success: function (data) {
@@ -133,7 +142,7 @@
 
                 switch (obj.event) {
                     case 'edit':
-                        permissionFormShow("/Admin/User/PermissionCreate", obj.data);
+                        permissionFormShow(obj.data);
                         // 同步更新缓存对应的值
                         //obj.update({
                         //    username: '123',
@@ -159,7 +168,7 @@
                     let selectArr = PermissionParent.getValue('valueStr');
                     treeTable.reload('table-permission', {
                         method: 'post',
-                        url: '/Admin/User/PermissionTable',
+                        url: TableURL,
                         where: {
                             parentId: selectArr
                         }
@@ -174,7 +183,7 @@
                     //执行 Ajax 后重载
                     ajaxDeleteAction(permissionIds);
                 },
-                add: () => permissionFormShow("/Admin/User/PermissionCreate")
+                add: () => permissionFormShow()
             }
             $('.layui-btn.layuiadmin-btn-event').on('click', function () {
                 var type = $(this).data('type');
@@ -191,7 +200,7 @@
 
                     $.ajax({
                         type: 'Delete',
-                        url: '/Admin/User/DeletePermissionArray',
+                        url: DeleteURL,
                         /* contentType: 'application/json',*/
                         data: { permissionIdArray: permissionIds },
                         dataType: 'json',
@@ -212,12 +221,18 @@
                 });
             }
 
-            const permissionFormShow = (postUrl, formObj) => {
+            const permissionFormShow = (formObj) => {
+
+                let postUrl = CreateURL;
+                if (formObj != null && formObj != undefined)
+                {
+                    postUrl = UpdateURL;
+                }
                 let index = layer.open({
                     type: 2,
                     title: '添加权限',
                     area: ['auto', '80%'],
-                    content: '/Admin/User/PermissionForm',
+                    content: ShowFormURL,
                     btn: ['确定', '取消'],
                     success: (layero, index)=> {
 

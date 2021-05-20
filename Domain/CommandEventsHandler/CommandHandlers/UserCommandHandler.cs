@@ -70,7 +70,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
            
             // 判断邮箱是否存在
             // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
-            var existingUSER = _userRepository.ReadUserName(entity.UserName);
+            var existingUSER = _userRepository.QueryByName(entity.UserName);
             if (existingUSER != null)
             {
                 Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));

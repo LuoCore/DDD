@@ -32,7 +32,7 @@ namespace Domain.CommandEventsHandler
         {
             // 除了领域通知以外的事件都保存下来
             if (!@event.MessageType.Equals("DomainNotification"))
-                _eventStoreService?.Save(@event);
+                _eventStoreService?.Save(@event,System.Environment.UserName);
 
             // MediatR中介者模式中的第二种方法，发布/订阅模式
             return _mediator.Publish(@event);

@@ -16,6 +16,6 @@ namespace Domain.Interface.IRepository
         /// </summary>
         /// <typeparam name="T"> 泛型：Event命令模型</typeparam>
         /// <param name="theEvent"></param>
-        void Save<T>(T theEvent) where T : Event;
+        public void Save<T>(T theEvent, string userName) where T : Event;
     }
 }

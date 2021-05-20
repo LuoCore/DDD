@@ -1,12 +1,8 @@
-﻿using Domain.Interface.ICommandEventsHandler;
-using Domain.Interface.IRepository;
-using Domain.Models.StoredEvent.EventModels;
+﻿using Domain.Interface.IRepository;
 using Infrastructure.CommandEventsHandler;
 using Infrastructure.Interface.IFactory;
 using Infrastructure.Repository;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Domain.Repository
 {
@@ -23,26 +19,20 @@ namespace Domain.Repository
 
         }
 
-        public void Save<T>(T theEvent) where T : Event
+        public void Save<T>(T theEvent,string userName) where T : Event
         {
             // 对事件模型序列化
             var serializedData = Newtonsoft.Json.JsonConvert.SerializeObject(theEvent);
-
-            
-            var storedEvent = new StoredEventModel(
-                theEvent,
-                serializedData,
-                theEvent.MessageType);
             Factory.GetDbContext((db) =>
             {
                 db.Insertable<Infrastructure.Entitys.StoredEvent>(new 
                 {
-                    Data= storedEvent.Data,
-                    AggregateId=storedEvent.AggregateId.ToString(),
-                    EventId=storedEvent.Id.ToString(),
-                    MessageType=storedEvent.MessageType,
+                    Data= serializedData,
+                    AggregateId= theEvent.AggregateId.ToString(),
+                    EventId= Guid.NewGuid().ToString(),
+                    MessageType= theEvent.MessageType,
                     CreateTime=DateTime.Now,
-                    CreateName=storedEvent.User
+                    CreateName= userName
                 })
                 .IgnoreColumns(ignoreNullColumn: true).ExecuteCommand();
             });
