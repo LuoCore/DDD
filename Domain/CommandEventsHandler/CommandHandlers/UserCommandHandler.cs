@@ -1,17 +1,11 @@
 ﻿using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
-using Domain.Models.Entitys;
-using Domain.Models.User.CommandModels;
-using Domain.Models.User.EventModels;
 using Domain.Notifications;
-using Infrastructure.Entitys;
 using MediatR;
-using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Domain.Models.CommandModels.User;
 using Infrastructure.Common;
 
 namespace Domain.CommandEventsHandler.CommandHandlers
@@ -23,9 +17,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 说明：
     /// </summary>
     public class UserCommandHandler : CommandHandler,
-        IRequestHandler<UserCreateCommandModel, bool>,
-        IRequestHandler<PermissionCreateCommandModel, bool>,
-        IRequestHandler<PermissionDeleteCommandModel, bool>
+        IRequestHandler<CreateUserCommandModel, bool>
     {
         // 注入仓储接口
         private readonly IUsersRepository _userRepository;
@@ -53,10 +45,10 @@ namespace Domain.CommandEventsHandler.CommandHandlers
         /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<bool> Handle(UserCreateCommandModel request, CancellationToken cancellationToken)
+        public Task<bool> Handle(CreateUserCommandModel request, CancellationToken cancellationToken)
         {
             // 命令验证
-            if (!request.IsValid())
+            if (!request.VerifyData())
             {
                 // 错误信息收集
                 NotifyValidationErrors(request);
@@ -64,97 +56,40 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 return Task.FromResult(false);
             }
 
-            var dmData = new Models.Entitys.UserEntity(Guid.NewGuid(),
-                request.User.UserName,
-                request.User.Password, 
-                request.User.Email, 
-                request.User.Phone, 
-                request.User.CreateName);
+            
+            Infrastructure.Entitys.User entity = new Infrastructure.Entitys.User() 
+            {
+                UserId=request.UserId.ToString(),
+                UserName=request.UserName,
+                Email=request.Email,
+                Phone=request.Phone,
+                Password=request.Password,
+                CreateTime=DateTime.Now,
+                CreateName=request.CreateName
+            };
+           
             // 判断邮箱是否存在
             // 这些业务逻辑，当然要在领域层中（领域命令处理程序中）进行处理
-            var existingUSER = _userRepository.ReadUserName(dmData.ENTITY_USER.UserName);
+            var existingUSER = _userRepository.ReadUserName(entity.UserName);
             if (existingUSER != null)
             {
-                if (existingUSER.Equals(dmData))
-                {
-                    Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));
-                    return Task.FromResult(false);
-                }
+                Bus.RaiseEvent(new DomainNotification("User", "该用户已存在！"));
+                return Task.FromResult(false);
             }
-
-
-
             //提交
-            if (_userRepository.CreateUser(dmData))
+            if (_userRepository.CreateUser(entity))
             {
                 // 提交成功后，这里需要发布领域事件
                 // 比如欢迎用户注册邮件呀，短信呀等
-                var ddd = Bus.RaiseEvent(new UserCreateEventModel(dmData));
+                Bus.RaiseEvent(new Domain.Models.EventModels.User.UserCreateEventModel(entity.UserId.StringToGuid(),entity.UserName,entity.Password,entity.Email,entity.Phone,entity.CreateName,entity.CreateTime));
 
             }
 
             return Task.FromResult(true);
         }
 
-        public Task<bool> Handle(PermissionCreateCommandModel request, CancellationToken cancellationToken)
-        {
-            // 命令验证
-            if (!request.IsValid())
-            {
-                // 错误信息收集
-                NotifyValidationErrors(request);
-                // 返回，结束当前线程
-                return Task.FromResult(false);
-            }
+       
 
-            var dmData = new Models.Entitys.PermissionEntity(
-                Guid.NewGuid(),
-                request.PERMISSION.PermissionName,
-                request.PERMISSION.PermissionType.IntToEnum<PermissionEntity.PermissionTypeEnum>(),
-                request.PERMISSION.PermissionAction,
-                request.PERMISSION.PermissionParentId,
-                request.PERMISSION.IsValid);
-
-            var existingPermission = _userRepository.ReadPermissionNameType(request.PERMISSION.PermissionName, dmData.ENTITY_PERMISSION.PermissionType, dmData.ENTITY_PERMISSION.PermissionParentId);
-            if (existingPermission != null&& !string.IsNullOrWhiteSpace(existingPermission.PermissionId))
-            {
-                Bus.RaiseEvent(new DomainNotification("Permission", "权限名称重复！"));
-                return Task.FromResult(false);
-            }
-           
-
-
-            //提交
-            if (_userRepository.CreatePermission(dmData))
-            {
-                // 提交成功后，这里需要发布领域事件
-                // 比如欢迎用户注册邮件呀，短信呀等
-                Bus.RaiseEvent(new PermissionCreateEventModel(dmData));
-            }
-
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> Handle(PermissionDeleteCommandModel request, CancellationToken cancellationToken)
-        {
-            if (!request.IsValid())
-            {
-                NotifyValidationErrors(request);
-                return Task.FromResult(false);
-
-            }
-
-            if (_userRepository.DeletePermission(request.PERMISSION_ID.ToString()))
-            {
-                Bus.RaiseEvent(new PermissionDeleteEventModel(request.PERMISSION_ID));
-            }
-            else 
-            {
-                Bus.RaiseEvent(new DomainNotification("Permission", "删除失败！"));
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(true);
-        }
+      
     }
 }

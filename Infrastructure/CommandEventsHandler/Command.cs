@@ -22,6 +22,6 @@ namespace Infrastructure.CommandEventsHandler
         }
 
         //定义抽象方法，是否有效
-        public abstract bool IsValid();
+        public abstract bool VerifyData();
     }
 }

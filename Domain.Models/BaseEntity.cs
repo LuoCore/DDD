@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Domain.Models
 {
+ 
     /// <summary>
     /// 定义领域实体基类
     /// </summary>
@@ -13,6 +14,8 @@ namespace Domain.Models
         /// 唯一标识
         /// </summary>
         public Guid Id { get; protected set; }
+
+       
 
         /// <summary>
         /// 重写方法 相等运算

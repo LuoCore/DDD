@@ -234,7 +234,7 @@ namespace Web.Layui.Areas.Admin.Controllers
 
         }
 
-
+        [HttpDelete]
         public async Task<IActionResult> DeletePermissionArray(List<string> permissionIdArray) 
         {
            
@@ -267,6 +267,11 @@ namespace Web.Layui.Areas.Admin.Controllers
             }
             return Json(new { status = true, msg = resMsg.ToString() });
 
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdatePermission() 
+        {
+            return Json(new { });
         }
 
     }

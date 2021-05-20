@@ -190,7 +190,7 @@
                 layer.confirm('确定删除吗？', function (index) {
 
                     $.ajax({
-                        type: 'Post',
+                        type: 'Delete',
                         url: '/Admin/User/DeletePermissionArray',
                         /* contentType: 'application/json',*/
                         data: { permissionIdArray: permissionIds },
@@ -220,7 +220,7 @@
                     content: '/Admin/User/PermissionForm',
                     btn: ['确定', '取消'],
                     success: (layero, index)=> {
-                        debugger;
+
                         var iframe = window['layui-layer-iframe' + index];
                         iframe.FormShow_Load(formObj);
                     },
