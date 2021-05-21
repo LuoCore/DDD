@@ -10,7 +10,7 @@ namespace Application.Models.ViewModels
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public abstract class RoleViewModel
+    public  class RoleViewModel
     {
         public string RoleId { get; set; }
         public string RoleName { get; set; }

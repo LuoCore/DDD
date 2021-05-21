@@ -120,7 +120,7 @@
                             dataType: "json",
                             success: function (result) {
                                 if (result.status) {
-                                    treeTable.reload('table-role');
+                                    table.reload('table-role');
                                     layer.close(index); //关闭弹层
                                 }
                                 else {
@@ -161,7 +161,7 @@
         //事件
         let active = {
             query: () => {
-                treeTable.reload('table-role', {
+                table.reload('table-role', {
                     method: 'post',
                     url: TableURL,
                     where: {}

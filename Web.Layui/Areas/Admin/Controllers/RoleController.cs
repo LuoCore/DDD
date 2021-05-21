@@ -27,6 +27,13 @@ namespace Web.Layui.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> Table()
+        {
+            var res = await _SERVICE.GetAll();
+            return Json(res);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Create(Application.Models.ViewModels.Role.CreateViewModel vm)
         {
             bool commandBool = await _SERVICE.Create(vm);
