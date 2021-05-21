@@ -14,6 +14,7 @@ namespace Infrastructure.Entitys
     {
         public int ID { get; set; }
         public string EventId { get; set; }
+        public string EventName { get; set; }
         public string AggregateId { get; set; }
         public string MessageType { get; set; }
         public string Data { get; set; }

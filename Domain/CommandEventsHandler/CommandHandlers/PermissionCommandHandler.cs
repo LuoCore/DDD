@@ -15,20 +15,16 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class PermissionCommandHandler : CommandHandler,
-                                            IRequestHandler<CreatePermissionCommandModel, bool>,
-        IRequestHandler<UpdatePermissionCommandModel, bool>,
-        IRequestHandler<DeletePermissionCommandModel, bool>
+    public class PermissionCommandHandler : CommandHandler<IPermissionRepository>,
+                                            IRequestHandler<CreateCommandModel, bool>,
+        IRequestHandler<UpdateCommandModel, bool>,
+        IRequestHandler<DeleteCommandModel, bool>
     {
-        private readonly IPermissionRepository _Repository;
-        private readonly IMediatorHandler Bus;
-        public PermissionCommandHandler(IPermissionRepository permissionRepository, IMediatorHandler bus) : base(bus)
+        public PermissionCommandHandler(IMediatorHandler bus, IPermissionRepository repository) : base(bus, repository)
         {
-            _Repository = permissionRepository;
-            Bus = bus;
         }
 
-        public Task<bool> Handle(CreatePermissionCommandModel request, CancellationToken cancellationToken)
+        public Task<bool> Handle(CreateCommandModel request, CancellationToken cancellationToken)
         {
             // 命令验证
             if (!request.VerifyData())
@@ -49,29 +45,34 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 IsValid=request.IsValid
             };
 
-            var existingEntity = _Repository.QueryByNameTypeParentId(entity.PermissionName, entity.PermissionType, entity.PermissionParentId);
+            var existingEntity = _REPOSITORY.QueryByNameTypeParentId(entity.PermissionName, entity.PermissionType, entity.PermissionParentId);
             if (existingEntity != null && !string.IsNullOrWhiteSpace(existingEntity.PermissionId))
             {
-                Bus.RaiseEvent(new DomainNotification("Permission", "权限名称重复！"));
+                _Bus.RaiseEvent(new DomainNotification("Permission", "权限名称重复！"), "Permission");
                 return Task.FromResult(false);
             }
             //提交
-            if (_Repository.CreatePermission(entity))
+            if (_REPOSITORY.CreatePermission(entity))
             {
                 // 提交成功后，这里需要发布领域事件
                 // 比如欢迎用户注册邮件呀，短信呀等
-                Bus.RaiseEvent(new Domain.Models.EventModels.Permission.PermissionCreateEventModel(entity.PermissionId.StringToGuid(),
+                _Bus.RaiseEvent(new Domain.Models.EventModels.Permission.CreatePermissionEventModel(entity.PermissionId.StringToGuid(),
                     entity.PermissionName,
                     entity.PermissionType.IntToEnum<Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(),
                     entity.PermissionAction,
                     entity.PermissionParentId,
-                    entity.IsValid));
+                    entity.IsValid), "Permission");
+                return Task.FromResult(true);
+            }
+            else
+            {
+                _Bus.RaiseEvent(new Notifications.DomainNotification("Permission", "数据写入失败！"), "Permission");
+                return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
         }
 
-        public Task<bool> Handle(UpdatePermissionCommandModel request, CancellationToken cancellationToken)
+        public Task<bool> Handle(UpdateCommandModel request, CancellationToken cancellationToken)
         {
             if (!request.VerifyData())
             {
@@ -90,38 +91,39 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 IsValid = request.IsValid
             };
 
-            var existingEntity = _Repository.QueryByNameTypeParentId(entity.PermissionName, entity.PermissionType, entity.PermissionParentId);
+            var existingEntity = _REPOSITORY.QueryByNameTypeParentId(entity.PermissionName, entity.PermissionType, entity.PermissionParentId);
 
-            if (existingEntity != null && existingEntity.PermissionId == entity.PermissionId)
+            if (existingEntity != null && existingEntity.PermissionId != entity.PermissionId)
             {
                 if (!existingEntity.Equals(entity))
                 {
 
-                    Bus.RaiseEvent(new DomainNotification("Permission", "权限的名称重复！"));
+                    _Bus.RaiseEvent(new DomainNotification("Permission", "不存在该权限的信息！"), "Permission");
                     return Task.FromResult(false);
 
                 }
             }
 
-            if (_Repository.UpdatePermission(entity))
+            if (_REPOSITORY.UpdatePermission(entity))
             {
-                Bus.RaiseEvent(new Domain.Models.EventModels.Permission.PermissionUpdateEventModel(entity.PermissionId.StringToGuid(),
+                _Bus.RaiseEvent(new Domain.Models.EventModels.Permission.UpdatePermissionEventModel(entity.PermissionId.StringToGuid(),
                    entity.PermissionName,
                    entity.PermissionType.IntToEnum<Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(),
                    entity.PermissionAction,
                    entity.PermissionParentId,
-                   entity.IsValid));
+                   entity.IsValid), "Permission");
+                return Task.FromResult(true);
             }
             else
             {
-                Bus.RaiseEvent(new DomainNotification("Permission", "修改权限失败！"));
+                _Bus.RaiseEvent(new DomainNotification("Permission", "修改权限失败！"), "Permission");
                 return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+           
         }
 
-        public Task<bool> Handle(DeletePermissionCommandModel request, CancellationToken cancellationToken)
+        public Task<bool> Handle(DeleteCommandModel request, CancellationToken cancellationToken)
         {
             if (!request.VerifyData())
             {
@@ -129,17 +131,18 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 return Task.FromResult(false);
             }
 
-            if (_Repository.DeletePermission(request.PermissionId.ToString()))
+            if (_REPOSITORY.DeletePermission(request.PermissionId.ToString()))
             {
-                Bus.RaiseEvent(new Domain.Models.EventModels.Permission.PermissionDeleteEventModel(request.PermissionId));
+                _Bus.RaiseEvent(new Domain.Models.EventModels.Permission.DeletePermissionEventModel(request.PermissionId), "Permission");
+                return Task.FromResult(true);
             }
             else
             {
-                Bus.RaiseEvent(new DomainNotification("Permission", "删除失败！"));
+                _Bus.RaiseEvent(new DomainNotification("Permission", "删除失败！"), "Permission");
                 return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            
         }
 
        

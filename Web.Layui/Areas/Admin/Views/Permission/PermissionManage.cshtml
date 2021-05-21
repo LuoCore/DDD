@@ -202,7 +202,7 @@
                         type: 'Delete',
                         url: DeleteURL,
                         /* contentType: 'application/json',*/
-                        data: { permissionIdArray: permissionIds },
+                        data: { Ids: permissionIds },
                         dataType: 'json',
                         headers: {},
                         success: function (result) {
@@ -223,14 +223,20 @@
 
             const permissionFormShow = (formObj) => {
 
-                let postUrl = CreateURL;
+                let ActionUrl = CreateURL;
+                let formTitle = "添加权限";
+                let actionType = "POST"
+                let identification = "";
                 if (formObj != null && formObj != undefined)
                 {
-                    postUrl = UpdateURL;
+                    ActionUrl = UpdateURL;
+                    formTitle = "编辑权限"
+                    actionType = "Put"
+                    identification = formObj.permissionId;
                 }
                 let index = layer.open({
                     type: 2,
-                    title: '添加权限',
+                    title: formTitle,
                     area: ['auto', '80%'],
                     content: ShowFormURL,
                     btn: ['确定', '取消'],
@@ -249,9 +255,10 @@
                             let field = data.field; //获取提交的字段
                             //提交 Ajax 成功后，静态更新表格中的数据
                             $.ajax({
-                                type: "Post",
-                                url: postUrl,
+                                type: actionType,
+                                url: ActionUrl,
                                 data: {
+                                    PermissionId: identification,
                                     PermissionName: field.PermissionName,
                                     PermissionType: field.PermissionType,
                                     PermissionAction: field.PermissionAction,

@@ -29,6 +29,6 @@ namespace Domain.Interface.ICommandEventsHandler
         /// <param name="event"> 事件模型，比如StudentRegisteredEvent，</param>
         /// 请注意一个细节：这个命名方法和Command不一样，一个是RegisterStudentCommand注册学生命令之前,一个是StudentRegisteredEvent学生被注册事件之后
         /// <returns></returns>
-        Task RaiseEvent<T>(T @event) where T : Event;
+        public Task RaiseEvent<T>(T @event, string eventName) where T : Event;
     }
 }

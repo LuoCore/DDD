@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Models.ViewModels
+namespace Application.Models.ViewModels.Layui
 {
-    public class LayuiSelectViewModel
+    public class SelectViewModel
     {
         public string value { get; set; }
         public string Name { get; set; }
         public bool disabled { get; set; }
-        public List<LayuiSelectViewModel> children { get; set; }
+        public List<SelectViewModel> children { get; set; }
     }
 }

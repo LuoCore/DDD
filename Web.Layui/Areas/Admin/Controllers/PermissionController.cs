@@ -1,5 +1,7 @@
-﻿using Application.Models.ViewModels;
-using Application.Models.ViewModels.User;
+﻿using Application.Interface.IServices;
+using Application.Models.ViewModels;
+using Domain.Notifications;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,19 +12,13 @@ using System.Threading.Tasks;
 namespace Web.Layui.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class PermissionController : Controller
+    public class PermissionController : BaseController<IPermissionService>
     {
-       
-        private readonly Application.Interface.IServices.IPermissionService _Service;
-        // 将领域通知处理程序注入Controller
-        private readonly Domain.Notifications.DomainNotificationHandler _notifications;
-        public PermissionController(Application.Interface.IServices.IPermissionService userService, MediatR.INotificationHandler<Domain.Notifications.DomainNotification> notifications)
+        public PermissionController(IPermissionService service, INotificationHandler<DomainNotification> notifications) : base(service, notifications)
         {
-            _Service = userService;
-            // 强类型转换
-            _notifications = (Domain.Notifications.DomainNotificationHandler)notifications;
         }
-        public IActionResult Manage()
+
+        public IActionResult PermissionManage()
         {
             return View();
         }
@@ -34,7 +30,7 @@ namespace Web.Layui.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Table(string parentId)
         {
-            var res = await _Service.GetByPerentId(parentId);
+            var res = await _SERVICE.GetByPerentId(parentId);
             return Json(res);
 
         }
@@ -57,9 +53,9 @@ namespace Web.Layui.Areas.Admin.Controllers
         /// <param name="vm"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(PermissionCreateViewModel vm)
+        public async Task<IActionResult> Create(Application.Models.ViewModels.Permission.PermissionCreateViewModel vm)
         {
-            bool commandBool = await _Service.Create(vm);
+            bool commandBool = await _SERVICE.Create(vm);
             // 是否存在消息通知
             if (commandBool)
             {
@@ -67,7 +63,7 @@ namespace Web.Layui.Areas.Admin.Controllers
             }
             else
             {
-                var notificationDatas = _notifications.GetNotifications();
+                var notificationDatas = _NOTIFICATIONS.GetNotifications();
                 StringBuilder strMsg = new StringBuilder();
                 foreach (var item in notificationDatas.Where(x => x.Key == "Permission").ToList())
                 {
@@ -88,13 +84,13 @@ namespace Web.Layui.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Select()
         {
-            List<LayuiSelectViewModel> listSelect = new List<LayuiSelectViewModel>();
-            var resSelect = new LayuiSelectViewModel()
+            List<Application.Models.ViewModels.Layui.SelectViewModel> listSelect = new List<Application.Models.ViewModels.Layui.SelectViewModel>();
+            var resSelect = new Application.Models.ViewModels.Layui.SelectViewModel()
             {
                 Name = "顶级",
                 value = "0"
             };
-            var resData = await _Service.SelectByParentId(resSelect.value);
+            var resData = await _SERVICE.SelectByParentId(resSelect.value);
             if (resData != null && resData.Count > 0)
             {
                 resSelect.children = resData;
@@ -115,14 +111,14 @@ namespace Web.Layui.Areas.Admin.Controllers
             StringBuilder resMsg = new StringBuilder();
             foreach (var itemid in Ids)
             {
-                bool commandBool = await _Service.DeleteById(itemid);
+                bool commandBool = await _SERVICE.DeleteById(itemid);
                 if (commandBool)
                 {
                     resMsg.Append(itemid + "，删除成功！" + Environment.NewLine);
                 }
                 else
                 {
-                    var notificationDatas = _notifications.GetNotifications();
+                    var notificationDatas = _NOTIFICATIONS.GetNotifications();
                     StringBuilder strMsg = new StringBuilder();
                     foreach (var item in notificationDatas.Where(x => x.Key == "Permission").ToList())
                     {
@@ -139,9 +135,29 @@ namespace Web.Layui.Areas.Admin.Controllers
 
         }
         [HttpPut]
-        public async Task<IActionResult> Update()
+        public async Task<IActionResult> Update(Application.Models.ViewModels.Permission.PermissionUpdateViewModel vm)
         {
-            return Json(new { });
+            bool commandBool = await _SERVICE.Update(vm);
+            // 是否存在消息通知
+            if (commandBool)
+            {
+                return Json(new { status = true, msg = "成功！" });
+            }
+            else
+            {
+                var notificationDatas = _NOTIFICATIONS.GetNotifications();
+                StringBuilder strMsg = new StringBuilder();
+                foreach (var item in notificationDatas.Where(x => x.Key == "Permission").ToList())
+                {
+                    strMsg.Append(item.Value);
+                }
+                if (strMsg.Length < 1)
+                {
+                    strMsg.Append("发生异常！");
+                }
+                return Json(new { status = false, msg = strMsg.ToString() });
+            }
+            
         }
     }
 }

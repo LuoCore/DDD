@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Models.EventModels.Permission
+namespace Domain.Models.EventModels.Role
 {
     /// <summary>
     /// 作者：(YJY)
@@ -11,14 +11,13 @@ namespace Domain.Models.EventModels.Permission
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class PermissionDeleteEventModel : Event
+    public class DeleteEventModel : RoleEventModel
     {
-        public PermissionDeleteEventModel(Guid gid)
+        public DeleteEventModel(Guid gid)
         {
             this.AggregateId = gid;
-            PermissionId = gid;
+            this.RoleId = gid;
         }
 
-        public Guid PermissionId { get; set; }
     }
 }

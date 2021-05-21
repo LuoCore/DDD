@@ -1,0 +1,192 @@
+﻿@{
+    ViewData["Title"] = "角色管理";
+    Layout = "~/Areas/Admin/Views/Shared/_LayuiLayout.cshtml";
+}
+
+
+<div class="layui-fluid">
+    <div class="layui-card">
+
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色名称</label>
+                <div class="layui-input-inline">
+                    <div id="RoleName"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-event" data-type="query">查询</button>
+                <button class="layui-btn layuiadmin-btn-event layui-btn-danger" data-type="delete">删除</button>
+                <button class="layui-btn layuiadmin-btn-event" data-type="add">添加</button>
+            </div>
+
+            <table id="table-role" lay-filter="table-role"></table>
+
+            <script type="text/html" id="table-action">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+            </script>
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+<script>
+    layui.use(['jquery','table'], () => {
+        let $ = layui.jquery,
+            table = layui.table;
+
+        const [TableURL, DeleteURL, CreateURL, UpdateURL, ShowFormURL] = [
+            '/Admin/Role/Table',
+            '/Admin/Role/DeleteByIds',
+            "/Admin/Role/Create",
+            "/Admin/Role/Update",
+            '/Admin/Role/FormDialog'
+        ];
+
+        const DeleteAction = (Ids) => {
+
+            if (Ids.length === 0) {
+                return layer.msg('请选择数据');
+            }
+            layer.confirm('确定删除吗？', function (index) {
+
+                $.ajax({
+                    type: 'Delete',
+                    url: DeleteURL,
+                    data: { Ids: Ids },
+                    dataType: 'json',
+                    headers: {},
+                    success: function (result) {
+                        if (result.status) {
+                            treeTable.reload('table-permission');
+                            layer.alert(result.msg);
+                        }
+                        else {
+                            layer.msg(result.msg);
+                        }
+                    },
+                    error: function (e, msg) {
+                        alert('数据接口请求异常：' + msg);
+                    }
+                });
+            });
+        }
+
+        const FormDialogShow = (formObj) => {
+
+            let ActionUrl = CreateURL;
+            let formTitle = "添加";
+            let actionType = "POST"
+            let identification = "";
+            if (formObj != null && formObj != undefined) {
+                ActionUrl = UpdateURL;
+                formTitle = "编辑"
+                actionType = "Put"
+                identification = formObj.RoleId;
+            }
+            let index = layer.open({
+                type: 2,
+                title: formTitle,
+                area: ['auto'],
+                content: ShowFormURL,
+                btn: ['确定', '取消'],
+                success: (layero, index) => {
+                    layer.iframeAuto(index);
+                    var iframe = window['layui-layer-iframe' + index];
+                    iframe.FormDialog_Load(formObj);
+                },
+                yes: function (index, layero) {
+                    let iframeWindow = window['layui-layer-iframe' + index]
+                        , submit = layero.find('iframe').contents().find("#luo-submit");
+
+                    debugger;
+                    iframeWindow.layui.form.on('submit(luo-submit)', function (data) {
+                        let field = data.field;
+
+                        $.ajax({
+                            type: actionType,
+                            url: ActionUrl,
+                            data: {
+                                RoleId: identification,
+                                RoleName: field.RoleName,
+                                RoleDescription: field.RoleDescription,
+                                IsValid: field.IsValid,
+                            },
+                            dataType: "json",
+                            success: function (result) {
+                                if (result.status) {
+                                    treeTable.reload('table-role');
+                                    layer.close(index); //关闭弹层
+                                }
+                                else {
+                                    layer.alert(result.msg);
+                                }
+                            },
+                            error: function (jqXHR) {
+                                alert("发生错误：" + jqXHR.status);
+                            }
+                        });
+                    });
+                    submit.trigger('click');
+                }
+            });
+            layer.iframeAuto(index);
+        }
+
+
+        // 字段配置
+        const tableCols = [[
+            { type: 'checkbox', fixed: 'left' },
+            { field: 'roleId', title: '角色编号' },
+            { field: 'roleName', title: '角色名称' },
+            { field: 'roleDescription', title: '角色描述' },
+            { field: 'isValid', title: '是否有效' },
+            { title: '操作', width: 150, align: 'center', fixed: 'right', toolbar: '#table-action' }
+        ]];
+
+        table.render({
+            elem: '#table-role',
+            height: 'full-20',
+            loading: false,
+            page:true,
+            cols: tableCols
+        });
+
+
+        //事件
+        let active = {
+            query: () => {
+                treeTable.reload('table-role', {
+                    method: 'post',
+                    url: TableURL,
+                    where: {}
+                });
+            },
+            delete: () => {
+                let checkData = permissionTable.checkStatus(false);
+                let permissionIds = new Array()
+                for (var i = 0; i < checkData.length; i++) {
+                    permissionIds.push(checkData[i].permissionId);
+                }
+                DeleteAction(permissionIds);
+            },
+            add: () => FormDialogShow()
+        }
+        $('.layui-btn.layuiadmin-btn-event').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+
+
+      
+
+    });
+</script>
+    
+}

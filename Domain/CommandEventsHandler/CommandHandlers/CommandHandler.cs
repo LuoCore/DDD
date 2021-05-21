@@ -12,19 +12,20 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 领域命令处理程序
     /// 用来作为全部处理程序的基类，提供公共方法和接口数据
     /// </summary>
-    public class CommandHandler
+    public class CommandHandler<T>
     {
         // 注入中介处理接口（目前用不到，在领域事件中用来发布事件）
-        private readonly IMediatorHandler _bus;
-
+        protected readonly IMediatorHandler _Bus;
+        protected readonly T _REPOSITORY;
 
         /// <summary>
         /// 构造函数注入
         /// </summary>
         /// <param name="bus"></param>
-        public CommandHandler(IMediatorHandler bus)
+        public CommandHandler(IMediatorHandler bus,T repository)
         {
-            _bus = bus;
+            _Bus = bus;
+            _REPOSITORY = repository;
         }
 
 
@@ -35,7 +36,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             foreach (var error in message.ValidationResult.Errors)
             {
                 //将错误信息提交到事件总线，派发出去
-                _bus.RaiseEvent(new DomainNotification("", error.ErrorMessage));
+                _Bus.RaiseEvent(new DomainNotification("", error.ErrorMessage),"");
             }
         }
 

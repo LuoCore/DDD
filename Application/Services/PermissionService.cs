@@ -1,14 +1,10 @@
 ﻿using Application.Interface.IServices;
-using Application.Models.ViewModels;
-using Application.Models.ViewModels.User;
 using Domain.Interface.ICommandEventsHandler;
 using Domain.Interface.IRepository;
 using Infrastructure.Common;
 using Infrastructure.Interface.IFactory;
-using Infrastructure.Repository;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Services
@@ -19,39 +15,33 @@ namespace Application.Services
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class PermissionService : SqlSugarRepository<ISqlSugarFactory, IPermissionRepository>, IPermissionService
+    public class PermissionService : BaseService<IPermissionRepository>, IPermissionService
     {
-        private readonly IMediatorHandler Bus;
-        // 事件源仓储
-        private readonly IEventStoreRepository _eventStoreRepository;
-
-        public PermissionService(ISqlSugarFactory factory, IPermissionRepository repository,
-            IMediatorHandler bus,
-            IEventStoreRepository eventStoreRepository
-            ) : base(factory, repository)
+        public PermissionService(ISqlSugarFactory factory, IPermissionRepository repository, IMediatorHandler bus, IEventStoreRepository eventStoreRepository) : base(factory, repository, bus, eventStoreRepository)
         {
-            Bus = bus;
-            _eventStoreRepository = eventStoreRepository;
         }
 
-      
-
-        public async Task<Boolean> Create(PermissionCreateViewModel vm)
+        public async Task<Boolean> Create(Application.Models.ViewModels.Permission.PermissionCreateViewModel vm)
         {
-            var CreateCommand = new Domain.Models.CommandModels.Permission.CreatePermissionCommandModel(Guid.NewGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
+            var CreateCommand = new Domain.Models.CommandModels.Permission.CreateCommandModel(Guid.NewGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
             return await Bus.SendCommand(CreateCommand);
         }
 
-   
-
-
-        private List<PermissionViewModel> RecursiveByParentId(string pid)
+        public async Task<Boolean> Update(Application.Models.ViewModels.Permission.PermissionUpdateViewModel vm)
         {
-            List<PermissionViewModel> res = new List<PermissionViewModel>();
+            var CommandData = new Domain.Models.CommandModels.Permission.UpdateCommandModel(vm.PermissionId.StringToGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
+            return await Bus.SendCommand(CommandData);
+        }
+
+
+        private List<Application.Models.ViewModels.PermissionViewModel> RecursiveByParentId(string pid)
+        {
+            List<Application.Models.ViewModels.PermissionViewModel> res = new List<Application.Models.ViewModels.PermissionViewModel>();
             var resData = DbRepository.QueryByParentId(pid);
             resData.ForEach(x =>
             {
-                PermissionViewModel model = new PermissionViewModel()
+               
+                Application.Models.ViewModels.PermissionViewModel model = new Application.Models.ViewModels.PermissionViewModel()
                 {
                     PermissionId = x.PermissionId,
                     PermissionName = x.PermissionName,
@@ -68,15 +58,15 @@ namespace Application.Services
         }
 
 
-        public async Task<LayuiTableViewModel<PermissionViewModel>> GetByPerentId(string pid)
+        public async Task<Models.ViewModels.Layui.TableViewModel<Application.Models.ViewModels.PermissionViewModel>> GetByPerentId(string pid)
         {
 
             return await Task.Run(() =>
             {
-                LayuiTableViewModel<PermissionViewModel> res = new LayuiTableViewModel<PermissionViewModel>();
+                Models.ViewModels.Layui.TableViewModel<Application.Models.ViewModels.PermissionViewModel> res = new Models.ViewModels.Layui.TableViewModel<Application.Models.ViewModels.PermissionViewModel>();
                 try
                 {
-                    res.data = new List<PermissionViewModel>();
+                    res.data = new List<Application.Models.ViewModels.PermissionViewModel>();
                     res.data = RecursiveByParentId(pid);
                     res.code = 0;
                     res.count = res.data.Count;
@@ -100,19 +90,19 @@ namespace Application.Services
 
 
       
-        public async Task<List<LayuiSelectViewModel>> SelectByParentId(string permissionParentId)
+        public async Task<List<Models.ViewModels.Layui.SelectViewModel>> SelectByParentId(string permissionParentId)
         {
 
             return await Task.Run(() =>
             {
-                List<LayuiSelectViewModel> res = new List<LayuiSelectViewModel>();
+                List<Models.ViewModels.Layui.SelectViewModel> res = new List<Models.ViewModels.Layui.SelectViewModel>();
 
                 try
                 {
                     var resData = DbRepository.QueryByParentId(permissionParentId);
                     resData.ForEach(x =>
                     {
-                        var selectModel = new LayuiSelectViewModel()
+                        var selectModel = new Models.ViewModels.Layui.SelectViewModel()
                         {
                             Name = x.PermissionName,
                             value = x.PermissionId
@@ -121,7 +111,7 @@ namespace Application.Services
                         var sm = SelectByParentId(selectModel.value);
                         if (sm.Result != null && sm.Result.Count > 0)
                         {
-                            selectModel.children = new List<LayuiSelectViewModel>();
+                            selectModel.children = new List<Models.ViewModels.Layui.SelectViewModel>();
                             selectModel.children = sm.Result;
                         }
                         res.Add(selectModel);
@@ -142,7 +132,7 @@ namespace Application.Services
         /// <returns></returns>
         public async Task<bool> DeleteById(string permissionId)
         {
-            var CommandEvent = new Domain.Models.CommandModels.Permission.DeletePermissionCommandModel(permissionId.StringToGuid());
+            var CommandEvent = new Domain.Models.CommandModels.Permission.DeleteCommandModel(permissionId.StringToGuid());
             return await Bus.SendCommand(CommandEvent);
         }
     }

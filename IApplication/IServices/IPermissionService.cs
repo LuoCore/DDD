@@ -1,17 +1,15 @@
-﻿using Application.Models.ViewModels;
-using Application.Models.ViewModels.User;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Interface.IServices
 {
     public interface IPermissionService
     {
-        public  Task<LayuiTableViewModel<PermissionViewModel>> GetByPerentId(string pid);
+        public  Task<Models.ViewModels.Layui.TableViewModel<Application.Models.ViewModels.PermissionViewModel>> GetByPerentId(string pid);
         public  Task<bool> DeleteById(string permissionId);
-        public  Task<List<LayuiSelectViewModel>> SelectByParentId(string permissionParentId);
-        public  Task<Boolean> Create(PermissionCreateViewModel vm);
+        public  Task<List<Models.ViewModels.Layui.SelectViewModel>> SelectByParentId(string permissionParentId);
+        public  Task<Boolean> Create(Application.Models.ViewModels.Permission.PermissionCreateViewModel vm);
+        public Task<Boolean> Update(Application.Models.ViewModels.Permission.PermissionUpdateViewModel vm);
     }
 }

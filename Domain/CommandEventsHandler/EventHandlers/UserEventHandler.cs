@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 namespace Domain.CommandEventsHandler.EventHandlers
 {
     public class UserEventHandler :
-        INotificationHandler<Domain.Models.EventModels.User.UserCreateEventModel>
+        INotificationHandler<Domain.Models.EventModels.User.CreateUserEventModel>
     {
         // 学习被注册成功后的事件处理方法
-        public Task Handle(Domain.Models.EventModels.User.UserCreateEventModel req, CancellationToken cancellationToken)
+        public Task Handle(Domain.Models.EventModels.User.CreateUserEventModel req, CancellationToken cancellationToken)
         {
 
-            req.MessageType = "恭喜您，注册成功，欢迎加入我们。";
+           
             return Task.FromResult(req);
         }
     }

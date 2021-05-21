@@ -1,9 +1,5 @@
-﻿using Domain.CommandEventsHandler;
-using Domain.Interface.ICommandEventsHandler;
-using Infrastructure.CommandEventsHandler;
+﻿using Infrastructure.CommandEventsHandler;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Domain.Notifications
 {

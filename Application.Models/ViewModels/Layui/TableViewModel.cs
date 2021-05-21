@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Models.ViewModels
+namespace Application.Models.ViewModels.Layui
 {
-    public class LayuiTableViewModel<T>
+    public class TableViewModel<T>
     {
         /// <summary>
         /// 接口状态

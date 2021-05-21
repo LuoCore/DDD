@@ -6,26 +6,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Infrastructure.Common;
-using Application.Models.ViewModels.User;
-using Application.Models.ViewModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+using Application.Interface.IServices;
+using MediatR;
+using Domain.Notifications;
 
 namespace Web.Layui.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class UserController : Controller
+    public class UserController : BaseController<IUsersService>
     {
-        private readonly Application.Interface.IServices.IUsersService _userService;
-        // 将领域通知处理程序注入Controller
-        private readonly Domain.Notifications.DomainNotificationHandler _notifications;
-        public UserController(Application.Interface.IServices.IUsersService userService, MediatR.INotificationHandler<Domain.Notifications.DomainNotification> notifications)
+        public UserController(IUsersService service, INotificationHandler<DomainNotification> notifications) : base(service, notifications)
         {
-            _userService = userService;
-            // 强类型转换
-            _notifications = (Domain.Notifications.DomainNotificationHandler)notifications;
         }
+
         /// <summary>
         /// 用户登录界面
         /// </summary>
@@ -48,7 +43,7 @@ namespace Web.Layui.Areas.Admin.Controllers
             {
                 return Json(new { status = false, msg = "验证码错误！" });
             }
-            var user = await _userService.UserLogin(vm);
+            var user = await _SERVICE.UserLogin(vm);
             if (user == null || string.IsNullOrWhiteSpace(user.UserName))
             {
                 return Json(new { status = false, msg = "用户名或密码错误！" });
@@ -111,7 +106,7 @@ namespace Web.Layui.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(Application.Models.ViewModels.User.UserCreateViewModel vm)
         {
-            bool regBool = await _userService.UserRegister(new Application.Models.ViewModels.User.UserCreateViewModel()
+            bool regBool = await _SERVICE.UserRegister(new Application.Models.ViewModels.User.UserCreateViewModel()
             {
                 UserName = vm.UserName.ToLower(),
                 Password = vm.Password,
@@ -125,7 +120,7 @@ namespace Web.Layui.Areas.Admin.Controllers
             }
             else
             {
-                var notificationDatas = _notifications.GetNotifications();
+                var notificationDatas = _NOTIFICATIONS.GetNotifications();
                 StringBuilder strMsg = new StringBuilder();
                 foreach (var item in notificationDatas.Where(x => x.Key == "User").ToList())
                 {

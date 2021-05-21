@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Models.CommandModels.Permission
+namespace Domain.Models.CommandModels.Role
 {
     /// <summary>
     /// 作者：(YJY)
@@ -10,11 +10,11 @@ namespace Domain.Models.CommandModels.Permission
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-   public class DeletePermissionCommandModel:PermissionCommandModel
+   public class DeleteCommandModel:RoleCommandModel
     {
-        public DeletePermissionCommandModel(Guid gid)
+        public DeleteCommandModel(Guid gid)
         {
-            this.PermissionId = gid;
+            this.RoleId = gid;
         }
     }
 }

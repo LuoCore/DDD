@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Web.Layui.Models;
 
@@ -32,7 +33,7 @@ namespace Web.Layui.Controllers
 
         public IActionResult Index()
         {
-            
+   
             return View();
         }
 
