@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Models.CommandModels
+namespace Domain.Models.EventModels.Role
 {
     /// <summary>
     /// 作者：(YJY)
@@ -11,16 +11,14 @@ namespace Domain.Models.CommandModels
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class RoleCommandModel : Command
+    public abstract class RoleEventModel : Event
     {
-        public override bool VerifyData()
-        {
-            return true;
-        }
+    
         public Guid RoleId { get; set; }
         public string RoleName { get; set; }
 
         public string RoleDescription { get; set; }
+        public List<string> PermissionIds { get; set; }
 
         public bool IsValid { get; set; }
     }

@@ -8,5 +8,6 @@ namespace Application.Interface.IServices
     {
         public  Task<Boolean> Create(Application.Models.ViewModels.Role.CreateViewModel vm);
         public  Task<Models.ViewModels.Layui.TableViewModel<Application.Models.ViewModels.RoleViewModel>> GetAll();
+        public  Task<List<Application.Models.ViewModels.Layui.TreeViewModel>> GetPermissionByParent();
     }
 }

@@ -1,4 +1,6 @@
-﻿using Domain.Models.EventModels.Permission;
+﻿using Domain.Interface.ICommandEventsHandler;
+using Domain.Models.EventModels.Permission;
+using Domain.Models.EventModels.Role;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -13,11 +15,16 @@ namespace Domain.CommandEventsHandler.EventHandlers
         INotificationHandler<Domain.Models.EventModels.Role.UpdateEventModel>,
         INotificationHandler<Domain.Models.EventModels.Role.DeleteEventModel>
     {
-        // 学习被注册成功后的事件处理方法
-        public Task Handle(Domain.Models.EventModels.Role.CreateEventModel req, CancellationToken cancellationToken)
-        {
 
-            return Task.FromResult(req);
+       private readonly IMediatorHandler Bus;
+        public RoleEventHandler(IMediatorHandler bus)
+        {
+            Bus = bus;
+        }
+        public Task<Boolean> Handle(Domain.Models.EventModels.Role.CreateEventModel req, CancellationToken cancellationToken)
+        {
+            var CreateCommand = new Domain.Models.CommandModels.RolePermission.CreateBatchCommandModel(Guid.NewGuid(),req.RoleId.ToString(),req.PermissionIds);
+            return Bus.SendCommand(CreateCommand);
         }
 
         public Task Handle(Domain.Models.EventModels.Role.UpdateEventModel notification, CancellationToken cancellationToken)
@@ -29,5 +36,7 @@ namespace Domain.CommandEventsHandler.EventHandlers
         {
             return Task.FromResult(notification);
         }
+
+     
     }
 }

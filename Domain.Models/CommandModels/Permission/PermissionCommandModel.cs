@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Models.CommandModels
+namespace Domain.Models.CommandModels.Permission
 {
     /// <summary>
     /// 作者：(YJY)
@@ -11,7 +11,7 @@ namespace Domain.Models.CommandModels
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class PermissionCommandModel : Command
+    public abstract class PermissionCommandModel : Command
     {
         public Guid PermissionId { get;protected set; }
         public string PermissionName { get; protected set; }
@@ -28,11 +28,6 @@ namespace Domain.Models.CommandModels
         {
             菜单=0,
             按钮=1
-        }
-
-        public override bool VerifyData()
-        {
-            return true;
         }
     }
 }

@@ -21,5 +21,10 @@ namespace Domain.Models.CommandModels.Permission
             this.PermissionParentId = permissionparentid;
             this.IsValid = isvalid;
         }
+
+        public override bool VerifyData()
+        {
+            return true;
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace Application.Models.ViewModels
         public string RoleName { get; set; }
 
         public string RoleDescription { get; set; }
+        public List<string> PermissionIds { get; set; }
 
         public bool IsValid { get; set; }
     }

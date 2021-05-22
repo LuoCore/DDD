@@ -23,13 +23,13 @@ namespace Application.Services
 
         public async Task<Boolean> Create(Application.Models.ViewModels.Permission.PermissionCreateViewModel vm)
         {
-            var CreateCommand = new Domain.Models.CommandModels.Permission.CreateCommandModel(Guid.NewGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
+            var CreateCommand = new Domain.Models.CommandModels.Permission.CreateCommandModel(Guid.NewGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.CommandModels.Permission.PermissionCommandModel.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
             return await Bus.SendCommand(CreateCommand);
         }
 
         public async Task<Boolean> Update(Application.Models.ViewModels.Permission.PermissionUpdateViewModel vm)
         {
-            var CommandData = new Domain.Models.CommandModels.Permission.UpdateCommandModel(vm.PermissionId.StringToGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
+            var CommandData = new Domain.Models.CommandModels.Permission.UpdateCommandModel(vm.PermissionId.StringToGuid(), vm.PermissionName, vm.PermissionType.IntToEnum<Domain.Models.CommandModels.Permission.PermissionCommandModel.PermissionTypeEnum>(), vm.PermissionAction, vm.PermissionParentId, vm.IsValid);
             return await Bus.SendCommand(CommandData);
         }
 

@@ -16,5 +16,9 @@ namespace Domain.Models.CommandModels.Permission
         {
             this.PermissionId = gid;
         }
+        public override bool VerifyData()
+        {
+            return true;
+        }
     }
 }

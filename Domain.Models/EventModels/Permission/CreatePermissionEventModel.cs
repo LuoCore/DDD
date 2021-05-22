@@ -15,7 +15,7 @@ namespace Domain.Models.EventModels.Permission
         
 
 
-        public CreatePermissionEventModel(Guid gid, string permissionname, CommandModels.PermissionCommandModel.PermissionTypeEnum permissiontype, string permissionaction, string permissionparentid, bool isvalid)
+        public CreatePermissionEventModel(Guid gid, string permissionname, CommandModels.Permission.PermissionCommandModel.PermissionTypeEnum permissiontype, string permissionaction, string permissionparentid, bool isvalid)
         {
             this.AggregateId = gid;
             this.PermissionId = gid;

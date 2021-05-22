@@ -16,7 +16,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
     /// 说明：
     /// </summary>
     public class PermissionCommandHandler : CommandHandler<IPermissionRepository>,
-                                            IRequestHandler<CreateCommandModel, bool>,
+        IRequestHandler<CreateCommandModel, bool>,
         IRequestHandler<UpdateCommandModel, bool>,
         IRequestHandler<DeleteCommandModel, bool>
     {
@@ -58,7 +58,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
                 // 比如欢迎用户注册邮件呀，短信呀等
                 _Bus.RaiseEvent(new Domain.Models.EventModels.Permission.CreatePermissionEventModel(entity.PermissionId.StringToGuid(),
                     entity.PermissionName,
-                    entity.PermissionType.IntToEnum<Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(),
+                    entity.PermissionType.IntToEnum<Models.CommandModels.Permission.PermissionCommandModel.PermissionTypeEnum>(),
                     entity.PermissionAction,
                     entity.PermissionParentId,
                     entity.IsValid), "Permission");
@@ -108,7 +108,7 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             {
                 _Bus.RaiseEvent(new Domain.Models.EventModels.Permission.UpdatePermissionEventModel(entity.PermissionId.StringToGuid(),
                    entity.PermissionName,
-                   entity.PermissionType.IntToEnum<Models.CommandModels.PermissionCommandModel.PermissionTypeEnum>(),
+                   entity.PermissionType.IntToEnum<Models.CommandModels.Permission.PermissionCommandModel.PermissionTypeEnum>(),
                    entity.PermissionAction,
                    entity.PermissionParentId,
                    entity.IsValid), "Permission");

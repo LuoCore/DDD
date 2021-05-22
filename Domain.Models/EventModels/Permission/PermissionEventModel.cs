@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Models.EventModels
+namespace Domain.Models.EventModels.Permission
 {
     /// <summary>
     /// 作者：(YJY)
@@ -11,12 +11,12 @@ namespace Domain.Models.EventModels
     /// 版本：V1.0.1  
     /// 说明：
     /// </summary>
-    public class PermissionEventModel : Event
+    public abstract class PermissionEventModel : Event
     {
         public Guid PermissionId { get; set; }
         public string PermissionName { get; set; }
 
-        public CommandModels.PermissionCommandModel.PermissionTypeEnum PermissionType { get; set; }
+        public CommandModels.Permission.PermissionCommandModel.PermissionTypeEnum PermissionType { get; set; }
 
         public string PermissionAction { get; set; }
 

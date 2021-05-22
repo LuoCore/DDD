@@ -34,6 +34,8 @@ namespace Domain.Repository
                 return db.Queryable<Infrastructure.Entitys.Role>().Where(x=>x.RoleName== namevalue).First();
             });
         }
+
+       
         public bool Create(Infrastructure.Entitys.Role m)
         {
             return Factory.GetDbContext((db) =>
@@ -49,5 +51,7 @@ namespace Domain.Repository
                 .ExecuteCommand()>0;
             });
         }
+
+
     }
 }

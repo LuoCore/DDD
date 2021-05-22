@@ -12,6 +12,10 @@ namespace Domain.Models.CommandModels.Permission
     /// </summary>
     public class UpdateCommandModel : PermissionCommandModel
     {
+        public override bool VerifyData()
+        {
+            return true;
+        }
         public UpdateCommandModel(Guid gid, string permissionname, PermissionTypeEnum permissiontype, string permissionaction, string permissionparentid, bool isvalid)
         {
             this.PermissionId = gid;

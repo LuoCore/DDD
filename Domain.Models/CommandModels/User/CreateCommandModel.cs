@@ -23,5 +23,9 @@ namespace Domain.Models.CommandModels.User
             CreateName = createname;
         }
 
+        public override bool VerifyData()
+        {
+            return true;
+        }
     }
 }

@@ -16,13 +16,15 @@ namespace Application.Services
     /// </summary>
     public class RoleService : BaseService<IRoleRepository>, IRoleService
     {
-        public RoleService(ISqlSugarFactory factory, IRoleRepository repository, IMediatorHandler bus, IEventStoreRepository eventStoreRepository) : base(factory, repository, bus, eventStoreRepository)
+        private readonly IPermissionRepository _PermissionRepository;
+        public RoleService(ISqlSugarFactory factory, IRoleRepository repository, IMediatorHandler bus, IEventStoreRepository eventStoreRepository, IPermissionRepository permissionRepository) : base(factory, repository, bus, eventStoreRepository)
         {
+            _PermissionRepository = permissionRepository;
         }
 
         public async Task<Boolean> Create(Application.Models.ViewModels.Role.CreateViewModel vm)
         {
-            var CreateCommand = new Domain.Models.CommandModels.Role.CreateCommandModel(Guid.NewGuid(), vm.RoleName,vm.RoleDescription,vm.IsValid);
+            var CreateCommand = new Domain.Models.CommandModels.Role.CreateCommandModel(Guid.NewGuid(), vm.RoleName,vm.RoleDescription,vm.IsValid,vm.PermissionIds);
             return await Bus.SendCommand(CreateCommand);
         }
 
@@ -53,6 +55,32 @@ namespace Application.Services
                 }
                 return models;
             });
+        }
+
+        public async Task<List<Application.Models.ViewModels.Layui.TreeViewModel>> GetPermissionByParent() 
+        {
+            return await Task.Run(() =>
+            {
+                return RecurvePermission("0"); ;
+            }); 
+        }
+
+        private  List<Application.Models.ViewModels.Layui.TreeViewModel> RecurvePermission(string parentId) 
+        {
+            List<Application.Models.ViewModels.Layui.TreeViewModel> treeViewModels = new List<Models.ViewModels.Layui.TreeViewModel>();
+
+            List<Infrastructure.Entitys.Permission> permissions = _PermissionRepository.QueryByParentId(parentId);
+            foreach (var item in permissions)
+            {
+                Application.Models.ViewModels.Layui.TreeViewModel tvm = new Models.ViewModels.Layui.TreeViewModel();
+                tvm.id = item.PermissionId;
+                tvm.title = item.PermissionName;
+                tvm.disabled = !item.IsValid;
+                tvm.children = RecurvePermission(item.PermissionId);
+                treeViewModels.Add(tvm);
+            }
+            return treeViewModels;
+
         }
     }
 }

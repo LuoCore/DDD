@@ -16,5 +16,9 @@ namespace Domain.Models.CommandModels.Role
         {
             this.RoleId = gid;
         }
+        public override bool VerifyData()
+        {
+            return true;
+        }
     }
 }

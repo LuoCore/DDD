@@ -73,6 +73,7 @@ namespace Infrastructure.CrossCutting.IoC
             services.AddScoped<IRequestHandler<Domain.Models.CommandModels.Role.CreateCommandModel, bool>, RoleCommandHandler>();
             services.AddScoped<IRequestHandler<Domain.Models.CommandModels.Role.UpdateCommandModel, bool>, RoleCommandHandler>();
             services.AddScoped<IRequestHandler<Domain.Models.CommandModels.Role.DeleteCommandModel, bool>, RoleCommandHandler>();
+            services.AddScoped<IRequestHandler<Domain.Models.CommandModels.RolePermission.CreateBatchCommandModel, bool>, RolePermissionCommandHandler>();
 
             // 领域通知
             services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
@@ -85,6 +86,7 @@ namespace Infrastructure.CrossCutting.IoC
             services.AddScoped<INotificationHandler<Domain.Models.EventModels.Role.CreateEventModel>, RoleEventHandler>();
             services.AddScoped<INotificationHandler<Domain.Models.EventModels.Role.UpdateEventModel>, RoleEventHandler>();
             services.AddScoped<INotificationHandler<Domain.Models.EventModels.Role.DeleteEventModel>, RoleEventHandler>();
+            services.AddScoped<INotificationHandler<Domain.Models.EventModels.RolePermission.CreateBatchEventModel>, RolePermissionEventHandler>();
 
 
 

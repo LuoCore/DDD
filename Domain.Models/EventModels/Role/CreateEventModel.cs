@@ -1,6 +1,6 @@
 ﻿using Infrastructure.CommandEventsHandler;
 using System;
-
+using System.Collections.Generic;
 
 namespace Domain.Models.EventModels.Role
 {
@@ -13,13 +13,14 @@ namespace Domain.Models.EventModels.Role
     public class CreateEventModel : RoleEventModel
     {
         
-        public CreateEventModel(Guid gid, string RoleName,string RoleDescription,bool isvalid)
+        public CreateEventModel(Guid gid, string RoleName,string RoleDescription,bool isvalid,List<string> permissionIds)
         {
             this.AggregateId = gid;
             this.RoleId = gid;
             this.RoleName = RoleName;
             this.RoleDescription = RoleDescription;
             this.IsValid = isvalid;
+            this.PermissionIds = permissionIds;
         }
     }
 }

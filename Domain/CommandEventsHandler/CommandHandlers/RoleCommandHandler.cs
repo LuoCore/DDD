@@ -49,8 +49,8 @@ namespace Domain.CommandEventsHandler.CommandHandlers
             //提交
             if (_REPOSITORY.Create(entity))
             {
-                _Bus.RaiseEvent(new Domain.Models.EventModels.Role.CreateEventModel(entity.RoleId.StringToGuid(), entity.RoleName, entity.RoleDescription, entity.IsValid), "Role");
-                return Task.FromResult(true);
+              var eventResult= _Bus.RaiseEvent(new Domain.Models.EventModels.Role.CreateEventModel(entity.RoleId.StringToGuid(), entity.RoleName, entity.RoleDescription, entity.IsValid,request.PermissionIds), "Role");
+                return Task.FromResult(eventResult.Result);
             }
             else 
             {

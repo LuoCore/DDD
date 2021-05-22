@@ -21,7 +21,7 @@ namespace Web.Layui.Areas.Admin.Controllers
             return View();
         }
 
-        public IActionResult FormDialog() 
+        public IActionResult RoleFormDialog()
         {
             return PartialView();
         }
@@ -57,6 +57,13 @@ namespace Web.Layui.Areas.Admin.Controllers
                 return Json(new { status = false, msg = strMsg.ToString() });
             }
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TreePermission()
+        {
+            List<Application.Models.ViewModels.Layui.TreeViewModel> models = await _SERVICE.GetPermissionByParent();
+            return Json(new { status = true, datas = models });
         }
     }
 }

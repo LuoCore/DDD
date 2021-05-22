@@ -12,6 +12,10 @@ namespace Domain.Models.CommandModels.Role
     /// </summary>
     public class UpdateCommandModel : RoleCommandModel
     {
+        public override bool VerifyData()
+        {
+            return true;
+        }
         public UpdateCommandModel(Guid gid, string rolename, string RoleDescription, bool IsValid)
         {
             this.RoleId = gid;

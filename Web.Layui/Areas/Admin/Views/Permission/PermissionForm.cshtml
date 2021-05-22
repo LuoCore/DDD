@@ -34,7 +34,7 @@
             <select name="PermissionType" lay-verify="required" lay-search="">
 
                 @{
-                    Type enumType = typeof(Domain.Models.CommandModels.PermissionCommandModel.PermissionTypeEnum);
+                    Type enumType = typeof(Domain.Models.CommandModels.Permission.PermissionCommandModel.PermissionTypeEnum);
                     Array values = Enum.GetValues(enumType);
                     if (values.Length > 0)
                     {

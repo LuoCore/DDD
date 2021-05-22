@@ -28,14 +28,14 @@ namespace Domain.CommandEventsHandler
             _serviceFactory = serviceFactory;
             _eventStoreService = eventStoreService;
         }
-        public Task RaiseEvent<T>(T @event,string eventName) where T : Event
+        public Task<bool> RaiseEvent<T>(T @event,string eventName) where T : Event
         {
             // 除了领域通知以外的事件都保存下来
             if (!@event.MessageType.Equals("DomainNotification"))
                 _eventStoreService?.Save(@event, eventName, System.Environment.UserName);
 
             // MediatR中介者模式中的第二种方法，发布/订阅模式
-            return _mediator.Publish(@event);
+            return (Task<bool>)_mediator.Publish(@event);
         }
 
         public Task<bool> SendCommand<T>(T command) where T : Command
@@ -43,5 +43,7 @@ namespace Domain.CommandEventsHandler
             //这个是正确的
             return _mediator.Send(command);//请注意 入参 的类型
         }
+
+       
     }
 }
